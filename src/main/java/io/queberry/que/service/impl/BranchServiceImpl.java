@@ -121,7 +121,7 @@ public class BranchServiceImpl implements BranchService {
         return false;
     }
     @Override
-    public Page<Branch> getBranchesByRegionId(String regionId, Pageable pageable) {
+    public Page<Branch>getBranchesByRegionId(String regionId, Pageable pageable) {
         return branchRepository.findByRegion(regionId, pageable);
     }
     @Override
