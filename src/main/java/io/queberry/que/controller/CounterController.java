@@ -5,6 +5,9 @@ import io.queberry.que.dto.ServiceList;
 import io.queberry.que.entity.Branch;
 import io.queberry.que.entity.Counter;
 import io.queberry.que.service.CounterService;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -83,5 +86,35 @@ public class CounterController {
     @GetMapping("/counters/{id}/free")
     public ResponseEntity<?> inUse(@PathVariable("id") String ctr) {
         return ResponseEntity.ok(counterService.inUse(ctr));
+    }
+    @PutMapping("/counters/{id}/disable")
+    public ResponseEntity<?> disable(HttpServletRequest request, @PathVariable("id") String counterId) {
+        Counter updatedCounter = counterService.disableCounter(request, counterId);
+        return ResponseEntity.ok(updatedCounter);
+    }
+    @PutMapping("/counters/{id}/enable")
+    public ResponseEntity<?> enableCounter(HttpServletRequest request, @PathVariable("id") String counterId) {
+        Counter updatedCounter = counterService.enableCounter(request, counterId);
+        return ResponseEntity.ok(updatedCounter);
+    }
+    @GetMapping("/counters")
+    public ResponseEntity<?> getCounters(Pageable pageable) {
+        Page<Counter> countersList = counterService.getCounters(pageable);
+        return ResponseEntity.ok(countersList);
+    }
+    @GetMapping("/counters/{id}/filterByCode")
+    public ResponseEntity<?> filterCounterByCode(
+            @PathVariable("id") String branchId,
+            @RequestParam("counterId") String cd,
+            Pageable pageable) {
+
+        Page<Counter> counters = counterService.filterCountersByCode(branchId, cd, pageable);
+        return ResponseEntity.ok(counters);
+    }
+//    @Transaction
+    @GetMapping("/counters/{id}/exit/{empId}")
+    public ResponseEntity<?> exit(@PathVariable("id") String counterId, @PathVariable("empId") String empId) {
+        Counter updatedCounter = counterService.exitCounter(counterId, empId);
+        return ResponseEntity.ok(updatedCounter);
     }
 }

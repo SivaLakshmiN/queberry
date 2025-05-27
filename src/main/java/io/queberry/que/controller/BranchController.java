@@ -1,10 +1,8 @@
 package io.queberry.que.controller;
 
-import io.queberry.que.dto.BranchDTO;
-import io.queberry.que.dto.BranchRequest;
-import io.queberry.que.dto.Capacity;
-import io.queberry.que.dto.ServiceGroupRequest;
+import io.queberry.que.dto.*;
 import io.queberry.que.entity.Branch;
+import io.queberry.que.entity.Counter;
 import io.queberry.que.exception.DataNotFoundException;
 import io.queberry.que.exception.QueException;
 import io.queberry.que.service.*;
@@ -20,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -147,6 +146,11 @@ public class BranchController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Failed to assign service group");
         }
+    }
+    @GetMapping("/branches/services/{key}")
+    public ResponseEntity<Set<ServiceGroupDTO>> getAllServiceGroups(@PathVariable("key") String branchKey) {
+        Set<ServiceGroupDTO> serviceGroups = branchService.getServiceGroupsByBranchKey(branchKey);
+        return ResponseEntity.ok(serviceGroups);
     }
     @GetMapping("/branches/branchCapacity/{key}")
     public ResponseEntity<?> getCapacity(@PathVariable("key") String branchKey) {

@@ -1,9 +1,6 @@
 package io.queberry.que.service.impl;
 
-import io.queberry.que.dto.BranchDTO;
-import io.queberry.que.dto.BranchRequest;
-import io.queberry.que.dto.Capacity;
-import io.queberry.que.dto.ServiceGroupRequest;
+import io.queberry.que.dto.*;
 import io.queberry.que.entity.*;
 import io.queberry.que.enums.Status;
 import io.queberry.que.exception.DataNotFoundException;
@@ -149,7 +146,7 @@ public class BranchServiceImpl implements BranchService {
 
         Set<String> branches = new HashSet<>();
 //        branches.add(branch);
-        Set<Employee> employees = employeeRepository.findByBranchIn(branches);
+        List<Employee> employees = employeeRepository.findByBranchesIn(branches);
         for (Employee employee : employees) {
             Set<String> employeeBranches = (Set<String>) employee;
             employeeBranches.remove(branch);
@@ -218,6 +215,17 @@ public class BranchServiceImpl implements BranchService {
         branch.setServiceGroup(serviceGroups);
         return branchRepository.save(branch);
     }
+    @Override
+    public Set<ServiceGroupDTO> getServiceGroupsByBranchKey(String branchKey) {
+        Branch branch = branchRepository.findByBranchKey(branchKey);
+        if (branch == null) {
+            throw new RuntimeException("Branch not found with key: " + branchKey);
+        }
+        return branch.getServiceGroup().stream()
+                .map(ServiceGroupDTO::new)
+                .collect(Collectors.toSet());
+    }
+
     @Override
     public Capacity getBranchCapacity(String branchKey) {
         Branch branch = branchRepository.findByBranchKey(branchKey);

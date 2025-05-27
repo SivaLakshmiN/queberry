@@ -1,9 +1,6 @@
 package io.queberry.que.service;
 
-import io.queberry.que.dto.BranchDTO;
-import io.queberry.que.dto.BranchRequest;
-import io.queberry.que.dto.Capacity;
-import io.queberry.que.dto.ServiceGroupRequest;
+import io.queberry.que.dto.*;
 import io.queberry.que.entity.Branch;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.domain.Page;
@@ -27,6 +24,7 @@ public interface BranchService {
     Branch deActivateBranch(String branchId);
     Page<BranchDTO> filterBranchesByName(HttpServletRequest request, String region, String brName, Pageable pageable);
     Branch assignServiceGroup(String branchId, ServiceGroupRequest request);
+    Set<ServiceGroupDTO> getServiceGroupsByBranchKey(String branchKey);
     Capacity getBranchCapacity(String branchKey);
 }
 

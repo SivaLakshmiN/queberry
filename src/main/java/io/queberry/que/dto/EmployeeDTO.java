@@ -61,7 +61,7 @@ public class EmployeeDTO {
         this.lastname = employee.getLastname();
         this.tenant = employee.getTenant();
         this.roles = employee.getRoles();
-        this.counter = employee.getCounter();
+        this.counter = String.valueOf(employee.getCounter());
         this.active = employee.isActive();
         this.walkIn = employee.isWalkIn();
         this.callByNumber = employee.isCallByNumber();
@@ -87,6 +87,7 @@ public class EmployeeDTO {
         this.loggedTime = employee.getLoggedTime();
         this.region = employee.getRegion();
         this.locked = employee.isLocked();
+        this.counter = employee.getCounter();
     }
 
     private Set<ServiceDTO> getServiceDTO(Set<Service> services) {
