@@ -72,6 +72,12 @@ package io.queberry.que.config;//package io.queberry.que.config;
 //    }
 //
 //    //generate token for user
+//    public String generateToken(Employee user, EmployeeSessions employeeSessions) {
+//        Map<String, Object> claims = new HashMap<>();
+////		log.info("in jwt token util generate token");
+////		claims.put("userId",employeeSessions.getId());
+//        return doGenerateToken(claims, user.getUsername(), employeeSessions.getId());
+//    }
 ////    public String generateToken(Employee user, EmployeeSessions employeeSessions) {
 ////        Map<String, Object> claims = new HashMap<>();
 //////		log.info("in jwt token util generate token");

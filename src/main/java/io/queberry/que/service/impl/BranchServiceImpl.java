@@ -1,5 +1,6 @@
 package io.queberry.que.service.impl;
 
+import io.queberry.que.dto.*;
 import io.queberry.que.dto.BranchDTO;
 import io.queberry.que.dto.BranchRequest;
 import io.queberry.que.dto.Capacity;
@@ -35,6 +36,7 @@ public class BranchServiceImpl implements BranchService {
 
     private final AssistanceRepository assistanceRepository;
 
+    private final EmployeeRepository employeeRepository;
 //    private final EmployeeRepository employeeRepository;
 
     public BranchServiceImpl(BranchRepository branchRepository, BranchMapper branchMapper, ServiceGroupRepository serviceGroupRepository, CounterRepository counterRepository, AssistanceRepository assistanceRepository, EmployeeRepository employeeRepository) {
@@ -43,6 +45,7 @@ public class BranchServiceImpl implements BranchService {
         this.serviceGroupRepository = serviceGroupRepository;
         this.counterRepository = counterRepository;
         this.assistanceRepository = assistanceRepository;
+        this.employeeRepository = employeeRepository;
 //        this.employeeRepository = employeeRepository;
     }
 
@@ -149,7 +152,9 @@ public class BranchServiceImpl implements BranchService {
 
         Set<String> branches = new HashSet<>();
 //        branches.add(branch);
-        Set<Employee> employees = employeeRepository.findByBranchIn(branches);
+        List<Employee> employees = employeeRepository.findByBranchesIn(branches);
+=======
+        Set<Employee> employees = employeeRepository.findByBranchIn(branc
         for (Employee employee : employees) {
             Set<String> employeeBranches = (Set<String>) employee;
             employeeBranches.remove(branch);
@@ -218,6 +223,17 @@ public class BranchServiceImpl implements BranchService {
         branch.setServiceGroup(serviceGroups);
         return branchRepository.save(branch);
     }
+    @Override
+    public Set<ServiceGroupDTO> getServiceGroupsByBranchKey(String branchKey) {
+        Branch branch = branchRepository.findByBranchKey(branchKey);
+        if (branch == null) {
+            throw new RuntimeException("Branch not found with key: " + branchKey);
+        }
+        return branch.getServiceGroup().stream()
+                .map(ServiceGroupDTO::new)
+                .collect(Collectors.toSet());
+    }
+
     @Override
     public Capacity getBranchCapacity(String branchKey) {
         Branch branch = branchRepository.findByBranchKey(branchKey);

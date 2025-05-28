@@ -11,6 +11,5 @@ public class MapperConfig {
     @Bean
     public BranchMapper branchMapper() {
         return Mappers.getMapper(BranchMapper.class);
-
     }
 }

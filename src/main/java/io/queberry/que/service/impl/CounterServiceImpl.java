@@ -11,15 +11,20 @@ import io.queberry.que.entity.Employee;
 import io.queberry.que.exception.DataNotFoundException;
 import io.queberry.que.repository.*;
 import io.queberry.que.service.CounterService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Sort;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.*;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -200,11 +205,15 @@ public class CounterServiceImpl implements CounterService {
         Set<String> branches = new HashSet<>();
         branches.add(branchId);
 
+        List<Employee> employees = employeeRepository.findByBranchesIn(branches);
+        for (Employee employee : employees) {
+            if (employee != null && employee.getCounter() != null) {
+                assignedCounters.add(String.valueOf(employee.getCounter()));
         Set<Employee> employees = employeeRepository.findByBranchIn(branches);
         for (Employee employee : employees) {
             if (employee != null && employee.getCounter() != null) {
                 assignedCounters.add(employee.getCounter());
-            }
+                }
         }
 
         Set<Counter> counters;
@@ -221,6 +230,13 @@ public class CounterServiceImpl implements CounterService {
             );
         }
         return counters;
+    }
+    @Override
+    public Page<Counter> filterCountersByCode(String branchId, String codeFragment, Pageable pageable) {
+        Branch branch = branchRepository.findById(branchId)
+                .orElseThrow(() -> new DataNotFoundException("Branch not found with ID: " + branchId));
+
+        return counterRepository.findByBranchAndCodeContainingIgnoreCase(branch, codeFragment, pageable);
     }
 
     @Override
@@ -259,6 +275,92 @@ public class CounterServiceImpl implements CounterService {
 //        );
 
         return counterRepository.save(counter);
+    }
+    @Override
+    public Counter disableCounter(HttpServletRequest request,String counterId) {
+        String token = request.getHeader("Authorization").substring(7);
+
+//        if (jwtTokenUtil.isTokenExpired(token)) {
+//            throw new RuntimeException("JWT token expired!");
+//        }
+//
+//        String username = jwtTokenUtil.getUsernameFromToken(token);
+//
+        Counter counter = counterRepository.findById(counterId)
+                .orElseThrow(() -> new DataNotFoundException("Counter not found with ID: " + counterId));
+
+        counter.setActive(false);
+
+        AuditLogs auditLogs = new AuditLogs();
+        auditLogs.setEntityName("Counter");
+        auditLogs.setEntityId(counter.getId());
+        auditLogs.setEntityField("Status");
+        auditLogs.setOldData("inactive");
+        auditLogs.setNewData("active");
+//        auditLogs.setCreatedBy(username);
+
+        auditLogsRepository.save(auditLogs);
+        return counterRepository.save(counter);
+    }
+    @Override
+    public Counter enableCounter(HttpServletRequest request, String counterId) {
+        String token = request.getHeader("Authorization").substring(7);
+
+//        if (jwtTokenUtil.isTokenExpired(token)) {
+//            throw new RuntimeException("JWT token expired!");
+//        }
+//
+//        String username = jwtTokenUtil.getUsernameFromToken(token);
+//
+        Counter counter = counterRepository.findById(counterId)
+                .orElseThrow(() -> new DataNotFoundException("Counter not found with ID: " + counterId));
+
+        counter.setActive(true);
+
+        AuditLogs auditLogs = new AuditLogs();
+        auditLogs.setEntityName("Counter");
+        auditLogs.setEntityId(counter.getId());
+        auditLogs.setEntityField("Status");
+        auditLogs.setOldData("inactive");
+        auditLogs.setNewData("active");
+//        auditLogs.setCreatedBy(username);
+
+        auditLogsRepository.save(auditLogs);
+        return counterRepository.save(counter);
+    }
+    @Override
+    public Page<Counter> getCounters(Pageable pageable) {
+        return counterRepository.findAll(pageable);
+    }
+    @Transactional
+    @Override
+    public Counter exitCounter(String counterId, String empId) {
+        Counter counter = counterRepository.findCounterById(counterId)
+                .orElseThrow(() -> new DataNotFoundException("Counter not found: " + counterId));
+
+        counter.setInUse(false);
+        counter = counterRepository.save(counter);
+
+        // Unassign employee from counter
+        employeeRepository.findEmployeeById(empId).ifPresent(emp -> {
+            emp.setLoggedCounter(null);
+            emp.setLoggedTime(null);
+            employeeRepository.save(emp);
+        });
+
+//        // Remove queue-counter mapping
+//        queueCounterRepository.findByCounterId(counterId).stream().findFirst().ifPresent(queueCounterRepository::delete);
+//
+//        // Notify front-end
+//        messagingTemplate.convertAndSend(
+//                "/notifications/" + counter.getBranch().getBranchKey() + "/counterDisplayMessage",
+//                new BreakController.CounterStatusWrapper(counter, "CLOSED")
+//        );
+
+        // Set counter status
+//        counterStatusService.setStatus(counter.getId(), "CLOSED");
+
+        return counter;
     }
 }
 

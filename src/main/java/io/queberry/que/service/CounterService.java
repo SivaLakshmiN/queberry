@@ -4,6 +4,9 @@ import io.queberry.que.dto.CounterResources;
 import io.queberry.que.dto.ServiceList;
 import io.queberry.que.entity.Branch;
 import io.queberry.que.entity.Counter;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Set;
 
@@ -17,4 +20,10 @@ public interface CounterService {
     Counter addServices(Counter counter, ServiceList serviceList);
     Set<Counter> listUnassignedCounters(String branchId);
     Counter inUse(String counterId);
+    Page<Counter> getCounters(Pageable pageable);
+    Counter disableCounter(HttpServletRequest httpServletRequest,String counterId);
+    Counter enableCounter(HttpServletRequest request, String counterId);
+    Page<Counter> filterCountersByCode(String branchId, String codeFragment, Pageable pageable);
+    Counter exitCounter(String counterId, String empId);
+
 }

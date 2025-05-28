@@ -207,6 +207,7 @@ public class Counter extends AggregateRoot<Counter> {
     public static class CounterDeactivated extends DomainEvent<Counter> {
 
         @AggregateReference
+        Counter counter;
         final Counter counter;
     }
 
@@ -217,6 +218,10 @@ public class Counter extends AggregateRoot<Counter> {
     public static class ServiceAddedToCounter extends DomainEvent<Counter> {
 
         @AggregateReference
+        Counter counter;
+
+        @AggregateReference
+        String service;
         final Counter counter;
 
         @AggregateReference
