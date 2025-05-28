@@ -13,7 +13,6 @@ import lombok.*;
 @NoArgsConstructor
 public class SurveyConfiguration extends AggregateRoot<SurveyConfiguration> {
 
-
     @Column(columnDefinition = "bit default 0")
     private boolean enabled;
 

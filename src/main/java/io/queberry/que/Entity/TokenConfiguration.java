@@ -12,7 +12,6 @@ import lombok.ToString;
 //@NoArgsConstructor(force = true,access = AccessLevel.PRIVATE)
 @NoArgsConstructor
 public class TokenConfiguration extends AggregateRoot<TokenConfiguration> {
-
     private Integer tokenValidity;
 
 

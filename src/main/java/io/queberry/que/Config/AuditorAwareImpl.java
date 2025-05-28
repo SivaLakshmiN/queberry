@@ -15,7 +15,6 @@ public class AuditorAwareImpl implements AuditorAware<String> {
         if (authentication == null)
             return Optional.of("System :: Queberry");
         else
-
             return Optional.of(((UserDetails) authentication.getPrincipal()).getUsername());
     }
 }

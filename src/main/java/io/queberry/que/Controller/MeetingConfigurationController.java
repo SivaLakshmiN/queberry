@@ -17,7 +17,6 @@ public class MeetingConfigurationController {
 
     private final MeetingConfigurationRepository meetingConfigurationRepository;
 
-
     @GetMapping("/config/meeting")
     public ResponseEntity getAudioConfig(){
         return ResponseEntity.ok(meetingConfigurationRepository.findAll().stream().findFirst().orElse(null));

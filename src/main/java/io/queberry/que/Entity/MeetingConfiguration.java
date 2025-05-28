@@ -13,7 +13,6 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MeetingConfiguration extends AggregateRoot<MeetingConfiguration> {
-
     private String surveyId;
 
     public MeetingConfiguration change(MeetingConfigurationController.MeetingConfigurationResource resource){

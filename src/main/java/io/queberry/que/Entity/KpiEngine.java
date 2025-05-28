@@ -12,7 +12,6 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @Service
 @RequiredArgsConstructor
 public class KpiEngine {
-
 //    private final KpiService kpiService;
 //
 //    @Scheduled(fixedRate = 300000)

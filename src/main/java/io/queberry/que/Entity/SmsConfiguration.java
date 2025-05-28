@@ -13,7 +13,6 @@ import lombok.*;
 @NoArgsConstructor
 public class SmsConfiguration extends AggregateRoot<SmsConfiguration> {
 
-
     private String url;
     private String username;
     private String password;

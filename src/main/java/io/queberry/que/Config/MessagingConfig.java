@@ -12,7 +12,6 @@ package io.queberry.que.Config;//package io.queberry.que.config;
 //import org.springframework.kafka.support.serializer.JsonSerializer;
 //
 //
-
 //@Slf4j
 //@Configuration
 //@EnableConfigurationProperties({KafkaProperties.class})

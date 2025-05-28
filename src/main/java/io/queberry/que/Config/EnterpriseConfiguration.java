@@ -8,5 +8,4 @@ import org.springframework.context.annotation.Profile;
 @Profile("enterprise")
 @Configuration
 public class EnterpriseConfiguration {
-
 }

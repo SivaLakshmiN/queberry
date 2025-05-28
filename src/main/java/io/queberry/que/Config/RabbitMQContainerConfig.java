@@ -12,7 +12,6 @@ package io.queberry.que.Config;//package io.queberry.que.config;
 //import org.springframework.context.annotation.Configuration;
 //import org.springframework.context.annotation.Profile;
 //
-
 //import java.security.KeyManagementException;
 //import java.security.NoSuchAlgorithmException;
 //

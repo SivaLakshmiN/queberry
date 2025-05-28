@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequiredArgsConstructor
 @Slf4j
 public class KpiConfigurationController {
-
     private final KpiConfigurationRepository kpiConfigurationRepository;
 
 

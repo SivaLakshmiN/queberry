@@ -20,7 +20,6 @@
 //import org.springframework.security.ldap.authentication.ad.ActiveDirectoryLdapAuthenticationProvider;
 //import org.springframework.security.web.session.HttpSessionEventPublisher;
 //
-
 //import javax.naming.Context;
 //import java.io.IOException;
 //import java.util.HashMap;

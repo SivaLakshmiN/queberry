@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-
 public interface BreakSessionRepository extends JpaRepository<BreakSession, String> {
 //    Set<BreakSession> findByEmployeeAndStartTimeBetween(Employee employee, LocalDateTime start, LocalDateTime end);
 //    Set<BreakSession> findByEmployeeIdAndStartTimeBetween(String employee, LocalDateTime start, LocalDateTime end);

@@ -22,7 +22,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 
 public class RabbitMQConfig {
-
 //    private final Home home;
 //
 //    private final Environment environment;

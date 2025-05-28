@@ -15,7 +15,6 @@ import lombok.*;
 @NoArgsConstructor
 public class ThemeConfiguration extends AggregateRoot<ThemeConfiguration> {
 
-
     private String signageLogo;
 
     private String dispenserLogo;

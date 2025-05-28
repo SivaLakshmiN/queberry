@@ -13,7 +13,6 @@ public class DefaultRolesPrefixPostProcessor implements BeanPostProcessor, Prior
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName)
             throws BeansException {
-
         // remove this if you are not using JSR-250
         if(bean instanceof Jsr250MethodSecurityMetadataSource) {
             ((Jsr250MethodSecurityMetadataSource) bean).setDefaultRolePrefix(null);

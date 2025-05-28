@@ -15,7 +15,6 @@ import java.util.List;
 @ToString(callSuper = true)
 @Slf4j
 public class MainConfigResource {
-
     private final QueueConfiguration queue;
 
     private final Home home;

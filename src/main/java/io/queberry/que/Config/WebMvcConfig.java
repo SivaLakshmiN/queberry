@@ -16,7 +16,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Value("${user.home}/queberry/halo/announcements/")
     private String announcementStore;
 
-
     /*@Autowired
     private ObjectMapper objectMapper;
 

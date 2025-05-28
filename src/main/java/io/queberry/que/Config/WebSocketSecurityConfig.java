@@ -11,7 +11,6 @@
 //    protected void configureInbound(MessageSecurityMetadataSourceRegistry messages) {
 //        messages.anyMessage().permitAll();
 //    }
-
 //
 //    @Override
 //    protected boolean sameOriginDisabled() {

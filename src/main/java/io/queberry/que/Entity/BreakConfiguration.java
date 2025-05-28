@@ -2,7 +2,6 @@ package io.queberry.que.Entity;
 import jakarta.persistence.Entity;
 import lombok.*;
 
-
 @Entity
 @Getter
 @Setter

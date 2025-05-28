@@ -18,7 +18,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Entity(name = "license")
 public class License extends AggregateRoot<License> {
-
     private String orgName; // package
 
     private LocalDate startDate; //package

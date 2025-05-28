@@ -17,7 +17,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DispenserConfiguration extends AggregateRoot<DispenserConfiguration> {
-
     private String welcomeMessage;
 
     private Integer numberOfTokens;

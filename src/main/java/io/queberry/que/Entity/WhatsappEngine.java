@@ -18,7 +18,6 @@ import org.springframework.web.client.RestTemplate;
 public class WhatsappEngine {
 
     private final WhatsappConfigurationRepository whatsappConfigurationRepository;
-
 //    @Async
 //    @TransactionalEventListener(fallbackExecution = true)
 //    public void onAssistance(Assistance.AssistanceCalled assistanceCalled) {

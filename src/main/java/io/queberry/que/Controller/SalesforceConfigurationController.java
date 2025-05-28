@@ -21,7 +21,6 @@ public class SalesforceConfigurationController {
     public ResponseEntity getSalesforceConfig(){
         return ResponseEntity.ok(salesforceConfigurationRepository.findAll().stream().findFirst().orElse(new SalesforceConfiguration()));
     }
-
     @PutMapping("/config/salesforce")
     public ResponseEntity editSalesforceConfig(@RequestBody SalesforceConfigurationResource resource){
         SalesforceConfiguration salesforceConfiguration = salesforceConfigurationRepository.findAll().stream().findFirst().orElse(new SalesforceConfiguration());

@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 @CloudloomController
 @RequiredArgsConstructor
 public class LdapConfigurationController {
-
     private final LdapConfigurationRepository ldapConfigurationRepository;
 
     @GetMapping("/config/ldap")

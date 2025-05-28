@@ -17,7 +17,6 @@ public class QueueConfiguration extends AggregateRoot<QueueConfiguration> {
     @Enumerated(EnumType.STRING)
     private QueueStrategy strategy;
 
-
     private Integer slaWait;
 
     private Integer slaServe;

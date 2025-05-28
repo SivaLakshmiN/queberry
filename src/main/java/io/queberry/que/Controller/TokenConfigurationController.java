@@ -22,7 +22,6 @@ public class TokenConfigurationController {
         return ResponseEntity.ok(tokenConfigurationRepository.findAll().stream().findFirst().orElse(null));
     }
 
-
     @PutMapping("/config/token")
     public ResponseEntity editTokenConfiguration(@RequestBody TokenConfigurationResource resource){
         TokenConfiguration tokenConfiguration = tokenConfigurationRepository.findAll().stream().findFirst().orElse(null);

@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 import lombok.Value;
 import org.w3c.dom.events.EventTarget;
 
-
 @Value
 @NoArgsConstructor(access = AccessLevel.PRIVATE, force = true)
 @AllArgsConstructor

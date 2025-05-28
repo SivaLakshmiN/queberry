@@ -6,7 +6,6 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import java.util.Optional;
 
-
 @RepositoryRestResource(exported = false)
 public interface ThemeConfigurationRepository extends JpaRepository<ThemeConfiguration,String> {
     Optional<ThemeConfiguration> findByBranchKey(String branchKey);

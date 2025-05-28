@@ -12,7 +12,6 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LdapConfiguration extends AggregateRoot<LdapConfiguration> {
-
     private boolean enabled;
     private String host;
     private String base;

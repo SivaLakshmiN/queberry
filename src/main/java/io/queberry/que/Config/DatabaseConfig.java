@@ -9,7 +9,6 @@ public class DatabaseConfig {
     @Value("${spring.datasource.url}")
     private String databaseUrl;
 
-
     @Value("${spring.datasource.username}")
     private String userName;
 

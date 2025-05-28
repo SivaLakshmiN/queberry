@@ -10,7 +10,7 @@ package io.queberry.que.Repository;//package com.example.QueApplication.Reposito
 //import java.time.LocalTime;
 //import java.util.Optional;
 //import java.util.Set;
-//
+
 //public interface AppointmentRepository extends JpaRepository<Appointment,String> {
 //    Set<Appointment> findByMobile(String mobile, Sort sort);
 //

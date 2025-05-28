@@ -17,7 +17,6 @@ import java.util.Optional;
 public class QueueConfigurationController {
 
     private final QueueConfigurationRepository queueConfigurationRepository;
-
     @GetMapping("/config/queue/strategies")
     public ResponseEntity getAllStrategies(){
         return ResponseEntity.ok(QueueConfiguration.QueueStrategy.values());

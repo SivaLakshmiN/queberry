@@ -29,7 +29,6 @@
 //@EnableGlobalMethodSecurity(prePostEnabled = true)
 //public class MultiWebSecurityConfig extends WebSecurityConfigurerAdapter{
 ////
-
 ////    private final UserDetailsService userDetailsService;
 ////
 ////    private static JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
