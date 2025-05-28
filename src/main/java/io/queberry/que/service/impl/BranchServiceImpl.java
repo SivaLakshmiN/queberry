@@ -152,9 +152,7 @@ public class BranchServiceImpl implements BranchService {
 
         Set<String> branches = new HashSet<>();
 //        branches.add(branch);
-        List<Employee> employees = employeeRepository.findByBranchesIn(branches);
-=======
-        Set<Employee> employees = employeeRepository.findByBranchIn(branc
+        Set<Employee> employees = employeeRepository.findByBranchesIn(branches);
         for (Employee employee : employees) {
             Set<String> employeeBranches = (Set<String>) employee;
             employeeBranches.remove(branch);

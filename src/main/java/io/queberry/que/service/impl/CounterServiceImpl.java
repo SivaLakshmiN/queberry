@@ -1,7 +1,5 @@
 package io.queberry.que.service.impl;
 
-//import io.queberry.que.config.WebSocketOperations;
-
 import io.queberry.que.dto.CounterResources;
 import io.queberry.que.dto.ServiceList;
 import io.queberry.que.entity.AuditLogs;
@@ -20,33 +18,25 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.data.domain.Sort;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
+import java.util.*;
 
 @org.springframework.stereotype.Service
 public class CounterServiceImpl implements CounterService {
-
     private final CounterRepository counterRepository;
-
     private final BranchRepository branchRepository;
-
     private final ServiceRepository serviceRepository;
-
     private final EmployeeRepository employeeRepository;
-
-//    private final WebSocketOperations webSocketOperations;
-
+    //    private final WebSocketOperations webSocketOperations;
     private final AssistanceRepository assistanceRepository;
-
     private final AuditLogsRepository auditLogsRepository;
-
     @Autowired
     public CounterServiceImpl(CounterRepository counterRepository, BranchRepository branchRepository, ServiceRepository serviceRepository, EmployeeRepository employeeRepository,  AssistanceRepository assistanceRepository, AuditLogsRepository auditLogsRepository) {
         this.counterRepository = counterRepository;
@@ -57,12 +47,10 @@ public class CounterServiceImpl implements CounterService {
         this.assistanceRepository = assistanceRepository;
         this.auditLogsRepository = auditLogsRepository;
     }
-
     @Override
     public Set<Counter> activeFindAll(Branch branch) {
         return counterRepository.findByBranchAndActiveTrue(branch, Sort.by(Sort.Order.asc("name")));
     }
-
     @Override
     public Counter activate(Counter counter) {
         if (counter == null) {
@@ -71,7 +59,6 @@ public class CounterServiceImpl implements CounterService {
         counter.activate();
         return counterRepository.save(counter);
     }
-
     @Override
     public Counter deactivate(String counterId) {
         return counterRepository.findCounterById(counterId)
@@ -81,7 +68,6 @@ public class CounterServiceImpl implements CounterService {
                 })
                 .orElseThrow(() -> new NoSuchElementException("Counter not found with ID: " + counterId));
     }
-
     @Override
     public Counter save(CounterResources resource) {
         Counter counter = new Counter();
@@ -91,30 +77,24 @@ public class CounterServiceImpl implements CounterService {
         counter.setName(resource.getName());
         counter.setDisplayName(resource.getDisplayName());
         counter.setBranch(resource.getBranchKey());
-
         counter.setFirst(new HashSet<>(serviceRepository.findByIdIn(resource.getFirst())));
         counter.setSecond(new HashSet<>(serviceRepository.findByIdIn(resource.getSecond())));
         counter.setThird(new HashSet<>(serviceRepository.findByIdIn(resource.getThird())));
         counter.setFourth(new HashSet<>(serviceRepository.findByIdIn(resource.getFourth())));
-
         if (resource.getType() != null) {
             counter.setType(Counter.Type.valueOf(resource.getType()));
         }
-
         if (resource.getColorCode() != null) {
             counter.setColorCode(resource.getColorCode());
         }
-
         if (resource.getPanelNumber() != null) {
             counter.setPanelNumber(resource.getPanelNumber());
         }
-
         if (resource.getPresentation() != null) {
             counter.setPresentation(resource.getPresentation());
         }
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
         Set<ConstraintViolation<Counter>> errors = validator.validate(counter);
-
         if (!errors.isEmpty()) {
             StringBuilder validationErrors = new StringBuilder();
             for (ConstraintViolation<Counter> error : errors) {
@@ -124,7 +104,6 @@ public class CounterServiceImpl implements CounterService {
         }
         return counterRepository.save(counter);
     }
-
     @Override
     public Counter editCounter(String counterId, CounterResources resource) {
         Optional<Counter> optionalCounter = counterRepository.findCounterById(counterId);
@@ -137,28 +116,22 @@ public class CounterServiceImpl implements CounterService {
         counter.setName(resource.getName());
         counter.setDisplayName(resource.getDisplayName());
         counter.setBranch(resource.getBranchKey());
-
         counter.setFirst(new HashSet<>(serviceRepository.findByIdIn(resource.getFirst())));
         counter.setSecond(new HashSet<>(serviceRepository.findByIdIn(resource.getSecond())));
         counter.setThird(new HashSet<>(serviceRepository.findByIdIn(resource.getThird())));
         counter.setFourth(new HashSet<>(serviceRepository.findByIdIn(resource.getFourth())));
-
         if (resource.getType() != null) {
             counter.setType(Counter.Type.valueOf(resource.getType()));
         }
-
         if (resource.getColorCode() != null) {
             counter.setColorCode(resource.getColorCode());
         }
-
         if (resource.getPanelNumber() != null) {
             counter.setPanelNumber(resource.getPanelNumber());
         }
-
         if (resource.getPresentation() != null) {
             counter.setPresentation(resource.getPresentation());
         }
-
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
         Set<ConstraintViolation<Counter>> errors = validator.validate(counter);
         if (!errors.isEmpty()) {
@@ -168,52 +141,41 @@ public class CounterServiceImpl implements CounterService {
             }
             throw new IllegalArgumentException(validationErrors.toString());
         }
-
         return counterRepository.save(counter);
     }
-
     @Override
     public Counter addServices(Counter counter, ServiceList serviceList) {
         if (counter == null) {
             throw new NoSuchElementException("Counter does not exist");
         }
-
         Set<String> firstLevel = new HashSet<>(serviceRepository.findByIdIn(serviceList.getFirst()));
         counter.setFirst(firstLevel);
-
         if (serviceList.getSecond() != null) {
             Set<String> secondLevel = new HashSet<>(serviceRepository.findByIdIn(serviceList.getSecond()));
             counter.setSecond(secondLevel);
         }
-
         if (serviceList.getThird() != null) {
             Set<String> thirdLevel = new HashSet<>(serviceRepository.findByIdIn(serviceList.getThird()));
             counter.setThird(thirdLevel);
         }
-
         if (serviceList.getFourth() != null) {
             Set<String> fourthLevel = new HashSet<>(serviceRepository.findByIdIn(serviceList.getFourth()));
             counter.setFourth(fourthLevel);
         }
-
         return counterRepository.save(counter);
     }
-
     @Override
     public Set<Counter> listUnassignedCounters(String branchId) {
         Set<String> assignedCounters = new HashSet<>();
         Set<String> branches = new HashSet<>();
         branches.add(branchId);
 
-        List<Employee> employees = employeeRepository.findByBranchesIn(branches);
-        for (Employee employee : employees) {
-            if (employee != null && employee.getCounter() != null) {
-                assignedCounters.add(String.valueOf(employee.getCounter()));
-        Set<Employee> employees = employeeRepository.findByBranchIn(branches);
+        Set<Employee> employees = employeeRepository.findByBranchesIn(branches);
         for (Employee employee : employees) {
             if (employee != null && employee.getCounter() != null) {
                 assignedCounters.add(employee.getCounter());
-                }
+                assignedCounters.add(String.valueOf(employee.getCounter()));
+            }
         }
 
         Set<Counter> counters;
@@ -244,13 +206,10 @@ public class CounterServiceImpl implements CounterService {
         if (counterId == null || counterId.trim().isEmpty()) {
             throw new DataNotFoundException("Counter ID is missing");
         }
-
         Counter counter = counterRepository.findCounterById(counterId)
                 .orElseThrow(() -> new DataNotFoundException("Counter not found with ID: " + counterId));
-
         LocalDateTime start = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
         LocalDateTime end = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
-
 //        boolean isBusy = assistanceRepository
 //                .findByStatusAndSessionsCounterAndCreatedAtBetween(
 //                        Status.ATTENDING, counter.getId(), start, end, Pageable.unpaged()
@@ -259,9 +218,7 @@ public class CounterServiceImpl implements CounterService {
 //        if (isBusy) {
 //            throw new IllegalStateException("Counter is currently serving a token");
 //        }
-
         counter.setInUse(false);
-
         AuditLogs log = new AuditLogs();
         log.setEntityName("Counter");
         log.setEntityId(counter.getId());
@@ -269,7 +226,6 @@ public class CounterServiceImpl implements CounterService {
         log.setOldData("occupied");
         log.setNewData("free");
         auditLogsRepository.save(log);
-
 //        employeeRepository.findByLoggedCounter(counter.getId()).ifPresent(emp ->
 //                webSocketOperations.send("/notifications/employee/" + emp.getUsername(), "logout")
 //        );
@@ -363,4 +319,3 @@ public class CounterServiceImpl implements CounterService {
         return counter;
     }
 }
-
