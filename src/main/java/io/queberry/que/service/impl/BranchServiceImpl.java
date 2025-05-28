@@ -1,6 +1,10 @@
 package io.queberry.que.service.impl;
 
 import io.queberry.que.dto.*;
+import io.queberry.que.dto.BranchDTO;
+import io.queberry.que.dto.BranchRequest;
+import io.queberry.que.dto.Capacity;
+import io.queberry.que.dto.ServiceGroupRequest;
 import io.queberry.que.entity.*;
 import io.queberry.que.enums.Status;
 import io.queberry.que.exception.DataNotFoundException;
@@ -33,6 +37,7 @@ public class BranchServiceImpl implements BranchService {
     private final AssistanceRepository assistanceRepository;
 
     private final EmployeeRepository employeeRepository;
+//    private final EmployeeRepository employeeRepository;
 
     public BranchServiceImpl(BranchRepository branchRepository, BranchMapper branchMapper, ServiceGroupRepository serviceGroupRepository, CounterRepository counterRepository, AssistanceRepository assistanceRepository, EmployeeRepository employeeRepository) {
         this.branchRepository = branchRepository;
@@ -41,6 +46,7 @@ public class BranchServiceImpl implements BranchService {
         this.counterRepository = counterRepository;
         this.assistanceRepository = assistanceRepository;
         this.employeeRepository = employeeRepository;
+//        this.employeeRepository = employeeRepository;
     }
 
     @Override
@@ -147,6 +153,8 @@ public class BranchServiceImpl implements BranchService {
         Set<String> branches = new HashSet<>();
 //        branches.add(branch);
         List<Employee> employees = employeeRepository.findByBranchesIn(branches);
+=======
+        Set<Employee> employees = employeeRepository.findByBranchIn(branc
         for (Employee employee : employees) {
             Set<String> employeeBranches = (Set<String>) employee;
             employeeBranches.remove(branch);

@@ -20,11 +20,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.data.domain.Sort;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.HashSet;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.Set;
 
 @org.springframework.stereotype.Service
 public class CounterServiceImpl implements CounterService {
@@ -205,7 +209,11 @@ public class CounterServiceImpl implements CounterService {
         for (Employee employee : employees) {
             if (employee != null && employee.getCounter() != null) {
                 assignedCounters.add(String.valueOf(employee.getCounter()));
-            }
+        Set<Employee> employees = employeeRepository.findByBranchIn(branches);
+        for (Employee employee : employees) {
+            if (employee != null && employee.getCounter() != null) {
+                assignedCounters.add(employee.getCounter());
+                }
         }
 
         Set<Counter> counters;

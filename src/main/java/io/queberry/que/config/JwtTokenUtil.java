@@ -78,6 +78,12 @@ package io.queberry.que.config;//package io.queberry.que.config;
 ////		claims.put("userId",employeeSessions.getId());
 //        return doGenerateToken(claims, user.getUsername(), employeeSessions.getId());
 //    }
+////    public String generateToken(Employee user, EmployeeSessions employeeSessions) {
+////        Map<String, Object> claims = new HashMap<>();
+//////		log.info("in jwt token util generate token");
+//////		claims.put("userId",employeeSessions.getId());
+////        return doGenerateToken(claims, user.getUsername(), employeeSessions.getId());
+////    }
 //
 //    //while creating the token -
 //    //1. Define  claims of the token, like Issuer, Expiration, Subject, and the ID

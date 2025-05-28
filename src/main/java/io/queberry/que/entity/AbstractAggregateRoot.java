@@ -10,19 +10,17 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * @author firoz
- * @since 25/09/17
- */
 public class AbstractAggregateRoot<A extends AbstractAggregateRoot<A>> implements Serializable {
     @Transient
     private transient final List<Object> domainEvents = new ArrayList<>();
 
     protected <T> void registerEvent(T event) {
+    protected <T> T registerEvent(T event) {
 
         Assert.notNull(event, "Domain event must not be null!");
 
         this.domainEvents.add(event);
+        return event;
     }
 
     @AfterDomainEventPublication

@@ -6,6 +6,10 @@ import io.queberry.que.entity.Role;
 import jakarta.persistence.QueryHint;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+//import io.queberry.que.entity.Employee;
+import io.queberry.que.entity.Employee;
+import jakarta.persistence.QueryHint;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
@@ -29,6 +33,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
 //    Set<Employee> findByBranch(Set<String> branches);
 
 //    Set<Employee> findByBranchesIn(Set<String> branches);
+=======
+    Set<Employee> findByBranchIn(Set<String> branches);
 
     Optional<Employee> findByLoggedCounter(String cid);
 
@@ -51,9 +57,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
     Optional<Employee> findById(String id);
 
     List<Employee> findByActiveTrueAndBranchesAndRolesContaining(Branch branch, Role role);
-
-
-
 
 }
 

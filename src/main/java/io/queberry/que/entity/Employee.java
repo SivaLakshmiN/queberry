@@ -245,7 +245,6 @@ package io.queberry.que.entity;
 //
 //}
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.queberry.que.anotation.AggregateReference;
 import io.queberry.que.exception.QueueException;
@@ -256,6 +255,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.w3c.dom.events.EventTarget;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import lombok.*;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -295,6 +302,29 @@ public class Employee extends AggregateRoot<Employee> implements UserDetails {
     private String lastname;
     //
     //    @Pattern(regexp = "[A-Za-z0-9 ]*", message = "Middle name should contain only alphabets!!")
+
+    @Column(unique = true)
+    @NotNull()
+    @Pattern(regexp =  "^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$", message = "Email is invalid")
+    private String username;
+
+    @JsonIgnore
+    @NotNull()
+    @Size(min = 8, message = "Password should be minimum 8 characters!!")
+    private String password;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Set<Role> roles;
+
+    @NotNull()
+    @Pattern(regexp = "[A-Za-z0-9 ]*", message = "First name should contain only alphabets!!")
+    private String firstname;
+
+    @NotNull()
+    @Pattern(regexp = "[A-Za-z0-9 ]*", message = "Last name should contain only alphabets!!")
+    private String lastname;
+
+    @Pattern(regexp = "[A-Za-z0-9 ]*", message = "Middle name should contain only alphabets!!")
     private String middlename;
 
     @Column(name = "counter_id")
@@ -355,6 +385,42 @@ public class Employee extends AggregateRoot<Employee> implements UserDetails {
     // @ManyToMany(fetch = FetchType.EAGER)
     @ElementCollection(fetch = FetchType.EAGER)
     @Column(name="fourth")
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "que_employee_services", joinColumns = @JoinColumn(name = "employee_id"))
+    @Column(name = "value")
+    private Set<String> services = new HashSet<>();
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+            name = "que_employee_second",
+            joinColumns = @JoinColumn(name = "employee_id")
+    )
+    @Column(name = "value")
+    private Set<String> second = new TreeSet<>();
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+            name = "que_employee_first",
+            joinColumns = @JoinColumn(name = "employee_id")
+    )
+    @Column(name = "value")
+    private Set<String> first = new TreeSet<>();
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+            name = "que_employee_third",
+            joinColumns = @JoinColumn(name = "employee_id")
+    )
+    @Column(name = "value")
+    private Set<String> third = new TreeSet<>();
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+            name = "que_employee_fourth",
+            joinColumns = @JoinColumn(name = "employee_id")
+    )
+    @Column(name = "value")
     private Set<String> fourth = new TreeSet<>();
 
     private String tenant;
@@ -371,6 +437,10 @@ public class Employee extends AggregateRoot<Employee> implements UserDetails {
     //   @ElementCollection(fetch = FetchType.EAGER)
 //    @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "RegionCache")
     @Column(name="region")
+    @Column(name = "branch_id")
+    private String branch;
+
+    @Column(name = "region_id")
     private String region;
 
     private String loggedCounter;
@@ -381,6 +451,11 @@ public class Employee extends AggregateRoot<Employee> implements UserDetails {
     private boolean locked;
 
     private String passwordManagement;
+
+    @Override
+    public String getUsername() {
+        return this.username;
+    }
 
     @JsonIgnore
     public Set<Role> getAuthorities(){
@@ -450,6 +525,16 @@ public class Employee extends AggregateRoot<Employee> implements UserDetails {
                     String middlename,
                     String tenant,
                     Set<Role> roles, boolean active){
+        if (new BCryptPasswordEncoder().matches(existing,this.password)) {
+            this.password = new BCryptPasswordEncoder().encode(password);
+            return this;
+        }
+        else
+            throw new QueueException("Password doesn't match",HttpStatus.PRECONDITION_FAILED);
+    }
+
+
+    public Employee(String username, String password, String firstname, String lastname, String middlename, String tenant, Set<Role> roles, boolean active){
         this.username = username;
         this.password = password;
         this.firstname = firstname;
@@ -481,9 +566,11 @@ public class Employee extends AggregateRoot<Employee> implements UserDetails {
 
         @AggregateReference
         final Employee employee;
-
     }
 }
 
+    }
+
+}
 
 

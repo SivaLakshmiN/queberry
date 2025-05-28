@@ -26,5 +26,4 @@ public interface CounterService {
     Page<Counter> filterCountersByCode(String branchId, String codeFragment, Pageable pageable);
     Counter exitCounter(String counterId, String empId);
 
-
 }

@@ -208,6 +208,7 @@ public class Counter extends AggregateRoot<Counter> {
 
         @AggregateReference
         Counter counter;
+        final Counter counter;
     }
 
     @Value
@@ -221,6 +222,10 @@ public class Counter extends AggregateRoot<Counter> {
 
         @AggregateReference
         String service;
+        final Counter counter;
+
+        @AggregateReference
+        final String service;
     }
 
     public enum Type {
