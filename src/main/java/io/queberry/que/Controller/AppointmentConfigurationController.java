@@ -27,7 +27,8 @@ import java.util.UUID;
 
 @CloudloomController
 @RequiredArgsConstructor
-public class AppointmentConfigurationController {
+public class
+AppointmentConfigurationController {
 
     @Value("${vault.baseDirectory:null}")
     private String baseDirectory;

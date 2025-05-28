@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @RequiredArgsConstructor
 public class ConfigurationController {
 
+
     private final ConfigurationService configurationService;
 
 //    @GetMapping("/config")

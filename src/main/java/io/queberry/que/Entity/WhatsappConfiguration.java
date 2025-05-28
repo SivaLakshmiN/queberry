@@ -14,6 +14,7 @@ import lombok.ToString;
 @NoArgsConstructor
 public class WhatsappConfiguration extends AggregateRoot<WhatsappConfiguration> {
 
+
     @Column(columnDefinition = "bit default 0")
     private boolean enabled;
     private String token;

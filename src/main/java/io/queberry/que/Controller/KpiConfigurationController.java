@@ -17,6 +17,7 @@ public class KpiConfigurationController {
 
     private final KpiConfigurationRepository kpiConfigurationRepository;
 
+
     @GetMapping("/config/kpi")
     public ResponseEntity getKpiConfig(){
         log.info("in get mail config");

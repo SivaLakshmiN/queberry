@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
+
 public interface AppointmentConfigurationRepository extends JpaRepository<AppointmentConfiguration,String> {
     AppointmentConfiguration findByBranchIsNull();
     Optional<AppointmentConfiguration> findByBranch(String b);

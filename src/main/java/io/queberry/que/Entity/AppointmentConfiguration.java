@@ -15,6 +15,7 @@ import lombok.ToString;
 @NoArgsConstructor(force = true,access = AccessLevel.PUBLIC)
 public class AppointmentConfiguration extends AggregateRoot<AppointmentConfiguration> {
 
+
     private boolean enabled;
     private boolean sms;
     @Column(unique = true)

@@ -33,6 +33,7 @@ public class WhatsappConfigurationController {
             return ResponseEntity.ok(whatsappConfigurationRepository.findAll().stream().findFirst().orElse(new WhatsappConfiguration()));
     }
 
+
     @PutMapping("/config/whatsapp")
     public ResponseEntity editSalesforceConfig(@RequestBody Resource resource){
         WhatsappConfiguration whatsappConfiguration = whatsappConfigurationRepository.findAll().stream().findFirst().orElse(new WhatsappConfiguration());

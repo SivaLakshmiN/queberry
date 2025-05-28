@@ -18,6 +18,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableJpaAuditing(auditorAwareRef = "auditorProvider")
 public class QueConfig {
 
+
     //private final HomeService homeService;
 
     @PostConstruct

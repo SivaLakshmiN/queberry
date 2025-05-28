@@ -19,6 +19,7 @@ public class SurveyConfigurationController {
         return ResponseEntity.ok(surveyConfigurationRepository.findAll().stream().findFirst().orElse(new SurveyConfiguration()));
     }
 
+
     @PutMapping("/config/survey")
     public ResponseEntity editSmsConfig(@RequestBody SurveyConfiguration resource){
         SurveyConfiguration surveyConfiguration = surveyConfigurationRepository.findAll().stream().findFirst().orElse(new SurveyConfiguration());

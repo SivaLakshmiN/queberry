@@ -20,6 +20,7 @@ import java.util.Map;
 @Configuration
 @Profile("enterprise")
 @RequiredArgsConstructor
+
 public class RabbitMQConfig {
 
 //    private final Home home;

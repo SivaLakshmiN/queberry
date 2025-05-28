@@ -17,6 +17,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "SharedSequenceCache")
 public class SharedSequence extends AggregateRoot<SharedSequence> {
 
+
     @Column(unique = true, nullable = false)
     private String name;
 

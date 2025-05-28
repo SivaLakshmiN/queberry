@@ -19,6 +19,7 @@ public class DefaultRolesPrefixPostProcessor implements BeanPostProcessor, Prior
             ((Jsr250MethodSecurityMetadataSource) bean).setDefaultRolePrefix(null);
         }
 
+
         if(bean instanceof DefaultMethodSecurityExpressionHandler) {
             ((DefaultMethodSecurityExpressionHandler) bean).setDefaultRolePrefix(null);
         }

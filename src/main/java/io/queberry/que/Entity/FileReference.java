@@ -6,6 +6,7 @@ import java.util.Date;
  * @author ffazil
  * @since 26/08/15
  */
+
 public class FileReference {
     private String fileReference;
     private Date created;

@@ -32,6 +32,7 @@ public class QueueConfigurationController {
            throw new QueueException("No Queue Configuration Found",HttpStatus.PRECONDITION_FAILED);
     }
 
+
 //    @PutMapping("/config/queue")
 //    public ResponseEntity editQueueConfig(@RequestParam("strategy") QueueConfiguration.QueueStrategy strategy,@RequestParam("slaWait") Integer slaWait,@RequestParam("slaServe")Integer slaServe, @RequestParam("servicePriority") QueueConfiguration.ServicePriority servicePriority){
 //        QueueConfiguration queueConfiguration = queueConfigurationRepository.findAll().stream().findFirst().orElse(null);

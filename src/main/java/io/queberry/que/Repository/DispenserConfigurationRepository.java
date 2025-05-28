@@ -6,6 +6,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import java.util.Optional;
 
+
 @RepositoryRestResource(exported = false)
 public interface DispenserConfigurationRepository extends JpaRepository<DispenserConfiguration,String> {
     Optional<DispenserConfiguration> findByBranchKey(String name);

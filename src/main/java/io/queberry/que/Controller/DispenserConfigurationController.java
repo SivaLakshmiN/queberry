@@ -97,6 +97,7 @@ public class DispenserConfigurationController {
         entityManager.createNativeQuery("SET FOREIGN_KEY_CHECKS = 0").executeUpdate();
         sessionRepository.deleteAllInBatch();
         log.info("sessions deleted");
+
         //assistanceRepository.deleteAllInBatch();
         log.info("assistance deleted");
         //tokenRepository.deleteAllInBatch();

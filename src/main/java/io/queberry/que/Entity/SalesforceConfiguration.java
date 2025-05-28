@@ -20,6 +20,7 @@ public class SalesforceConfiguration extends AggregateRoot<SalesforceConfigurati
     private String clientId;
     private String clientSecret;
 
+
     public SalesforceConfiguration change(SalesforceConfigurationController.SalesforceConfigurationResource resource){
         this.enabled = resource.isEnabled();
         this.url = resource.getUrl();

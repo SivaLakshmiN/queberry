@@ -15,6 +15,7 @@ public class TokenConfiguration extends AggregateRoot<TokenConfiguration> {
 
     private Integer tokenValidity;
 
+
     public TokenConfiguration change(TokenConfigurationController.TokenConfigurationResource resource){
         this.tokenValidity = resource.getTokenValidity();
         return andEvent(ConfigurationEvent.of(this));

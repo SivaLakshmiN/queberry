@@ -5,4 +5,6 @@ package io.queberry.que.Services;//package com.example.QueApplication.Services;
 //
 //public interface EmployeeDashboardService {
 //    EmpDashboardDtls getEmployeeDashboard(EmpDashboardRequest request);
+
 //}
+

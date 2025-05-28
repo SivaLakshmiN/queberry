@@ -19,6 +19,7 @@ public class LdapConfigurationController {
         return ResponseEntity.ok(ldapConfigurationRepository.findAll().stream().findFirst().orElse(new LdapConfiguration()));
     }
 
+
     @PutMapping("/config/ldap")
     public ResponseEntity editSmsConfig(@RequestBody LdapConfiguration resource){
         LdapConfiguration ldapConfiguration = ldapConfigurationRepository.findAll().stream().findFirst().orElse(new LdapConfiguration());

@@ -23,6 +23,7 @@ public class MeetingConfigurationController {
         return ResponseEntity.ok(meetingConfigurationRepository.findAll().stream().findFirst().orElse(null));
     }
 
+
     @PutMapping("/config/meeting")
     public ResponseEntity editAudioConfig(@RequestBody MeetingConfigurationResource resource){
         MeetingConfiguration meetingConfiguration = meetingConfigurationRepository.findAll().stream().findFirst().orElse(null);

@@ -8,6 +8,7 @@ import java.time.LocalDate;
 
 
 //@Data
+
 @NoArgsConstructor(force = true)
 //@EqualsAndHashCode(callSuper = true)
 @Getter

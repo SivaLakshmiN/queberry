@@ -6,6 +6,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import java.util.Optional;
 
+
 @RepositoryRestResource(exported = false)
 public interface AudioConfigurationRepository extends JpaRepository<AudioConfiguration,String> {
     Optional<AudioConfiguration> findByBranchKey(String name);

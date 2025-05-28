@@ -20,6 +20,7 @@ public class SmsConfigurationController {
         return ResponseEntity.ok(smsConfigurationRepository.findAll().stream().findFirst().orElse(null));
     }
 
+
     @PutMapping("/config/sms")
     public ResponseEntity editAudioCnnfig(@RequestBody SmsConfiguration resource){
         SmsConfiguration smsConfiguration = smsConfigurationRepository.findAll().stream().findFirst().orElse(null);

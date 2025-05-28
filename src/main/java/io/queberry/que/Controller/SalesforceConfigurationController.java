@@ -30,6 +30,7 @@ public class SalesforceConfigurationController {
         return ResponseEntity.ok(salesforceConfiguration);
     }
 
+
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor

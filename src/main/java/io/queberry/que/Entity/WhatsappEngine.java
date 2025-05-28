@@ -42,6 +42,7 @@ public class WhatsappEngine {
 //        }
 //    }
 
+
     //    @Async
 //    @EventListener
 //    public void onAssistance(Assistance.AssistanceTransferedToCounter assistanceTransferred) {

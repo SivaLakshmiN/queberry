@@ -27,6 +27,7 @@ public class ThemeConfigurationController {
         return ResponseEntity.ok(themeConfigurationRepository.findByBranchKey(request.getHeader("X-TenantID")));
     }
 
+
     @PutMapping("/config/themeConfig")
     public ResponseEntity getThemeByBranch(@RequestBody Theme theme){
         return ResponseEntity.ok(themeConfigurationRepository.findByBranchKey(theme.getBranchKey()));
