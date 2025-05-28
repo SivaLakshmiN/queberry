@@ -15,12 +15,10 @@ public class AbstractAggregateRoot<A extends AbstractAggregateRoot<A>> implement
     private transient final List<Object> domainEvents = new ArrayList<>();
 
     protected <T> void registerEvent(T event) {
-    protected <T> T registerEvent(T event) {
 
         Assert.notNull(event, "Domain event must not be null!");
 
         this.domainEvents.add(event);
-        return event;
     }
 
     @AfterDomainEventPublication

@@ -33,8 +33,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
 //    Set<Employee> findByBranch(Set<String> branches);
 
 //    Set<Employee> findByBranchesIn(Set<String> branches);
-=======
-    Set<Employee> findByBranchIn(Set<String> branches);
+    Set<Employee> findByBranchesIn(Set<String> branches);
 
     Optional<Employee> findByLoggedCounter(String cid);
 
@@ -50,7 +49,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
 
     int countAllByActiveTrue();
 
-    List<Employee> findByBranchesIn(Set<String> branches);
+//    List<Employee> findByBranchIn(Set<String> branches);
 
     List<Employee> findAllByUsername(String username);
 
