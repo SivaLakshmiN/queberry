@@ -1,11 +1,11 @@
-package io.queberry.que.Entity;//
-//import com.example.QueApplication.Entity.AggregateRoot;
-//import com.example.QueApplication.Entity.Service;
+//package io.queberry.que.Entity;
+//
+//import io.queberry.que.Entity.AggregateRoot;
 //import jakarta.persistence.*;
 //import lombok.*;
 //import lombok.extern.slf4j.Slf4j;
 //import org.jetbrains.annotations.NotNull;
-//import org.slf4j.Logger;
+//import org.w3c.dom.events.EventTarget;
 //
 //import java.time.LocalDateTime;
 //import java.util.Objects;
@@ -190,6 +190,56 @@ package io.queberry.que.Entity;//
 //
 //        @AggregateReference
 //        final Token token;
+//
+//        @Override
+//        public String getType() {
+//            return "";
+//        }
+//
+//        @Override
+//        public EventTarget getTarget() {
+//            return null;
+//        }
+//
+//        @Override
+//        public EventTarget getCurrentTarget() {
+//            return null;
+//        }
+//
+//        @Override
+//        public short getEventPhase() {
+//            return 0;
+//        }
+//
+//        @Override
+//        public boolean getBubbles() {
+//            return false;
+//        }
+//
+//        @Override
+//        public boolean getCancelable() {
+//            return false;
+//        }
+//
+//        @Override
+//        public long getTimeStamp() {
+//            return 0;
+//        }
+//
+//        @Override
+//        public void stopPropagation() {
+//
+//        }
+//
+//        @Override
+//        public void preventDefault() {
+//
+//        }
+//
+//        @Override
+//        public void initEvent(String eventTypeArg, boolean canBubbleArg, boolean cancelableArg) {
+//
+//        }
 //    }
 //
 //    @Value
@@ -200,6 +250,56 @@ package io.queberry.que.Entity;//
 //
 //        @AggregateReference
 //        final Token token;
+//
+//        @Override
+//        public String getType() {
+//            return "";
+//        }
+//
+//        @Override
+//        public EventTarget getTarget() {
+//            return null;
+//        }
+//
+//        @Override
+//        public EventTarget getCurrentTarget() {
+//            return null;
+//        }
+//
+//        @Override
+//        public short getEventPhase() {
+//            return 0;
+//        }
+//
+//        @Override
+//        public boolean getBubbles() {
+//            return false;
+//        }
+//
+//        @Override
+//        public boolean getCancelable() {
+//            return false;
+//        }
+//
+//        @Override
+//        public long getTimeStamp() {
+//            return 0;
+//        }
+//
+//        @Override
+//        public void stopPropagation() {
+//
+//        }
+//
+//        @Override
+//        public void preventDefault() {
+//
+//        }
+//
+//        @Override
+//        public void initEvent(String eventTypeArg, boolean canBubbleArg, boolean cancelableArg) {
+//
+//        }
 //    }
 //
 //    @Value
@@ -210,6 +310,56 @@ package io.queberry.que.Entity;//
 //
 //        @AggregateReference
 //        final Token token;
+//
+//        @Override
+//        public String getType() {
+//            return "";
+//        }
+//
+//        @Override
+//        public EventTarget getTarget() {
+//            return null;
+//        }
+//
+//        @Override
+//        public EventTarget getCurrentTarget() {
+//            return null;
+//        }
+//
+//        @Override
+//        public short getEventPhase() {
+//            return 0;
+//        }
+//
+//        @Override
+//        public boolean getBubbles() {
+//            return false;
+//        }
+//
+//        @Override
+//        public boolean getCancelable() {
+//            return false;
+//        }
+//
+//        @Override
+//        public long getTimeStamp() {
+//            return 0;
+//        }
+//
+//        @Override
+//        public void stopPropagation() {
+//
+//        }
+//
+//        @Override
+//        public void preventDefault() {
+//
+//        }
+//
+//        @Override
+//        public void initEvent(String eventTypeArg, boolean canBubbleArg, boolean cancelableArg) {
+//
+//        }
 //    }
 //
 //    @Value
@@ -220,5 +370,55 @@ package io.queberry.que.Entity;//
 //
 //        @AggregateReference
 //        final Token token;
+//
+//        @Override
+//        public String getType() {
+//            return "";
+//        }
+//
+//        @Override
+//        public EventTarget getTarget() {
+//            return null;
+//        }
+//
+//        @Override
+//        public EventTarget getCurrentTarget() {
+//            return null;
+//        }
+//
+//        @Override
+//        public short getEventPhase() {
+//            return 0;
+//        }
+//
+//        @Override
+//        public boolean getBubbles() {
+//            return false;
+//        }
+//
+//        @Override
+//        public boolean getCancelable() {
+//            return false;
+//        }
+//
+//        @Override
+//        public long getTimeStamp() {
+//            return 0;
+//        }
+//
+//        @Override
+//        public void stopPropagation() {
+//
+//        }
+//
+//        @Override
+//        public void preventDefault() {
+//
+//        }
+//
+//        @Override
+//        public void initEvent(String eventTypeArg, boolean canBubbleArg, boolean cancelableArg) {
+//
+//        }
 //    }
 //}

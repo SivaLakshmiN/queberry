@@ -1,249 +1,253 @@
-package io.queberry.que.Entity;//package com.example.QueApplication.Entity;
-//
-//import com.example.QueApplication.Exception.QueueException;
-//import jakarta.persistence.*;
-//import lombok.*;
-//import lombok.extern.slf4j.Slf4j;
-//import org.springframework.http.HttpStatus;
-//import org.w3c.dom.events.EventTarget;
-//
-//import java.time.Duration;
-//import java.time.LocalDateTime;
-//import java.util.*;
-//import java.util.stream.Collectors;
-//
-//
-//@Entity(name = "que_assistance")
-//@Table(name = "que_assistance", indexes = {@Index(name="br_index",columnList = "branch"),
-//        @Index(name="dt_index",columnList = "createdAt"),
-//        @Index(name="idx_branch_created_at", columnList="createdAt, branch"),
-//        @Index(name="idx_createdat_status_branch_service",columnList = "createdAt,entity_status,branch,service_id"),
-//        @Index(name="idx_createdat_service", columnList = "createdAt,service_id")})
-////@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "AssistanceCache")
-////@FilterDef(name = "todayFilter", parameters = @ParamDef(name = "minDate", type = "java.time.LocalDate"))
-////@Filter(name = "todayFilter", condition = "DATE(created_at) = :minDate")
-//@Getter
-//@Setter
-////@ToString
-//@AllArgsConstructor
-//@NoArgsConstructor
-//@Slf4j
-//@EqualsAndHashCode(callSuper = true,of = "createdAt")
-//public class Assistance extends AggregateRoot<Assistance> {
-//
-//    @Column(unique = true, length = 50)
-//    private String tokenRef;
-//
+package io.queberry.que.Entity;
+
+import io.queberry.que.Exception.QueueException;
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
+import org.springframework.http.HttpStatus;
+
+import javax.crypto.SecretKey;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+@Entity(name = "que_assistance")
+@Table(name = "que_assistance", indexes = {@Index(name="br_index",columnList = "branch"),
+        @Index(name="dt_index",columnList = "createdAt"),
+        @Index(name="idx_branch_created_at", columnList="createdAt, branch"),
+        @Index(name="idx_createdat_status_branch_service",columnList = "createdAt,entity_status,branch,service_id"),
+        @Index(name="idx_createdat_service", columnList = "createdAt,service_id")})
+//@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "AssistanceCache")
+//@FilterDef(name = "todayFilter", parameters = @ParamDef(name = "minDate", type = "java.time.LocalDate"))
+//@Filter(name = "todayFilter", condition = "DATE(created_at) = :minDate")
+@Getter
+@Setter
+//@ToString
+@AllArgsConstructor
+@NoArgsConstructor
+@Slf4j
+@EqualsAndHashCode(callSuper = true,of = "createdAt")
+public class Assistance extends AggregateRoot<Assistance> {
+
+    @Column(unique = true, length = 50)
+    private String tokenRef;
+
+    @ManyToOne
+    private Service service;
+
+    private Integer number;
+
 //    @ManyToOne
-//    private Service service;
-//
-//    private Integer number;
-//
-////    @ManyToOne
-////    private SubService subService;
-//
-//    @ElementCollection(fetch = FetchType.EAGER)
-//    private Map<String, Status> journey = new TreeMap();
-//
-//    private LocalDateTime createdAt = LocalDateTime.now();
-//
-//    private LocalDateTime servingStart;
-//
-//    @Column(name = "entity_status", length = 30)
+//    private SubService subService;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Map<String,Status> journey = new TreeMap();
+
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    private LocalDateTime servingStart;
+
+    @Column(name = "entity_status", length = 30)
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
+    @Column(name = "assistance_type",length = 30)
+    @Enumerated(EnumType.STRING)
+    private Type type;
+
+    @OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    private Set<Session> sessions = new HashSet<>(0);
+
+    @Column(length = 20)
+    private String language;
+    @Column(length = 50)
+    private String mobile;
+
 //    @Enumerated(EnumType.STRING)
-//    private Status status;
-//
-//    @Column(name = "assistance_type",length = 30)
-//    @Enumerated(EnumType.STRING)
-//    private Type type;
-//
-//    @OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
-//    private Set<Session> sessions = new HashSet<>(0);
-//
 //    @Column(length = 20)
-//    private String language;
-//    @Column(length = 50)
-//    private String mobile;
-//
-////    @Enumerated(EnumType.STRING)
-////    @Column(length = 20)
-////    private Token.Medium medium;
-//
+//    private Token.Medium medium;
+
 //    @OneToOne
 //    private Appointment appointment;
-//
-//    private String name;
-//
-//    @Column(length = 100)
-//    private String email;
-//
-//    private int age;
-//
-////    @Enumerated(EnumType.STRING)
-////    @Column(length = 20)
-////    private Gender gender;
-//
-//    private int syncdb = 0;
-//
-//    private boolean hasAppointment = false;
-//    @Column(length = 50)
-//    private String branch;
-//    @Column(length = 50)
-//    private String accountId;
-//    private String accountName;
-//    @Column(length = 50)
-//    private String accountNo;
-//
-//    @ElementCollection(fetch = FetchType.EAGER)
-//    private Set<String> bookingIds;
-//    @Column(length = 50)
-//    private String eventId;
-//    @Column(length = 50)
-//    private String cardNo;
+
+    private String name;
+
+    @Column(length = 100)
+    private String email;
+
+    private int age;
+
+//    @Enumerated(EnumType.STRING)
 //    @Column(length = 20)
-//    private String dob;
-//
-//    @Column(length = 50)
-//    private String emiratesId;
-//
-//    @Column(length = 50)
-//    @Getter(AccessLevel.NONE)
-//    private String eidphone;
-//
-//    @Column(length = 100)
-//    private String nationality;
-//    @Column(length = 100)
-//    private String occupation;
-//    @Column(name = "eid_scanned", nullable = false, columnDefinition = "bit default 0")
-//    private boolean eidScanned;
-//
-//    private String privateCode;
-//
-////    public String getToken(){
-////        if(number == null || service == null)
-////            return null;
-////        return getString(service, number, privateCode); // importing this method from token.java
-////    }
-//
-//
-//    public Optional<Long> getTotalServeTimeInSeconds(){
-//        return sessions.stream().map(Session::getServeTime).reduce(Long::sum);
+//    private Gender gender;
+
+    private int syncdb = 0;
+
+    private boolean hasAppointment = false;
+    @Column(length = 50)
+    private String branch;
+    @Column(length = 50)
+    private String accountId;
+    private String accountName;
+    @Column(length = 50)
+    private String accountNo;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Set<String> bookingIds;
+    @Column(length = 50)
+    private String eventId;
+    @Column(length = 50)
+    private String cardNo;
+    @Column(length = 20)
+    private String dob;
+
+    @Column(length = 50)
+    private String emiratesId;
+
+    @Column(length = 50)
+    @Getter(AccessLevel.NONE)
+    private String eidphone;
+
+    @Column(length = 100)
+    private String nationality;
+    @Column(length = 100)
+    private String occupation;
+    @Column(name = "eid_scanned", nullable = false, columnDefinition = "bit default 0")
+    private boolean eidScanned;
+
+    private String privateCode;
+
+//    public String getToken(){
+//        if(number == null || service == null)
+//            return null;
+//        return getString(service, number, privateCode); // importing this method from token.java
+//    }
+
+
+    public Optional<Long> getTotalServeTimeInSeconds(){
+        return sessions.stream().map(Session::getServeTime).reduce(Long::sum);
+    }
+
+    public Long getWaitingTime(){
+        if (servingStart == null)
+            return Duration.between(createdAt,LocalDateTime.now()).getSeconds();
+        return Duration.between(createdAt,servingStart).getSeconds();
+
+       /* if (servingStart == null)
+            return 0L;
+        return Duration.between(createdAt,servingStart).getSeconds();*/
+    }
+
+//    public Assistance(Token token){
+//        log.info("assistance creation");
+//        this.tokenRef = token.getId();
+//        this.service = token.getService();
+//        this.status = Status.SCHEDULED;
+//        journey.put(createdAt.toString(),status);
+//        this.number = token.getNumber();
+//        this.language = token.getLanguage();
+//        this.type = Type.valueOf(token.getType().name());
+//        this.mobile = token.getMobile();
+//        this.medium = token.getMedium();
+//        this.branch = token.getBranch();
+////        if (token.getType().equals(io.queberry.que.token.Type.APPOINTMENT))
+//        if (token.getAppointment() != null)
+//            this.appointment = token.getAppointment();
+//        this.registerEvent(AssistanceCreated.of(this));
 //    }
 //
-//    public Long getWaitingTime(){
-//        if (servingStart == null)
-//            return Duration.between(createdAt,LocalDateTime.now()).getSeconds();
-//        return Duration.between(createdAt,servingStart).getSeconds();
-//
-//       /* if (servingStart == null)
-//            return 0L;
-//        return Duration.between(createdAt,servingStart).getSeconds();*/
+//    public Assistance(Token token, DispenserController.TokenRequest tokenreq) throws Exception {
+//        log.info("assistance creation");
+//        this.tokenRef = token.getId();
+//        this.service = token.getService();
+//        this.status = Status.SCHEDULED;
+//        journey.put(createdAt.toString(),status);
+//        this.number = token.getNumber();
+//        this.language = token.getLanguage();
+//        this.type = Type.valueOf(token.getType().name());
+//        this.mobile = token.getMobile();
+//        this.medium = token.getMedium();
+//        this.branch = token.getBranch();
+//        this.privateCode = token.getPrivateCode();
+//        if (tokenreq.getName() != null){
+//            this.name = tokenreq.getName();
+//        }
+//        if(tokenreq.getGender() != null){
+//            this.gender = tokenreq.getGender();
+//        }
+//        if(tokenreq.getCardNo() != null){
+//            this.cardNo = EncryptionUtil.encryptData(tokenreq.getCardNo());
+//        }
+//        if (token.getAppointment() != null) {
+//            this.appointment = token.getAppointment();
+//        }
+//        if (tokenreq.getBookinIds() != null) {
+//            this.bookingIds = tokenreq.getBookinIds();
+//        }
+//        if(tokenreq.getDob() != null){
+//            this.dob = tokenreq.getDob();
+//        }
+//        if(tokenreq.getEidScanned() != null){
+//            this.eidScanned = tokenreq.getEidScanned();
+//        }
+//        if(tokenreq.getEmiratesId() != null){
+////            this.emiratesId = tokenreq.getEmiratesId();
+//            this.emiratesId = EncryptionUtil.encryptData(tokenreq.getEmiratesId());
+//        }
+//        if(tokenreq.getEidphone() != null){
+//            this.eidphone = EncryptionUtil.encryptData(tokenreq.getEidphone());
+//        }
+//        if(tokenreq.getNationality() != null){
+//            this.nationality = tokenreq.getNationality();
+//        }
+//        if(tokenreq.getOccupation() != null){
+//            this.occupation = tokenreq.getOccupation();
+//        }
+//        if(tokenreq.getEmail() != null){
+//            this.email = EncryptionUtil.encryptData(tokenreq.getEmail());
+//        }
+//        if(tokenreq.getAge() != null){
+//            this.age = tokenreq.getAge();
+//        }
+//        if (tokenreq.getBookinIds() != null) {
+//            this.bookingIds = tokenreq.getBookinIds();
+//        }
+//        if(tokenreq.getAccountId() != null) {
+//            this.accountId = tokenreq.getAccountId();
+//        }
+//        if(tokenreq.getAccountName() != null) {
+//            this.accountName = tokenreq.getAccountName();
+//        }
+//        this.registerEvent(AssistanceCreated.of(this));
 //    }
 //
-////    public Assistance(Token token){
-////        log.info("assistance creation");
-////        this.tokenRef = token.getId();
-////        this.service = token.getService();
-////        this.status = Status.SCHEDULED;
-////        journey.put(createdAt.toString(),status);
-////        this.number = token.getNumber();
-////        this.language = token.getLanguage();
-////        this.type = Type.valueOf(token.getType().name());
-////        this.mobile = token.getMobile();
-////        this.medium = token.getMedium();
-////        this.branch = token.getBranch();
-//////        if (token.getType().equals(io.queberry.que.token.Type.APPOINTMENT))
-////        if (token.getAppointment() != null)
-////            this.appointment = token.getAppointment();
-////        this.registerEvent(AssistanceCreated.of(this));
-////    }
 //
-////    public Assistance(Token token, DispenserController.TokenRequest tokenreq) throws Exception {
-////        log.info("assistance creation");
-////        this.tokenRef = token.getId();
-////        this.service = token.getService();
-////        this.status = Status.SCHEDULED;
-////        journey.put(createdAt.toString(),status);
-////        this.number = token.getNumber();
-////        this.language = token.getLanguage();
-////        this.type = Type.valueOf(token.getType().name());
-////        this.mobile = token.getMobile();
-////        this.medium = token.getMedium();
-////        this.branch = token.getBranch();
-////        this.privateCode = token.getPrivateCode();
-////        if (tokenreq.getName() != null){
-////            this.name = tokenreq.getName();
-////        }
-////        if(tokenreq.getGender() != null){
-////            this.gender = tokenreq.getGender();
-////        }
-////        if(tokenreq.getCardNo() != null){
-////            this.cardNo = EncryptionUtil.encryptData(tokenreq.getCardNo());
-////        }
-////        if (token.getAppointment() != null) {
-////            this.appointment = token.getAppointment();
-////        }
-////        if (tokenreq.getBookinIds() != null) {
-////            this.bookingIds = tokenreq.getBookinIds();
-////        }
-////        if(tokenreq.getDob() != null){
-////            this.dob = tokenreq.getDob();
-////        }
-////        if(tokenreq.getEidScanned() != null){
-////            this.eidScanned = tokenreq.getEidScanned();
-////        }
-////        if(tokenreq.getEmiratesId() != null){
-//////            this.emiratesId = tokenreq.getEmiratesId();
-////            this.emiratesId = EncryptionUtil.encryptData(tokenreq.getEmiratesId());
-////        }
-////        if(tokenreq.getEidphone() != null){
-////            this.eidphone = EncryptionUtil.encryptData(tokenreq.getEidphone());
-////        }
-////        if(tokenreq.getNationality() != null){
-////            this.nationality = tokenreq.getNationality();
-////        }
-////        if(tokenreq.getOccupation() != null){
-////            this.occupation = tokenreq.getOccupation();
-////        }
-////        if(tokenreq.getEmail() != null){
-////            this.email = EncryptionUtil.encryptData(tokenreq.getEmail());
-////        }
-////        if(tokenreq.getAge() != null){
-////            this.age = tokenreq.getAge();
-////        }
-////        if (tokenreq.getBookinIds() != null) {
-////            this.bookingIds = tokenreq.getBookinIds();
-////        }
-////        if(tokenreq.getAccountId() != null) {
-////            this.accountId = tokenreq.getAccountId();
-////        }
-////        if(tokenreq.getAccountName() != null) {
-////            this.accountName = tokenreq.getAccountName();
-////        }
-////        this.registerEvent(AssistanceCreated.of(this));
-////    }
+//    public Assistance(Service service, SubService subService, Status status, Type type) {
+//        this.service = service;
+////        this.subService = subService;
+//        this.status = status;
+//        this.type = type;
+//    }
 //
-//
-////    public Assistance(Service service, SubService subService, Status status, Type type) {
-////        this.service = service;
-//////        this.subService = subService;
-////        this.status = status;
-////        this.type = type;
-////    }
-//
-////    public static Assistance walkin(Service service, SubService subService, Counter counter, String employee,Token token){
-////        Assistance assistance = new Assistance(service,subService,Status.ATTENDING,Type.WALKIN);
-////        assistance.tokenRef = token.getId();
-////        assistance.number = token.getNumber();
-////        Session session = new Session(service, counter, employee);
-////        assistance.sessions.add(session);
-////        assistance.tokenRef = token.getId();
-////        assistance.branch = token.getBranch();
-////        assistance.servingStart = LocalDateTime.now();
-////        assistance.bookingIds = new HashSet<>();
-////        assistance.privateCode = token.getPrivateCode();
-////        return assistance.andEvent(AssistanceCalled.of(assistance));
-////    }
+//    public static Assistance walkin(Service service, SubService subService, Counter counter, String employee,Token token){
+//        Assistance assistance = new Assistance(service,subService,Status.ATTENDING,Type.WALKIN);
+//        assistance.tokenRef = token.getId();
+//        assistance.number = token.getNumber();
+//        Session session = new Session(service, counter, employee);
+//        assistance.sessions.add(session);
+//        assistance.tokenRef = token.getId();
+//        assistance.branch = token.getBranch();
+//        assistance.servingStart = LocalDateTime.now();
+//        assistance.bookingIds = new HashSet<>();
+//        assistance.privateCode = token.getPrivateCode();
+//        return assistance.andEvent(AssistanceCalled.of(assistance));
+//    }
 //
 //    public Assistance call(Counter counter, String employee){
 //        Service service = null;
@@ -331,12 +335,12 @@ package io.queberry.que.Entity;//package com.example.QueApplication.Entity;
 //        return andEvent(AssistanceCompleted.of(asst));
 //    }
 //
-////    public Assistance hold(String remarks){
-////        this.status = Status.HOLD;
-////        getOngoingSession().hold(remarks);
-////        journey.put(LocalDateTime.now().toString(),status);
-////        return andEvent(AssistanceOnHold.of(this));
-////    }
+//    public Assistance hold(String remarks){
+//        this.status = Status.HOLD;
+//        getOngoingSession().hold(remarks);
+//        journey.put(LocalDateTime.now().toString(),status);
+//        return andEvent(AssistanceOnHold.of(this));
+//    }
 //
 ////    public Assistance recall(){
 ////        Session session = findLastSession();
@@ -502,56 +506,6 @@ package io.queberry.que.Entity;//package com.example.QueApplication.Entity;
 //
 //        @AggregateReference
 //        final Assistance assistance;
-//
-//        @Override
-//        public String getType() {
-//            return "";
-//        }
-//
-//        @Override
-//        public EventTarget getTarget() {
-//            return null;
-//        }
-//
-//        @Override
-//        public EventTarget getCurrentTarget() {
-//            return null;
-//        }
-//
-//        @Override
-//        public short getEventPhase() {
-//            return 0;
-//        }
-//
-//        @Override
-//        public boolean getBubbles() {
-//            return false;
-//        }
-//
-//        @Override
-//        public boolean getCancelable() {
-//            return false;
-//        }
-//
-//        @Override
-//        public long getTimeStamp() {
-//            return 0;
-//        }
-//
-//        @Override
-//        public void stopPropagation() {
-//
-//        }
-//
-//        @Override
-//        public void preventDefault() {
-//
-//        }
-//
-//        @Override
-//        public void initEvent(String eventTypeArg, boolean canBubbleArg, boolean cancelableArg) {
-//
-//        }
 //    }
 //
 //    @Value
@@ -562,56 +516,6 @@ package io.queberry.que.Entity;//package com.example.QueApplication.Entity;
 //
 //        @AggregateReference
 //        final Assistance assistance;
-//
-//        @Override
-//        public String getType() {
-//            return "";
-//        }
-//
-//        @Override
-//        public EventTarget getTarget() {
-//            return null;
-//        }
-//
-//        @Override
-//        public EventTarget getCurrentTarget() {
-//            return null;
-//        }
-//
-//        @Override
-//        public short getEventPhase() {
-//            return 0;
-//        }
-//
-//        @Override
-//        public boolean getBubbles() {
-//            return false;
-//        }
-//
-//        @Override
-//        public boolean getCancelable() {
-//            return false;
-//        }
-//
-//        @Override
-//        public long getTimeStamp() {
-//            return 0;
-//        }
-//
-//        @Override
-//        public void stopPropagation() {
-//
-//        }
-//
-//        @Override
-//        public void preventDefault() {
-//
-//        }
-//
-//        @Override
-//        public void initEvent(String eventTypeArg, boolean canBubbleArg, boolean cancelableArg) {
-//
-//        }
 //    }
 //
 //    @Value
@@ -622,56 +526,6 @@ package io.queberry.que.Entity;//package com.example.QueApplication.Entity;
 //
 //        @AggregateReference
 //        final Assistance assistance;
-//
-//        @Override
-//        public String getType() {
-//            return "";
-//        }
-//
-//        @Override
-//        public EventTarget getTarget() {
-//            return null;
-//        }
-//
-//        @Override
-//        public EventTarget getCurrentTarget() {
-//            return null;
-//        }
-//
-//        @Override
-//        public short getEventPhase() {
-//            return 0;
-//        }
-//
-//        @Override
-//        public boolean getBubbles() {
-//            return false;
-//        }
-//
-//        @Override
-//        public boolean getCancelable() {
-//            return false;
-//        }
-//
-//        @Override
-//        public long getTimeStamp() {
-//            return 0;
-//        }
-//
-//        @Override
-//        public void stopPropagation() {
-//
-//        }
-//
-//        @Override
-//        public void preventDefault() {
-//
-//        }
-//
-//        @Override
-//        public void initEvent(String eventTypeArg, boolean canBubbleArg, boolean cancelableArg) {
-//
-//        }
 //    }
 //
 //    @Value
@@ -682,56 +536,6 @@ package io.queberry.que.Entity;//package com.example.QueApplication.Entity;
 //
 //        @AggregateReference
 //        final Assistance assistance;
-//
-//        @Override
-//        public String getType() {
-//            return "";
-//        }
-//
-//        @Override
-//        public EventTarget getTarget() {
-//            return null;
-//        }
-//
-//        @Override
-//        public EventTarget getCurrentTarget() {
-//            return null;
-//        }
-//
-//        @Override
-//        public short getEventPhase() {
-//            return 0;
-//        }
-//
-//        @Override
-//        public boolean getBubbles() {
-//            return false;
-//        }
-//
-//        @Override
-//        public boolean getCancelable() {
-//            return false;
-//        }
-//
-//        @Override
-//        public long getTimeStamp() {
-//            return 0;
-//        }
-//
-//        @Override
-//        public void stopPropagation() {
-//
-//        }
-//
-//        @Override
-//        public void preventDefault() {
-//
-//        }
-//
-//        @Override
-//        public void initEvent(String eventTypeArg, boolean canBubbleArg, boolean cancelableArg) {
-//
-//        }
 //    }
 //
 //    @Value
@@ -742,56 +546,6 @@ package io.queberry.que.Entity;//package com.example.QueApplication.Entity;
 //
 //        @AggregateReference
 //        final Assistance assistance;
-//
-//        @Override
-//        public String getType() {
-//            return "";
-//        }
-//
-//        @Override
-//        public EventTarget getTarget() {
-//            return null;
-//        }
-//
-//        @Override
-//        public EventTarget getCurrentTarget() {
-//            return null;
-//        }
-//
-//        @Override
-//        public short getEventPhase() {
-//            return 0;
-//        }
-//
-//        @Override
-//        public boolean getBubbles() {
-//            return false;
-//        }
-//
-//        @Override
-//        public boolean getCancelable() {
-//            return false;
-//        }
-//
-//        @Override
-//        public long getTimeStamp() {
-//            return 0;
-//        }
-//
-//        @Override
-//        public void stopPropagation() {
-//
-//        }
-//
-//        @Override
-//        public void preventDefault() {
-//
-//        }
-//
-//        @Override
-//        public void initEvent(String eventTypeArg, boolean canBubbleArg, boolean cancelableArg) {
-//
-//        }
 //    }
 //
 //    @Value
@@ -802,56 +556,6 @@ package io.queberry.que.Entity;//package com.example.QueApplication.Entity;
 //
 //        @AggregateReference
 //        final Assistance assistance;
-//
-//        @Override
-//        public String getType() {
-//            return "";
-//        }
-//
-//        @Override
-//        public EventTarget getTarget() {
-//            return null;
-//        }
-//
-//        @Override
-//        public EventTarget getCurrentTarget() {
-//            return null;
-//        }
-//
-//        @Override
-//        public short getEventPhase() {
-//            return 0;
-//        }
-//
-//        @Override
-//        public boolean getBubbles() {
-//            return false;
-//        }
-//
-//        @Override
-//        public boolean getCancelable() {
-//            return false;
-//        }
-//
-//        @Override
-//        public long getTimeStamp() {
-//            return 0;
-//        }
-//
-//        @Override
-//        public void stopPropagation() {
-//
-//        }
-//
-//        @Override
-//        public void preventDefault() {
-//
-//        }
-//
-//        @Override
-//        public void initEvent(String eventTypeArg, boolean canBubbleArg, boolean cancelableArg) {
-//
-//        }
 //    }
 //
 //    @Value
@@ -865,56 +569,6 @@ package io.queberry.que.Entity;//package com.example.QueApplication.Entity;
 //
 //        @AggregateReference
 //        final Counter counter;
-//
-//        @Override
-//        public String getType() {
-//            return "";
-//        }
-//
-//        @Override
-//        public EventTarget getTarget() {
-//            return null;
-//        }
-//
-//        @Override
-//        public EventTarget getCurrentTarget() {
-//            return null;
-//        }
-//
-//        @Override
-//        public short getEventPhase() {
-//            return 0;
-//        }
-//
-//        @Override
-//        public boolean getBubbles() {
-//            return false;
-//        }
-//
-//        @Override
-//        public boolean getCancelable() {
-//            return false;
-//        }
-//
-//        @Override
-//        public long getTimeStamp() {
-//            return 0;
-//        }
-//
-//        @Override
-//        public void stopPropagation() {
-//
-//        }
-//
-//        @Override
-//        public void preventDefault() {
-//
-//        }
-//
-//        @Override
-//        public void initEvent(String eventTypeArg, boolean canBubbleArg, boolean cancelableArg) {
-//
-//        }
 //    }
 //
 //    @Value
@@ -928,56 +582,6 @@ package io.queberry.que.Entity;//package com.example.QueApplication.Entity;
 //
 //        @AggregateReference
 //        final Employee employee;
-//
-//        @Override
-//        public String getType() {
-//            return "";
-//        }
-//
-//        @Override
-//        public EventTarget getTarget() {
-//            return null;
-//        }
-//
-//        @Override
-//        public EventTarget getCurrentTarget() {
-//            return null;
-//        }
-//
-//        @Override
-//        public short getEventPhase() {
-//            return 0;
-//        }
-//
-//        @Override
-//        public boolean getBubbles() {
-//            return false;
-//        }
-//
-//        @Override
-//        public boolean getCancelable() {
-//            return false;
-//        }
-//
-//        @Override
-//        public long getTimeStamp() {
-//            return 0;
-//        }
-//
-//        @Override
-//        public void stopPropagation() {
-//
-//        }
-//
-//        @Override
-//        public void preventDefault() {
-//
-//        }
-//
-//        @Override
-//        public void initEvent(String eventTypeArg, boolean canBubbleArg, boolean cancelableArg) {
-//
-//        }
 //    }
 //
 //    @Value
@@ -991,67 +595,17 @@ package io.queberry.que.Entity;//package com.example.QueApplication.Entity;
 //
 //        @AggregateReference
 //        final Service service;
-//
-//        @Override
-//        public String getType() {
-//            return "";
-//        }
-//
-//        @Override
-//        public EventTarget getTarget() {
-//            return null;
-//        }
-//
-//        @Override
-//        public EventTarget getCurrentTarget() {
-//            return null;
-//        }
-//
-//        @Override
-//        public short getEventPhase() {
-//            return 0;
-//        }
-//
-//        @Override
-//        public boolean getBubbles() {
-//            return false;
-//        }
-//
-//        @Override
-//        public boolean getCancelable() {
-//            return false;
-//        }
-//
-//        @Override
-//        public long getTimeStamp() {
-//            return 0;
-//        }
-//
-//        @Override
-//        public void stopPropagation() {
-//
-//        }
-//
-//        @Override
-//        public void preventDefault() {
-//
-//        }
-//
-//        @Override
-//        public void initEvent(String eventTypeArg, boolean canBubbleArg, boolean cancelableArg) {
-//
-//        }
 //    }
 //
-////    @Value
-////    @EqualsAndHashCode(callSuper = true)
-////    @RequiredArgsConstructor(staticName = "of")
-////    @NoArgsConstructor(access = AccessLevel.PRIVATE, force = true)
-////    public static class AssistanceOnHold extends DomainEvent<Assistance> implements AssistanceEvent {
-////
-////        @AggregateReference
-////        final Assistance assistance;
-////    }
+//    @Value
+//    @EqualsAndHashCode(callSuper = true)
+//    @RequiredArgsConstructor(staticName = "of")
+//    @NoArgsConstructor(access = AccessLevel.PRIVATE, force = true)
+//    public static class AssistanceOnHold extends DomainEvent<Assistance> implements AssistanceEvent {
+//
+//        @AggregateReference
+//        final Assistance assistance;
+//    }
 //
 //    /*public Map<LocalDateTime,Status> getJourney(){
 //        return Collections.unmodifiableMap(new HashMap<>(this.journey));
@@ -1088,4 +642,4 @@ package io.queberry.que.Entity;//package com.example.QueApplication.Entity;
 //    public Type getType() {
 //        return type;
 //    }*/
-//}
+}

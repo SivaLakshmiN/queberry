@@ -1,16 +1,17 @@
 package io.queberry.que.ServiceImpl;
+
 import io.queberry.que.Controller.BranchController;
 import io.queberry.que.DTO.*;
 import io.queberry.que.Entity.*;
 import io.queberry.que.Exception.QueueException;
 import io.queberry.que.Repository.*;
 import io.queberry.que.Services.EmployeeService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -95,38 +96,6 @@ public String resetPassword(PasswordResetDTO resetDTO, HttpServletRequest reques
     return "Password reset successfully.";
 }
 
-
-
-    @Override
-    public EntityModel<Employee> deactivate(String id, HttpServletRequest request) {
-        Optional<Employee> optional = employeeRepository.findById(String.valueOf(id));
-        if (optional.isEmpty()) {
-            throw new QueueException("User id doesn't exist!!!!", HttpStatus.NOT_FOUND);
-        }
-
-        Employee employee = optional.get();
-
-//        if (request.getUserPrincipal().getName().equals(employee.getUsername())) {
-//            throw new QueueException("Cannot deactivate the logged in Employee!!!!", HttpStatus.PRECONDITION_FAILED);
-//        }
-
-        String username = employee.getUsername();
-        employee.deActivate();
-        employeeRepository.save(employee);
-
-        AuditLogs logs = new AuditLogs();
-        logs.setEntityName("User");
-        logs.setEntityId(employee.getId());
-        logs.setEntityField("Status");
-        logs.setOldData("active");
-        logs.setNewData("inactive");
-        logs.setCreatedBy(username);
-        auditLogsRepository.save(logs);
-
-        updateMasterUser(employee);
-        return EntityModel.of(employee);
-    }
-
     @Override
     public int getActiveCount() {
         return employeeRepository.countAllByActiveTrue();
@@ -157,14 +126,15 @@ public String resetPassword(PasswordResetDTO resetDTO, HttpServletRequest reques
     }
 
     @Override
-    public EntityModel<Employee> deactivateEmployee(String id, HttpServletRequest request) {
+    public Employee deactivateEmployee(String id, HttpServletRequest request) {
         Optional<Employee> optionalEmployee = employeeRepository.findById(id);
 
         if (optionalEmployee.isEmpty()) {
             throw new QueueException("User id doesn't exist!!!!", HttpStatus.NOT_FOUND);
         }
+
         Employee employee = optionalEmployee.get();
-        employee.deActivate();
+        employee.deActivate(); // assuming this sets status to "inactive"
         employee = employeeRepository.save(employee);
 
         AuditLogs auditLogs = new AuditLogs();
@@ -177,12 +147,12 @@ public String resetPassword(PasswordResetDTO resetDTO, HttpServletRequest reques
 
         updateMasterUser(employee);
 
-        return EntityModel.of(employee);
+        return employee;
     }
 
     @Override
     public Page<Employee> filterEmployeesByUsername(String username, Pageable pageable, HttpServletRequest request) {
-        Employee loggedInEmployee = employeeRepository.findByUsername("karthik.s");
+        Employee loggedInEmployee = employeeRepository.findByUsername("sudhak@queberry.com");
         Set<Role> roles = loggedInEmployee.getAuthorities();
 
         boolean isAdmin = roles.contains(roleRepository.findByName("PRODUCT_ADMIN")) ||
@@ -557,6 +527,24 @@ private EmployeeRequest toDto(Employee employee) {
 //        return appointmentRepository.findByServiceInAndDateAndStateIn(
 //                swList, LocalDate.now(), stateList, pageable);
 //    }
+@Override
+public Employee activateEmployee(String id, String performedBy) {
+    Employee employee = employeeRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Employee with ID " + id + " not found"));
 
+    employee.activate(); // assumes you have a method like this in your entity
+    Employee updatedEmployee = employeeRepository.save(employee);
+
+    AuditLogs log = new AuditLogs();
+    log.setEntityName("User");
+    log.setEntityId(updatedEmployee.getId());
+    log.setEntityField("Status");
+    log.setOldData("inactive");
+    log.setNewData("active");
+    log.setCreatedBy(performedBy != null ? performedBy : "system");
+    auditLogsRepository.save(log);
+
+    return updatedEmployee;
+}
 
 }

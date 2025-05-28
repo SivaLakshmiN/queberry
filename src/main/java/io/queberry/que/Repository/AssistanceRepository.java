@@ -1,22 +1,17 @@
-package io.queberry.que.Repository;//package com.example.QueApplication.Repository;
+//package io.queberry.que.Repository;
 //
-//
-//import com.example.QueApplication.Entity.Service;
-//import com.example.QueApplication.Entity.Status;
-//import org.hibernate.annotations.Type;
+//import io.queberry.que.Entity.Assistance;
+//import io.queberry.que.Entity.Service;
+//import io.queberry.que.Entity.Status;
+//import io.queberry.que.Entity.Type;
 //import org.springframework.data.domain.Page;
 //import org.springframework.data.domain.Pageable;
 //import org.springframework.data.domain.Sort;
 //import org.springframework.data.jpa.repository.JpaRepository;
 //import org.springframework.data.jpa.repository.Query;
-//import org.springframework.data.jpa.repository.QueryHints;
 //import org.springframework.data.repository.query.Param;
 //
-//import java.time.DayOfWeek;
-//import java.time.LocalDate;
 //import java.time.LocalDateTime;
-//import java.time.LocalTime;
-//import java.util.Collection;
 //import java.util.List;
 //import java.util.Optional;
 //import java.util.Set;
@@ -106,7 +101,7 @@ package io.queberry.que.Repository;//package com.example.QueApplication.Reposito
 //            @Param("counterId") String counterId,
 //            @Param("branch") String branch);
 //
-//    Set<Assistance> findByBranchAndStatusAndServiceIdAndCreatedAtBetween(String b,Status status, String service, LocalDateTime from, LocalDateTime to);
+//    Set<Assistance> findByBranchAndStatusAndServiceIdAndCreatedAtBetween(String b, Status status, String service, LocalDateTime from, LocalDateTime to);
 //    Set<Assistance> findByStatusAndServiceAndCreatedAtBetween(Status status, Service service, LocalDateTime from, LocalDateTime to);
 //    Set<Assistance> findByStatusAndServiceIdAndCreatedAtBetween(Status status, String service, LocalDateTime from, LocalDateTime to);
 //    Set<Assistance> findByServiceAndCreatedAtBetween(Service service, LocalDateTime from, LocalDateTime to, Sort sort);

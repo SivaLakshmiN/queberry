@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,13 +33,19 @@ public class EmployeeController {
         return ResponseEntity.ok(employeeService.resetPassword(dto, request));
     }
 
-    @PutMapping("/employees/deactivate/{id}")
-    public ResponseEntity<?> deactivateEmployee(@PathVariable String id, HttpServletRequest request) {
-        return ResponseEntity.ok(employeeService.deactivate(id, request));
+    @PutMapping("/employees/{id}/deactivate")
+    public ResponseEntity<?> deactivate(@PathVariable String id, HttpServletRequest request) {
+        try {
+            Employee updated = employeeService.deactivateEmployee(id, request);
+            return ResponseEntity.ok(updated);
+        } catch (QueueException e) {
+            return ResponseEntity.status(e.getStatus()).body(e.getMessage());
+        }
     }
 
     @GetMapping("/employees/active")
     public ResponseEntity<?> getActiveEmployeeCount() {
+
         return ResponseEntity.ok(employeeService.getActiveCount());
     }
 
@@ -53,14 +58,14 @@ public class EmployeeController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
-    @PutMapping("/employees/{id}/deactivate")
-    public ResponseEntity<?> deactivate(@PathVariable String id, HttpServletRequest request) {
-        try {
-            return ResponseEntity.ok(employeeService.deactivateEmployee(id, request));
-        } catch (QueueException e) {
-            return ResponseEntity.status(e.getHttpStatus()).body(e.getMessage());
-        }
-    }
+//    @PutMapping("/employees/{id}/deactivate")
+//    public ResponseEntity<?> deactivate(@PathVariable String id, HttpServletRequest request) {
+//        try {
+//            return ResponseEntity.ok(employeeService.deactivateEmployee(id, request));
+//        } catch (QueueException e) {
+//            return ResponseEntity.status(e.getHttpStatus()).body(e.getMessage());
+//        }
+//    }
     @GetMapping("/employees/filterByUsername")
     public ResponseEntity<?> fetchUserName(
             HttpServletRequest request,
@@ -124,7 +129,7 @@ public ResponseEntity<?> createEmployee(@RequestBody EmployeeData employeeData) 
         if (employee == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User ID doesn't exist!");
         }
-        return ResponseEntity.ok(EntityModel.of(employee));
+        return ResponseEntity.ok(employee);
     }
     @PutMapping("/employees/{id}/assign")
     public ResponseEntity<?> assignCounter(@PathVariable String id, @RequestParam("counterId") String counterId) {
@@ -201,5 +206,15 @@ public void getExchangeRate1() throws IOException, InterruptedException {
 //    Page<Appointment> appointments = employeeService.getAppointmentList(services, pageable);
 //    return ResponseEntity.ok(appointments);
 //}
+
+    @PutMapping("/employees/{id}/activate")
+    public ResponseEntity<?> activate(@PathVariable("id") String id, @RequestParam(defaultValue = "admin") String performedBy) {
+        try {
+            Employee updated = employeeService.activateEmployee(id, performedBy);
+            return ResponseEntity.ok(updated);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
 

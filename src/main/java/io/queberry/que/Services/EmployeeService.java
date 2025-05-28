@@ -11,11 +11,11 @@ import java.util.List;
 
 public interface EmployeeService {
     String resetPassword(PasswordResetDTO dto, HttpServletRequest request);
-    EntityModel<Employee> deactivate(String id, HttpServletRequest request);
+    Employee deactivateEmployee(String id, HttpServletRequest request);
     int getActiveCount();
+    Employee activateEmployee(String id, String performedBy);
     EmployeeRequest createEmployee(EmployeeData employeeData);
     EmployeeRequest updateEmployee(String id, EmployeeData employeeData);
-    EntityModel<Employee> deactivateEmployee(String id, HttpServletRequest request);
     Page<Employee> filterEmployeesByUsername(String username, Pageable pageable, HttpServletRequest request);
     List<EmployeeRequest> getAllEmployees();
     EmployeeRequest getEmployeeById(String id);
