@@ -10,7 +10,6 @@
         <version>3.4.5</version>
         <relativePath/>
     </parent>
-
     <groupId>io.queberry</groupId>
     <artifactId>que</artifactId>
     <version>0.0.1-SNAPSHOT</version>
