@@ -17,8 +17,8 @@ public class EmployeeRequest {
 
     private RegionDTO region;
     private List<RoleDTO> roles;
-    private List<BranchDTO> branches;
-    private List<ServiceDTO> services;
+    private List<BranchesDTO> branches;
+    private List<ServicesDTO> services;
     private Set<String> second;
     private Set<String> third;
     private Set<String> fourth;
@@ -26,8 +26,8 @@ public class EmployeeRequest {
 
     public EmployeeRequest(Employee employee,
                            RegionDTO region,
-                           List<BranchDTO> branches,
-                           List<ServiceDTO> services) {
+                           List<BranchesDTO> branches,
+                           List<ServicesDTO> services) {
         this.id = employee.getId();
         this.firstname = employee.getFirstname();
         this.lastname = employee.getLastname();

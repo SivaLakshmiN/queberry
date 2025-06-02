@@ -61,22 +61,11 @@ public class EmployeeController {
         }
     }
 
-    //    @PutMapping("/employees/{id}/deactivate")
-//    public ResponseEntity<?> deactivate(@PathVariable String id, HttpServletRequest request) {
-//        try {
-//            return ResponseEntity.ok(employeeService.deactivateEmployee(id, request));
-//        } catch (QueueException e) {
-//            return ResponseEntity.status(e.getHttpStatus()).body(e.getMessage());
-//        }
-//    }
     @GetMapping("/employees/filterByUsername")
-    public ResponseEntity<?> fetchUserName(
-            HttpServletRequest request,
-            @RequestParam("userName") String username,
-            Pageable pageable
-    ) {
-        Page<Employee> result = employeeService.filterEmployeesByUsername(username, pageable, request);
-        return ResponseEntity.ok(result);
+    public ResponseEntity<?> fetchUserName(HttpServletRequest request,
+                                           @RequestParam("userName") String username,
+                                           Pageable pageable) {
+        return ResponseEntity.ok(employeeService.filterEmployeesByUsername(username, pageable, request));
     }
 
     @PostMapping("/employees")
@@ -204,7 +193,7 @@ public class EmployeeController {
         log.info("process:{}", process);
     }
 
-    @PutMapping("/dashboard")
+    @PutMapping("/employees/dashboard")
     public ResponseEntity<EmpDashboardDtls> empDashboard(@RequestBody EmpDashboardRequest request) {
         EmpDashboardDtls result = employeeService.getEmployeeDashboard(request);
         return ResponseEntity.ok(result);

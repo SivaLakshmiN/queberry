@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,6 +20,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -153,7 +155,19 @@ public String resetPassword(PasswordResetDTO resetDTO, HttpServletRequest reques
 
     @Override
     public Page<Employee> filterEmployeesByUsername(String username, Pageable pageable, HttpServletRequest request) {
-        Employee loggedInEmployee = employeeRepository.findByUsername("karthik.s");
+        Principal principal = request.getUserPrincipal();
+
+        if (principal == null) {
+            throw new IllegalStateException("User is not authenticated");
+        }
+
+        String loggedInUsername = principal.getName();
+        Employee loggedInEmployee = employeeRepository.findByUsername(loggedInUsername);
+
+        if (loggedInEmployee == null) {
+            throw new IllegalStateException("Logged-in employee not found");
+        }
+
         Set<Role> roles = loggedInEmployee.getAuthorities();
 
         boolean isAdmin = roles.contains(roleRepository.findByName("PRODUCT_ADMIN")) ||
@@ -163,34 +177,51 @@ public String resetPassword(PasswordResetDTO resetDTO, HttpServletRequest reques
             return employeeRepository.findByUsernameContainingIgnoreCase(username, pageable);
         } else {
             Set<String> userBranches = loggedInEmployee.getBranches();
-            Set<Employee> employeesInBranches = employeeRepository.findByBranchesIn(userBranches).stream()
-                    .filter(emp -> emp.getUsername() != null && emp.getUsername().toLowerCase().contains(username.toLowerCase()))
+            Set<Employee> filteredEmployees = employeeRepository.findByBranchesIn(userBranches).stream()
+                    .filter(emp -> emp.getUsername() != null &&
+                            emp.getUsername().toLowerCase().contains(username.toLowerCase()))
                     .collect(Collectors.toSet());
 
+            return paginateSet(filteredEmployees, pageable);
         }
-        return null;
     }
 
-@Override
-public EmployeeRequest createEmployee(EmployeeData employeeData) {
-    String createdBy = "system";
+    private Page<Employee> paginateSet(Set<Employee> employees, Pageable pageable) {
+        List<Employee> employeeList = new ArrayList<>(employees);
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), employeeList.size());
+        List<Employee> subList = employeeList.subList(start, end);
+        return new PageImpl<>(subList, pageable, employeeList.size());
+    }
 
-    Employee employee = new Employee();
-    employee.setId(UUID.randomUUID().toString());
-    employee.setPassword(new BCryptPasswordEncoder().encode(employeeData.getPassword()));
-    employee.setCounter(employeeData.getCounter());
+    @Override
+    public EmployeeRequest createEmployee(EmployeeData employeeData) {
+        String createdBy = "system";
 
-    Employee updated = setEmployeeInfo(employee, employeeData, createdBy);
+        Employee employee = new Employee();
+        employee.setId(UUID.randomUUID().toString());
+        employee.setCounter(employeeData.getCounter());
+        employee.setPassword(new BCryptPasswordEncoder().encode(employeeData.getPassword()));
 
-    AuditLogs log = new AuditLogs();
-    log.setEntityName("User");
-    log.setEntityId(updated.getId());
-    log.setNewData("New user created");
-    log.setCreatedBy(createdBy);
-    auditLogsRepository.save(log);
+        Employee updated = setEmployeeInfo(employee, employeeData, createdBy);
 
-    return toDto(updated);
-}
+        PasswordManagement pwdEntity = new PasswordManagement();
+        pwdEntity.setId(UUID.randomUUID().toString());
+        pwdEntity.setUsername(employeeData.getUsername());
+        pwdEntity.setPasswords(new BCryptPasswordEncoder().encode(employeeData.getPassword()));
+
+        passwordManagementRepository.save(pwdEntity);
+
+        AuditLogs log = new AuditLogs();
+        log.setEntityName("User");
+        log.setEntityId(updated.getId());
+        log.setNewData("New user created");
+        log.setCreatedBy(createdBy);
+        auditLogsRepository.save(log);
+
+        return toDto(updated);
+    }
+
 
     @Override
     public EmployeeRequest updateEmployee(String id, EmployeeData employeeData) {
@@ -251,30 +282,55 @@ public EmployeeRequest createEmployee(EmployeeData employeeData) {
         employee.setFourth(data.getFourth() != null ? data.getFourth() : new TreeSet<>());
         return employeeRepository.save(employee);
     }
-private EmployeeRequest toDto(Employee employee) {
-    List<Branch> branchEntities = employee.getBranches().stream()
-            .map(branchRepository::findById)
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .collect(Collectors.toList());
 
-    List<BranchDTO> branchDTOs = branchEntities.stream()
-            .map(branch -> new BranchDTO())
-            .collect(Collectors.toList());
+//private EmployeeRequest toDto(Employee employee) {
+//    List<Branch> branchEntities = employee.getBranches().stream()
+//            .map(branchRepository::findById)
+//            .filter(Optional::isPresent)
+//            .map(Optional::get)
+//            .collect(Collectors.toList());
+//
+//    List<BranchDTO> branchDTOs = branchEntities.stream()
+//            .map(branch -> new BranchDTO())
+//            .collect(Collectors.toList());
+//
+//    RegionDTO regionDTO = regionRepository.findById(employee.getRegion())
+//            .map(region -> new RegionDTO(region.getId(), region.getName()))
+//            .orElse(new RegionDTO(employee.getRegion(), "null"));
+//
+//    List<ServiceDTO> serviceDTOs = employee.getServices().stream()
+//            .map(serviceId -> serviceRepository.findById(serviceId))
+//            .filter(Optional::isPresent)
+//            .map(Optional::get)
+//            .map(service -> new ServiceDTO())
+//            .collect(Collectors.toList());
+//
+//    return new EmployeeRequest(employee, regionDTO, branchDTOs, serviceDTOs);
+//}
 
-    RegionDTO regionDTO = regionRepository.findById(employee.getRegion())
-            .map(region -> new RegionDTO(region.getId(), region.getName()))
-            .orElse(new RegionDTO(employee.getRegion(), "Unknown"));
 
-    List<ServiceDTO> serviceDTOs = employee.getServices().stream()
-            .map(serviceId -> serviceRepository.findById(serviceId))
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .map(service -> new ServiceDTO())
-            .collect(Collectors.toList());
+    private EmployeeRequest toDto(Employee employee) {
+        List<BranchesDTO> branchDTOs = employee.getBranches().stream()
+                .map(branchId -> branchRepository.findById(branchId))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(branch -> new BranchesDTO(branch.getId(), branch.getName(),branch.getBranchKey()))
+                .collect(Collectors.toList());
 
-    return new EmployeeRequest(employee, regionDTO, branchDTOs, serviceDTOs);
-}
+        RegionDTO regionDTO = regionRepository.findById(employee.getRegion())
+                .map(region -> new RegionDTO(region.getId(), region.getName()))
+                .orElse(new RegionDTO(employee.getRegion(), "null"));
+
+        List<ServicesDTO> serviceDTOs = employee.getServices().stream()
+                .map(serviceId -> serviceRepository.findById(serviceId))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(service -> new ServicesDTO(service.getId(), service.getName()))
+                .collect(Collectors.toList());
+
+        return new EmployeeRequest(employee, regionDTO, branchDTOs, serviceDTOs);
+    }
+
     @Override
     public Employee resetUserPassword(String username, String newPassword) {
         Employee employee = employeeRepository.findByUsername(username);
@@ -534,7 +590,7 @@ public Employee activateEmployee(String id, String performedBy) {
     Employee employee = employeeRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Employee with ID " + id + " not found"));
 
-    employee.activate(); // assumes you have a method like this in your entity
+    employee.activate();
     Employee updatedEmployee = employeeRepository.save(employee);
 
     AuditLogs log = new AuditLogs();
