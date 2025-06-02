@@ -25,7 +25,7 @@ public interface ServiceService {
     Service subServices(String serviceId, Set<String> subServices);
     Service deactivateSubServices(String serviceId, String subServiceId);
     Service getAllRegionServices(String regionId, Pageable pageable);
-    Page<Service> getAllServices(Pageable pageable);
+    Page<ServiceDTO> getAllServices(Pageable pageable);
     Page<Service> filterByName(String regionId, String serviceName, Pageable pageable);
     Set<ServiceDTO> findBySubServiceGroup(String subTransactionGroup);
     Set<ServiceResponse> getBranchServices(Branch branch);

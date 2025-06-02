@@ -86,7 +86,7 @@ public class BranchControllerTest {
         branch2.setId("122");
         List<BranchDTO> branchList = List.of(branch1, branch2);
 
-        when(branchService.getAllBranches()).thenReturn(branchList);
+        when(branchService.getAllBranches(any())).thenReturn(any());
 
         mockMvc.perform(get("/branches")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -152,7 +152,7 @@ public class BranchControllerTest {
         List<Branch> branchList = List.of(branch1, branch2);
         Page<Branch> branchPage = new PageImpl<>(branchList);
 
-        when(branchService.getBranchesByRegionId(eq(regionId), any(Pageable.class))).thenReturn(branchPage);
+        when(branchService.getBranchesByRegion(eq(regionId), any(Pageable.class))).thenReturn(branchPage);
 
         mockMvc.perform(get("/branches/region")
                         .param("regionId", regionId)

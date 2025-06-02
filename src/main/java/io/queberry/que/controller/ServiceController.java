@@ -100,9 +100,9 @@ public class ServiceController {
     }
 
     @GetMapping("/services")
-    public ResponseEntity<?> getAllServices(Pageable pageable) {
-        Page<Service> services = serviceService.getAllServices(pageable);
-        return ResponseEntity.ok(services);
+    public ResponseEntity<ServiceDTO> getAllServices(Pageable pageable) {
+        Page<ServiceDTO> services = serviceService.getAllServices(pageable);
+        return ResponseEntity.ok((ServiceDTO) services);
     }
 
     @GetMapping("/services/{id}/filterByName")

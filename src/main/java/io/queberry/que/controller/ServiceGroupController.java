@@ -1,6 +1,7 @@
 package io.queberry.que.controller;
 
 import io.queberry.que.dto.AddServiceToServiceGroup;
+import io.queberry.que.dto.ServiceGroupDTO;
 import io.queberry.que.dto.ServiceGroupRequest;
 import io.queberry.que.entity.ServiceGroup;
 import io.queberry.que.service.ServiceGroupService;

@@ -2,10 +2,7 @@ package io.queberry.que.service.impl;
 
 //import io.queberry.que.config.JwtTokenUtil;
 //import io.queberry.que.config.RedisSequenceEngine;
-import io.queberry.que.dto.ApptServiceResource;
-import io.queberry.que.dto.ServiceDTO;
-import io.queberry.que.dto.ServiceResource;
-import io.queberry.que.dto.ServiceResponse;
+import io.queberry.que.dto.*;
 import io.queberry.que.entity.*;
 import io.queberry.que.repository.*;
 import io.queberry.que.service.ServiceService;
@@ -172,10 +169,19 @@ public class ServiceServiceImpl implements ServiceService {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("No services found for region"));
     }
-
     @Override
-    public Page<Service> getAllServices(Pageable pageable) {
-        return serviceRepository.findAll(pageable);
+    public Page<ServiceDTO> getAllServices(Pageable pageable) {
+        Page<Service> services = serviceRepository.findAll(pageable);
+        return services.map(this::convertToDTO);
+    }
+    private ServiceDTO convertToDTO(Service service) {
+        ServiceDTO dto = new ServiceDTO();
+        dto.setId(service.getId());
+        dto.setName(service.getName());
+        dto.setDisplayName(service.getDisplayName());
+        dto.setSharedSequenceName(service.getSharedSequence());
+        dto.setStatus(service.toString());
+        return dto;
     }
 
     @Override

@@ -6,6 +6,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Mapper(
         componentModel = "spring",
@@ -15,6 +16,8 @@ import java.util.List;
 public interface BranchMapper {
 
     Branch dtoToEntity(BranchDTO branchDTO);
+
     BranchDTO entityToDto(Branch branch);
+
     List<BranchDTO> mapList(List<Branch> branches);
 }
