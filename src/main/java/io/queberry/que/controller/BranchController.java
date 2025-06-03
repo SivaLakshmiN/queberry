@@ -58,8 +58,8 @@ public class BranchController {
         List<BranchDTO> branches = branchService.getAllBranches();
         return ResponseEntity.ok(branches);
     }
-    @GetMapping("/branches/{id}")
-    public ResponseEntity<BranchDTO> getBranchById(@PathVariable String id) {
+    @GetMapping("/branch/{id}")
+    public ResponseEntity<BranchDTO> getBranchById(@PathVariable("id") String id) {
         try {
             BranchDTO branch = branchService.getBranchById(id);
             return ResponseEntity.ok(branch);
@@ -97,9 +97,9 @@ public class BranchController {
         return ResponseEntity.ok(deleted);
     }
 
-    @GetMapping("/branches/region")
+    @GetMapping("/branches/{id}")
     public ResponseEntity<Page<Branch>> getBranchesByRegion(
-            @RequestParam(value = "regionId") String region,
+            @RequestParam(value = "id") String regionId,
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
 
@@ -107,7 +107,7 @@ public class BranchController {
         int pageSize = (size != null) ? size : 10;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
-        Page<Branch> branches = branchService.getBranchesByRegionId(region, pageable);  // <-- corrected method name
+        Page<Branch> branches = branchService.getBranchesByRegion(regionId, pageable);  // <-- corrected method name
 
         return branches.hasContent()
                 ? ResponseEntity.ok(branches)

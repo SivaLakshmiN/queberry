@@ -16,13 +16,16 @@ import java.util.Set;
 })
 @Getter
 @Setter
-@ToString(of = "name")
+@ToString
 @NoArgsConstructor
-@EqualsAndHashCode(of = "name")
+//@EqualsAndHashCode(of = "name")
 //@AllArgsConstructor
 //@RequiredArgsConstructor(staticName = "of")
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "ServiceCache")
 public class Service extends AggregateRoot<Service> implements Comparable<Service>{
+
+    @Id
+    private String id;
 
     @Column(unique = true,columnDefinition = "nvarchar(255)",nullable = false)
     private String name;

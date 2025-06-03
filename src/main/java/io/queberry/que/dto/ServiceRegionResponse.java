@@ -7,7 +7,8 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 @Setter
-public class RegionDTO {
+public class ServiceRegionResponse {
+
     private String id;
     private String name;
 }

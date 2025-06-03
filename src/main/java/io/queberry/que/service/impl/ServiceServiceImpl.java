@@ -2,10 +2,7 @@ package io.queberry.que.service.impl;
 
 //import io.queberry.que.config.JwtTokenUtil;
 //import io.queberry.que.config.RedisSequenceEngine;
-import io.queberry.que.dto.ApptServiceResource;
-import io.queberry.que.dto.ServiceDTO;
-import io.queberry.que.dto.ServiceResource;
-import io.queberry.que.dto.ServiceResponse;
+import io.queberry.que.dto.*;
 import io.queberry.que.entity.*;
 import io.queberry.que.repository.*;
 import io.queberry.que.service.ServiceService;
@@ -69,7 +66,7 @@ public class ServiceServiceImpl implements ServiceService {
     }
 
     @Override
-    public Set<Service> getRegionActiveServices(String regionId) {
+    public Set<ServiceRegionResponse> getRegionActiveServices(String regionId) {
         return serviceRepository.findByIdAndActiveTrue(regionId, Sort.by(Sort.Order.asc("name")));
     }
 
@@ -172,10 +169,9 @@ public class ServiceServiceImpl implements ServiceService {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("No services found for region"));
     }
-
     @Override
-    public Page<Service> getAllServices(Pageable pageable) {
-        return serviceRepository.findAll(pageable);
+    public List<ServiceDTO> getAllServices() {
+        return serviceRepository.findAllService();
     }
 
     @Override

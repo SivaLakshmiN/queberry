@@ -13,7 +13,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Set;
 
-public interface BranchService {
+public interface  BranchService {
 
     Set<BranchDTO> getActiveBranches();
     Set<BranchDTO> getActiveWebPrinterBranches();
@@ -23,7 +23,7 @@ public interface BranchService {
     Branch createBranch(Branch branch);
     Branch updateBranch(String id, BranchRequest branch);
     boolean deleteBranch(String id);
-    Page<Branch> getBranchesByRegionId(String regionId, Pageable pageable);
+    Page<Branch> getBranchesByRegion(String regionId, Pageable pageable);
     Branch activateBranch(String branchId);
     Branch deActivateBranch(String branchId);
     Page<BranchDTO> filterBranchesByName(HttpServletRequest request, String region, String brName, Pageable pageable);
