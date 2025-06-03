@@ -153,37 +153,43 @@ public String resetPassword(PasswordResetDTO resetDTO, HttpServletRequest reques
         return employee;
     }
 
+//    @Override
+//    public Page<Employee> filterEmployeesByUsername(String username, Pageable pageable, HttpServletRequest request) {
+//        Principal principal = request.getUserPrincipal();
+//
+//        if (principal == null) {
+//            throw new IllegalStateException("User is not authenticated");
+//        }
+//
+//        String loggedInUsername = principal.getName();
+//        Employee loggedInEmployee = employeeRepository.findByUsername(loggedInUsername);
+//
+//        if (loggedInEmployee == null) {
+//            throw new IllegalStateException("Logged-in employee not found");
+//        }
+//
+//        Set<Role> roles = loggedInEmployee.getAuthorities();
+//
+//        boolean isAdmin = roles.contains(roleRepository.findByName("PRODUCT_ADMIN")) ||
+//                roles.contains(roleRepository.findByName("ORG_ADMIN"));
+//
+//        if (isAdmin) {
+//            return employeeRepository.findByUsernameContainingIgnoreCase(username, pageable);
+//        } else {
+//            Set<String> userBranches = loggedInEmployee.getBranches();
+//            Set<Employee> filteredEmployees = employeeRepository.findByBranchesIn(userBranches).stream()
+//                    .filter(emp -> emp.getUsername() != null &&
+//                            emp.getUsername().toLowerCase().contains(username.toLowerCase()))
+//                    .collect(Collectors.toSet());
+//
+//            return paginateSet(filteredEmployees, pageable);
+//        }
+//    }
+
     @Override
-    public Page<Employee> filterEmployeesByUsername(String username, Pageable pageable, HttpServletRequest request) {
-        Principal principal = request.getUserPrincipal();
-
-        if (principal == null) {
-            throw new IllegalStateException("User is not authenticated");
-        }
-
-        String loggedInUsername = principal.getName();
-        Employee loggedInEmployee = employeeRepository.findByUsername(loggedInUsername);
-
-        if (loggedInEmployee == null) {
-            throw new IllegalStateException("Logged-in employee not found");
-        }
-
-        Set<Role> roles = loggedInEmployee.getAuthorities();
-
-        boolean isAdmin = roles.contains(roleRepository.findByName("PRODUCT_ADMIN")) ||
-                roles.contains(roleRepository.findByName("ORG_ADMIN"));
-
-        if (isAdmin) {
-            return employeeRepository.findByUsernameContainingIgnoreCase(username, pageable);
-        } else {
-            Set<String> userBranches = loggedInEmployee.getBranches();
-            Set<Employee> filteredEmployees = employeeRepository.findByBranchesIn(userBranches).stream()
-                    .filter(emp -> emp.getUsername() != null &&
-                            emp.getUsername().toLowerCase().contains(username.toLowerCase()))
-                    .collect(Collectors.toSet());
-
-            return paginateSet(filteredEmployees, pageable);
-        }
+    public Page<EmployeeRequest> filterEmployeesByUsername(String username, Pageable pageable) {
+        return employeeRepository.findByUsernameContainingIgnoreCase(username, pageable)
+                .map(this::toDto);
     }
 
     private Page<Employee> paginateSet(Set<Employee> employees, Pageable pageable) {

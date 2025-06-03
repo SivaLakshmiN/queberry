@@ -16,7 +16,7 @@ public interface EmployeeService {
     Employee activateEmployee(String id, String performedBy);
     EmployeeRequest createEmployee(EmployeeData employeeData);
     EmployeeRequest updateEmployee(String id, EmployeeData employeeData);
-    Page<Employee> filterEmployeesByUsername(String username, Pageable pageable, HttpServletRequest request);
+    Page<EmployeeRequest> filterEmployeesByUsername(String username, Pageable pageable);
     List<EmployeeRequest> getAllEmployees();
     EmployeeRequest getEmployeeById(String id);
     Employee resetUserPassword(String username, String newPassword);

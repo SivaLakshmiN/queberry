@@ -62,10 +62,9 @@ public class EmployeeController {
     }
 
     @GetMapping("/employees/filterByUsername")
-    public ResponseEntity<?> fetchUserName(HttpServletRequest request,
-                                           @RequestParam("userName") String username,
+    public ResponseEntity<?> fetchUserName(@RequestParam("userName") String username,
                                            Pageable pageable) {
-        return ResponseEntity.ok(employeeService.filterEmployeesByUsername(username, pageable, request));
+        return ResponseEntity.ok(employeeService.filterEmployeesByUsername(username, pageable));
     }
 
     @PostMapping("/employees")
