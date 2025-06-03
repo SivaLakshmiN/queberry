@@ -1,10 +1,14 @@
 package io.queberry.que.controllerTest;
 
-import io.queberry.que.controller.BranchController;
+import io.queberry.que.Branch.BranchController;
+import io.queberry.que.Branch.BranchDTO;
+import io.queberry.que.Branch.BranchRequest;
+import io.queberry.que.ServiceGroup.ServiceGroupDTO;
+import io.queberry.que.ServiceGroup.ServiceGroupRequest;
 import io.queberry.que.dto.*;
-import io.queberry.que.entity.Branch;
+import io.queberry.que.Branch.Branch;
 import io.queberry.que.exception.DataNotFoundException;
-import io.queberry.que.service.BranchService;
+import io.queberry.que.Branch.BranchService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,10 +1,8 @@
 package io.queberry.que.config;
 
-import io.queberry.que.service.ConfigurationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.event.TransactionalEventListener;
 
 @Slf4j
 @Service

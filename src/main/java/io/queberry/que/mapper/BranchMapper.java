@@ -1,12 +1,11 @@
 package io.queberry.que.mapper;
 
-import io.queberry.que.dto.BranchDTO;
-import io.queberry.que.entity.Branch;
+import io.queberry.que.Branch.BranchDTO;
+import io.queberry.que.Branch.Branch;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Mapper(
         componentModel = "spring",
