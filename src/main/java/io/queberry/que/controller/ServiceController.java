@@ -1,9 +1,6 @@
 package io.queberry.que.controller;
 
-import io.queberry.que.dto.ApptServiceResource;
-import io.queberry.que.dto.ServiceDTO;
-import io.queberry.que.dto.ServiceResource;
-import io.queberry.que.dto.ServiceResponse;
+import io.queberry.que.dto.*;
 import io.queberry.que.entity.Branch;
 import io.queberry.que.entity.Service;
 import io.queberry.que.service.ServiceService;
@@ -44,7 +41,7 @@ public class ServiceController {
     }
 
     @GetMapping("/services/{region_id}/active")
-    public ResponseEntity<Set<Service>> getRegionActiveServices(@PathVariable("region_id") String id) {
+    public ResponseEntity<Set<ServiceRegionResponse>> getRegionActiveServices(@PathVariable("region_id") String id) {
         return ResponseEntity.ok(serviceService.getRegionActiveServices(id));
     }
 
@@ -101,9 +98,9 @@ public class ServiceController {
     }
 
     @GetMapping("/services")
-    public ResponseEntity<ServiceDTO> getAllServices() {
+    public ResponseEntity<List<ServiceDTO>> getAllServices() {
         List<ServiceDTO> services = serviceService.getAllServices();
-        return ResponseEntity.ok((ServiceDTO) services);
+        return ResponseEntity.ok(services);
     }
 
     @GetMapping("/services/{id}/filterByName")

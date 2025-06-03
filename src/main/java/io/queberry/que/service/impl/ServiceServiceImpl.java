@@ -66,7 +66,7 @@ public class ServiceServiceImpl implements ServiceService {
     }
 
     @Override
-    public Set<Service> getRegionActiveServices(String regionId) {
+    public Set<ServiceRegionResponse> getRegionActiveServices(String regionId) {
         return serviceRepository.findByIdAndActiveTrue(regionId, Sort.by(Sort.Order.asc("name")));
     }
 
@@ -173,15 +173,6 @@ public class ServiceServiceImpl implements ServiceService {
     public List<ServiceDTO> getAllServices() {
         return serviceRepository.findAllService();
     }
-//    private ServiceDTO convertToDTO(Service service) {
-//        ServiceDTO dto = new ServiceDTO();
-//        dto.setId(service.getId());
-//        dto.setName(service.getName());
-//        dto.setDisplayName(service.getDisplayName());
-//        dto.setSharedSequenceName(service.getSharedSequence());
-////        dto.setStatus(service.toString());
-//        return dto;
-//    }
 
     @Override
     public Page<Service> filterByName(String regionId, String serviceName, Pageable pageable) {

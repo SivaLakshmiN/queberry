@@ -1,6 +1,8 @@
 package io.queberry.que.repository;
 
+import io.queberry.que.dto.RegionDTO;
 import io.queberry.que.dto.ServiceDTO;
+import io.queberry.que.dto.ServiceRegionResponse;
 import io.queberry.que.entity.Region;
 import io.queberry.que.entity.Service;
 import io.queberry.que.entity.SharedSequence;
@@ -20,7 +22,10 @@ public interface ServiceRepository extends JpaRepository<Service, String> {
 
     Set<Service> findByActiveTrue(Sort sort);
 
-    Set<Service> findByIdAndActiveTrue(String id, Sort sort);
+    @Query("SELECT new io.queberry.que.dto.ServiceRegionResponse(s.id, s.name) " +
+            "FROM que_service s " +
+            "WHERE s.active = true AND s.region = :regionId")
+    Set<ServiceRegionResponse> findByIdAndActiveTrue(String regionId, Sort sort);
 
     Service findByName(String name);
 //    Service findBySubServices(Service service);

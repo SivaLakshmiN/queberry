@@ -16,9 +16,9 @@ import java.util.Set;
 })
 @Getter
 @Setter
-@ToString(of = "name")
+@ToString
 @NoArgsConstructor
-@EqualsAndHashCode(of = "name")
+//@EqualsAndHashCode(of = "name")
 //@AllArgsConstructor
 //@RequiredArgsConstructor(staticName = "of")
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "ServiceCache")

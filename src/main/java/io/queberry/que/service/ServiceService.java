@@ -1,9 +1,6 @@
 package io.queberry.que.service;
 
-import io.queberry.que.dto.ApptServiceResource;
-import io.queberry.que.dto.ServiceDTO;
-import io.queberry.que.dto.ServiceResource;
-import io.queberry.que.dto.ServiceResponse;
+import io.queberry.que.dto.*;
 import io.queberry.que.entity.Branch;
 import io.queberry.que.entity.Service;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,7 +14,7 @@ public interface ServiceService {
 
 
     Set<Service> getAllActiveServices(boolean active);
-    Set<Service> getRegionActiveServices(String regionId);
+    Set<ServiceRegionResponse> getRegionActiveServices(String regionId);
     Service activate(String regionId);
 
     Service deactivate(String id);
