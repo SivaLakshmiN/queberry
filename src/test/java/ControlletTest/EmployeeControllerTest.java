@@ -1,12 +1,12 @@
 package ControlletTest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.queberry.que.Employee.*;
-import io.queberry.que.PasswordManagement.ForgotPasswordDTO;
-import io.queberry.que.PasswordManagement.PasswordResetDTO;
+import io.queberry.que.employee.*;
+import io.queberry.que.passwordManagement.ForgotPasswordDTO;
+import io.queberry.que.passwordManagement.PasswordResetDTO;
 import io.queberry.que.QueApplication;
 import io.queberry.que.exception.QueueException;
-import io.queberry.que.Employee.EmployeeService;
+import io.queberry.que.employee.EmployeeService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

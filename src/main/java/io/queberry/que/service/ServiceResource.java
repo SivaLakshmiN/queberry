@@ -1,7 +1,7 @@
 package io.queberry.que.dto;
 
-import io.queberry.que.Region.Region;
-import io.queberry.que.SharedSequence.SharedSequence;
+import io.queberry.que.region.Region;
+import io.queberry.que.sharedSequence.SharedSequence;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

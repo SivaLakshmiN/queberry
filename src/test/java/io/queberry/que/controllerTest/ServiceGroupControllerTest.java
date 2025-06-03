@@ -1,11 +1,11 @@
 package io.queberry.que.controllerTest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.queberry.que.Branch.BranchController;
+import io.queberry.que.branch.BranchController;
 import io.queberry.que.dto.AddServiceToServiceGroup;
-import io.queberry.que.ServiceGroup.ServiceGroupRequest;
-import io.queberry.que.ServiceGroup.ServiceGroup;
-import io.queberry.que.ServiceGroup.ServiceGroupService;
+import io.queberry.que.serviceGroup.ServiceGroupRequest;
+import io.queberry.que.serviceGroup.ServiceGroup;
+import io.queberry.que.serviceGroup.ServiceGroupService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;

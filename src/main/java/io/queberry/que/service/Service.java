@@ -1,7 +1,7 @@
 package io.queberry.que.entity;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import io.queberry.que.SubService.SubService;
+import io.queberry.que.subService.SubService;
 import io.queberry.que.anotation.AggregateReference;
 import jakarta.persistence.*;
 import lombok.*;

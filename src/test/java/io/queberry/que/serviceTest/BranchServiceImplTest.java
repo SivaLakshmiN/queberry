@@ -1,16 +1,16 @@
 package io.queberry.que.serviceTest;
 
-import io.queberry.que.Assistance.Assistance;
-import io.queberry.que.Assistance.AssistanceRepository;
-import io.queberry.que.Branch.*;
-import io.queberry.que.Counter.Counter;
-import io.queberry.que.Counter.CounterRepository;
-import io.queberry.que.Employee.Employee;
-import io.queberry.que.Employee.EmployeeRepository;
-import io.queberry.que.ServiceGroup.ServiceGroup;
-import io.queberry.que.ServiceGroup.ServiceGroupDTO;
-import io.queberry.que.ServiceGroup.ServiceGroupRepository;
-import io.queberry.que.ServiceGroup.ServiceGroupRequest;
+import io.queberry.que.assistance.Assistance;
+import io.queberry.que.assistance.AssistanceRepository;
+import io.queberry.que.branch.*;
+import io.queberry.que.counter.Counter;
+import io.queberry.que.counter.CounterRepository;
+import io.queberry.que.employee.Employee;
+import io.queberry.que.employee.EmployeeRepository;
+import io.queberry.que.serviceGroup.ServiceGroup;
+import io.queberry.que.serviceGroup.ServiceGroupDTO;
+import io.queberry.que.serviceGroup.ServiceGroupRepository;
+import io.queberry.que.serviceGroup.ServiceGroupRequest;
 import io.queberry.que.dto.*;
 import io.queberry.que.entity.*;
 import io.queberry.que.exception.DataNotFoundException;

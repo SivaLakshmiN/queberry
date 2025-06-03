@@ -1,14 +1,14 @@
 package ServiceImplTest;
 
-import io.queberry.que.Employee.EmpDashboardDtls;
-import io.queberry.que.Employee.EmpDashboardRequest;
-import io.queberry.que.Employee.EmployeeRequest;
-import io.queberry.que.PasswordManagement.PasswordResetDTO;
-import io.queberry.que.Employee.Employee;
-import io.queberry.que.Employee.EmployeeData;
+import io.queberry.que.employee.EmpDashboardDtls;
+import io.queberry.que.employee.EmpDashboardRequest;
+import io.queberry.que.employee.EmployeeRequest;
+import io.queberry.que.passwordManagement.PasswordResetDTO;
+import io.queberry.que.employee.Employee;
+import io.queberry.que.employee.EmployeeData;
 import io.queberry.que.exception.QueueException;
-import io.queberry.que.Employee.EmployeeRepository;
-import io.queberry.que.Employee.EmployeeServiceImpl;
+import io.queberry.que.employee.EmployeeRepository;
+import io.queberry.que.employee.EmployeeServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
