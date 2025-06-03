@@ -8,29 +8,30 @@ import lombok.*;
 
 import java.util.HashMap;
 import java.util.Map;
-@Setter
+
 @Getter
-@ToString
-@NoArgsConstructor(force = true)
-@EqualsAndHashCode
+@Setter
 public class ServiceDTO {
     private String id;
     private String name;
     private String displayName;
-    @Column(columnDefinition = "nvarchar(255)")
-    @ElementCollection(fetch = FetchType.EAGER)
-    private Map<String,String> names = new HashMap<>(0);
-    private int apptSlotDuration=0;
+    private String sharedSequence;
 
-    public ServiceDTO(Service service){
-        this.id = service.getId();
-        this.name = service.getName();
-        this.displayName = service.getDisplayName();
-        this.names = service.getNames();
-        this.apptSlotDuration = service.getApptSlotDuration();
+    public ServiceDTO(String id, String name, String displayName, String sharedSequence) {
+        this.id = id;
+        this.name = name;
+        this.displayName = displayName;
+        this.sharedSequence = sharedSequence;
+    }
+
+    public ServiceDTO() {
+        
     }
 
     public ServiceDTO(String s) {
+    }
+
+    public ServiceDTO(Service service) {
     }
 }
 

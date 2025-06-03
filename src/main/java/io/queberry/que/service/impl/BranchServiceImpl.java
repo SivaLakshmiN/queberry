@@ -67,13 +67,24 @@ public class BranchServiceImpl implements BranchService {
     public String getActiveBranchCount() {
         return branchRepository.countAllByActiveTrue();
     }
+
     @Override
-    public List<BranchDTO> getAllBranches()  {
-        List<Branch> branches = branchRepository.findAll();
-        return branchMapper.mapList(branches);
+    public List<BranchDTO> getAllBranches() {
+        return branchRepository.findAllBranchDTOs();
+
+//        return branches.map(this::convertToDTO);
+//    }
+//    private BranchDTO convertToDTO(Branch branch) {
+//        BranchDTO dto = new BranchDTO();
+//        dto.setId(branch.getId());
+//        dto.setName(branch.getName());
+//        dto.setActive(branch.isActive());
+//        dto.setBranchKey(branch.getBranchKey());
+//        return dto;
     }
+
     @Override
-    public BranchDTO getBranchById(String id) throws DataNotFoundException {
+    public BranchDTO  getBranchById(String id) throws DataNotFoundException {
         Optional<Branch> optional = branchRepository.findById(id);
         if (optional.isPresent()) {
             return branchMapper.entityToDto(optional.get());
@@ -85,6 +96,7 @@ public class BranchServiceImpl implements BranchService {
     public Branch createBranch(Branch branch) {
         return branchRepository.save(branch);
     }
+
     @Override
     public Branch updateBranch(String id, BranchRequest branchInfo) {
         Branch branch = branchRepository.findById(id)
@@ -113,6 +125,7 @@ public class BranchServiceImpl implements BranchService {
 
         return branchRepository.save(branch);
     }
+
     @Override
     public boolean deleteBranch(String id) {
         if (branchRepository.existsById(id)) {
@@ -121,10 +134,13 @@ public class BranchServiceImpl implements BranchService {
         }
         return false;
     }  
+
+    }
     @Override
-    public Page<Branch> getBranchesByRegionId(String regionId, Pageable pageable) {
+    public Page<Branch> getBranchesByRegion(String regionId, Pageable pageable) {
         return branchRepository.findByRegion(regionId, pageable);
     }
+
     @Override
     public Branch activateBranch(String branchId) {
         Branch branch = branchRepository.findById(branchId)
@@ -138,6 +154,7 @@ public class BranchServiceImpl implements BranchService {
 
         return branch;
     }
+
     @Override
     public Branch deActivateBranch(String branchId) {
         Branch branch = branchRepository.findById(branchId)
@@ -160,6 +177,7 @@ public class BranchServiceImpl implements BranchService {
 
         return branch;
     }
+
     @Override
     public Page<BranchDTO> filterBranchesByName(HttpServletRequest request, String region, String brName, Pageable pageable) {
         String username = request.getUserPrincipal().getName();
@@ -187,6 +205,7 @@ public class BranchServiceImpl implements BranchService {
 //        return branchPage.map(branchMapper::entityToDto);
         return null;
     }
+
     private Page<Branch> getPage(Set<Branch> branches, Pageable pageable) {
         List<Branch> branchList = branches.stream().collect(Collectors.toList());
 
@@ -200,6 +219,7 @@ public class BranchServiceImpl implements BranchService {
         List<Branch> subList = branchList.subList(start, end);
         return new PageImpl<>(subList, pageable, branchList.size());
     }
+
     @Override
     public Branch assignServiceGroup(String branchId, ServiceGroupRequest request) {
         Branch branch = branchRepository.findById(branchId)
@@ -219,6 +239,7 @@ public class BranchServiceImpl implements BranchService {
         branch.setServiceGroup(serviceGroups);
         return branchRepository.save(branch);
     }
+
     @Override
     public Set<ServiceGroupDTO> getServiceGroupsByBranchKey(String branchKey) {
         Branch branch = branchRepository.findByBranchKey(branchKey);

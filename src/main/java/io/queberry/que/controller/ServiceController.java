@@ -1,9 +1,6 @@
 package io.queberry.que.controller;
 
-import io.queberry.que.dto.ApptServiceResource;
-import io.queberry.que.dto.ServiceDTO;
-import io.queberry.que.dto.ServiceResource;
-import io.queberry.que.dto.ServiceResponse;
+import io.queberry.que.dto.*;
 import io.queberry.que.entity.Branch;
 import io.queberry.que.entity.Service;
 import io.queberry.que.service.ServiceService;
@@ -15,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -43,7 +41,7 @@ public class ServiceController {
     }
 
     @GetMapping("/services/{region_id}/active")
-    public ResponseEntity<Set<Service>> getRegionActiveServices(@PathVariable("region_id") String id) {
+    public ResponseEntity<Set<ServiceRegionResponse>> getRegionActiveServices(@PathVariable("region_id") String id) {
         return ResponseEntity.ok(serviceService.getRegionActiveServices(id));
     }
 
@@ -100,8 +98,8 @@ public class ServiceController {
     }
 
     @GetMapping("/services")
-    public ResponseEntity<?> getAllServices(Pageable pageable) {
-        Page<Service> services = serviceService.getAllServices(pageable);
+    public ResponseEntity<List<ServiceDTO>> getAllServices() {
+        List<ServiceDTO> services = serviceService.getAllServices();
         return ResponseEntity.ok(services);
     }
 
