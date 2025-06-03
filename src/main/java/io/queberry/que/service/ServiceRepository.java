@@ -1,7 +1,5 @@
-package io.queberry.que.Service;
+package io.queberry.que.service;
 
-import io.queberry.que.dto.ServiceDTO;
-import io.queberry.que.dto.ServiceRegionResponse;
 import io.queberry.que.Region.Region;
 import io.queberry.que.entity.Service;
 import io.queberry.que.SharedSequence.SharedSequence;
@@ -21,7 +19,7 @@ public interface ServiceRepository extends JpaRepository<Service, String> {
 
     Set<Service> findByActiveTrue(Sort sort);
 
-    @Query("SELECT new io.queberry.que.dto.ServiceRegionResponse(s.id, s.name) " +
+    @Query("SELECT new io.queberry.que.service.ServiceRegionResponse(s.id, s.name) " +
             "FROM que_service s " +
             "WHERE s.active = true AND s.region = :regionId")
     Set<ServiceRegionResponse> findByIdAndActiveTrue(String regionId, Sort sort);
@@ -55,7 +53,7 @@ public interface ServiceRepository extends JpaRepository<Service, String> {
 
     Set<String> findBySharedSequence(SharedSequence sharedSequence);
 
-    @Query("SELECT new io.queberry.que.dto.ServiceDTO(s.id, s.name, s.displayName, s.sharedSequence) FROM que_service s")
+    @Query("SELECT new io.queberry.que.service.ServiceDTO(s.id, s.name, s.displayName, s.sharedSequence) FROM que_service s")
     List<ServiceDTO> findAllService();
 
 }

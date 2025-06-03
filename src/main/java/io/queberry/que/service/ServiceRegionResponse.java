@@ -1,4 +1,4 @@
-package io.queberry.que.dto;
+package io.queberry.que.service;
 
 import lombok.*;
 

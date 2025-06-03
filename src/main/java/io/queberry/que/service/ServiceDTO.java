@@ -1,4 +1,4 @@
-package io.queberry.que.Service;
+package io.queberry.que.service;
 
 import io.queberry.que.entity.Service;
 import lombok.Getter;
@@ -19,14 +19,15 @@ public class ServiceDTO {
         this.sharedSequence = sharedSequence;
     }
 
-    public ServiceDTO() {
-        
-    }
-
-    public ServiceDTO(String s) {
-    }
-
     public ServiceDTO(Service service) {
+        this.id = service.getId();
+        this.name = service.getName();
+        this.displayName = service.getDisplayName();
+        this.sharedSequence = service.getSharedSequence();
+    }
+    public ServiceDTO() {
+    }
+    public ServiceDTO(String s) {
     }
 }
 

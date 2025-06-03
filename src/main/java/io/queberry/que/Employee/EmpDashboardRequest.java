@@ -1,6 +1,6 @@
 package io.queberry.que.Employee;
 
-import io.queberry.que.dto.ServiceDTO;
+import io.queberry.que.service.ServiceDTO;
 import lombok.Data;
 
 import java.util.List;

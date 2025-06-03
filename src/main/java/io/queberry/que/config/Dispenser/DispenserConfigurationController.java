@@ -1,12 +1,12 @@
 package io.queberry.que.config.Dispenser;
 import io.queberry.que.Counter.CounterRepository;
 import io.queberry.que.Employee.EmployeeRepository;
-import io.queberry.que.Service.ServiceRepository;
 import io.queberry.que.Session.SessionRepository;
 import io.queberry.que.config.Theme.ThemeConfiguration;
 import io.queberry.que.config.Theme.ThemeConfigurationRepository;
 import io.queberry.que.entity.Language;
 import io.queberry.que.exception.QueueException;
+import io.queberry.que.service.ServiceRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.http.HttpServletRequest;

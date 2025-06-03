@@ -16,15 +16,13 @@ import io.queberry.que.Region.RegionDTO;
 import io.queberry.que.Region.RegionRepository;
 import io.queberry.que.Role.Role;
 import io.queberry.que.Role.RoleRepository;
-import io.queberry.que.Service.ServiceRepository;
 import io.queberry.que.Session.Session;
 import io.queberry.que.Session.SessionRepository;
 import io.queberry.que.config.Tenant.TenantContext;
-import io.queberry.que.dto.*;
-import io.queberry.que.dto.ServiceDTO;
-import io.queberry.que.dto.ServicesDTO;
 import io.queberry.que.enums.Status;
 import io.queberry.que.exception.QueueException;
+import io.queberry.que.service.ServiceRepository;
+import io.queberry.que.service.ServicesDTO;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -62,60 +60,60 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final CounterRepository counterRepository;
     private final PasswordEncoder passwordEncoder;
     private final SessionRepository sessionRepository;
-//    @Autowired
+    //    @Autowired
 //    private AssistanceRepository assistanceRepository;
     @Autowired
     private AppointmentRepository appointmentRepository;
 
-@Override
-public String resetPassword(PasswordResetDTO resetDTO, HttpServletRequest request) {
-    List<Employee> employees = employeeRepository.findAllByUsername(resetDTO.getUsername());
-    if (employees.isEmpty()) {
-        return "User not found.";
-    } else if (employees.size() > 1) {
-        return "Multiple users found with the same username. Please contact the administrator.";
-    }
-
-    Employee employee = employees.get(0);
-    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-
-    if (!encoder.matches(resetDTO.getOldPassword(), employee.getPassword())) {
-        return "Old password is incorrect.";
-    }
-
-    if (resetDTO.getOldPassword().equals(resetDTO.getNewPassword())) {
-        return "New password must be different from the old password.";
-    }
-
-    Optional<PasswordManagement> passwordManagementOpt =
-            passwordManagementRepository.findFirstByUsernameIgnoreCaseOrderByIdDesc(resetDTO.getUsername());
-    if (passwordManagementOpt.isPresent()) {
-        PasswordManagement passwordManagement = passwordManagementOpt.get();
-        List<String> lastPasswords = Arrays.asList(passwordManagement.getPasswords().split(","));
-
-        for (String storedPassword : lastPasswords) {
-            if (encoder.matches(resetDTO.getNewPassword(), storedPassword)) {
-                return "New password must not match any of the last passwords.";
-            }
+    @Override
+    public String resetPassword(PasswordResetDTO resetDTO, HttpServletRequest request) {
+        List<Employee> employees = employeeRepository.findAllByUsername(resetDTO.getUsername());
+        if (employees.isEmpty()) {
+            return "User not found.";
+        } else if (employees.size() > 1) {
+            return "Multiple users found with the same username. Please contact the administrator.";
         }
-        passwordManagement.updatePasswordHistory(resetDTO.getNewPassword());
-        passwordManagementRepository.save(passwordManagement);
-    } else {
-        return "Password history not found.";
+
+        Employee employee = employees.get(0);
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+        if (!encoder.matches(resetDTO.getOldPassword(), employee.getPassword())) {
+            return "Old password is incorrect.";
+        }
+
+        if (resetDTO.getOldPassword().equals(resetDTO.getNewPassword())) {
+            return "New password must be different from the old password.";
+        }
+
+        Optional<PasswordManagement> passwordManagementOpt =
+                passwordManagementRepository.findFirstByUsernameIgnoreCaseOrderByIdDesc(resetDTO.getUsername());
+        if (passwordManagementOpt.isPresent()) {
+            PasswordManagement passwordManagement = passwordManagementOpt.get();
+            List<String> lastPasswords = Arrays.asList(passwordManagement.getPasswords().split(","));
+
+            for (String storedPassword : lastPasswords) {
+                if (encoder.matches(resetDTO.getNewPassword(), storedPassword)) {
+                    return "New password must not match any of the last passwords.";
+                }
+            }
+            passwordManagement.updatePasswordHistory(resetDTO.getNewPassword());
+            passwordManagementRepository.save(passwordManagement);
+        } else {
+            return "Password history not found.";
+        }
+
+        employee.resetPassword(resetDTO.getOldPassword(), resetDTO.getNewPassword());
+        employeeRepository.save(employee);
+        AuditLogs logs = new AuditLogs();
+        logs.setEntityName("User");
+        logs.setEntityId(employee.getId());
+        logs.setEntityField("Password");
+        logs.setNewData("Password was reset");
+        logs.setCreatedBy(resetDTO.getUsername());
+        auditLogsRepository.save(logs);
+
+        return "Password reset successfully.";
     }
-
-    employee.resetPassword(resetDTO.getOldPassword(), resetDTO.getNewPassword());
-    employeeRepository.save(employee);
-    AuditLogs logs = new AuditLogs();
-    logs.setEntityName("User");
-    logs.setEntityId(employee.getId());
-    logs.setEntityField("Password");
-    logs.setNewData("Password was reset");
-    logs.setCreatedBy(resetDTO.getUsername());
-    auditLogsRepository.save(logs);
-
-    return "Password reset successfully.";
-}
 
     @Override
     public int getActiveCount() {
@@ -338,7 +336,7 @@ public String resetPassword(PasswordResetDTO resetDTO, HttpServletRequest reques
                 .map(branchId -> branchRepository.findById(branchId))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(branch -> new BranchesDTO(branch.getId(), branch.getName(),branch.getBranchKey()))
+                .map(branch -> new BranchesDTO(branch.getId(), branch.getName(), branch.getBranchKey()))
                 .collect(Collectors.toList());
 
         RegionDTO regionDTO = regionRepository.findById(employee.getRegion())
@@ -390,6 +388,7 @@ public String resetPassword(PasswordResetDTO resetDTO, HttpServletRequest reques
 
         return employee;
     }
+
     @Override
     public Employee assignCounter(String employeeId, String counter) {
         Employee employee = employeeRepository.findById(employeeId).orElse(null);
@@ -467,6 +466,7 @@ public String resetPassword(PasswordResetDTO resetDTO, HttpServletRequest reques
         employeeRepository.delete(employee);
         return "Employee deleted successfully.";
     }
+
     @Override
     public List<Employee> getActiveCounterAgents(String branchKey) {
         Branch branch = branchRepository.findByBranchKey(branchKey);
@@ -486,7 +486,7 @@ public String resetPassword(PasswordResetDTO resetDTO, HttpServletRequest reques
             LocalDate edate = LocalDate.parse(services.getEndDate(),
                     DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 
-            Set<String> serviceIds = services.getServices().stream().map(ServiceDTO::getId).collect(Collectors.toSet());
+            Set<ServicesDTO> serviceIds = services.getServices().stream().map(ServicesDTO::new).collect(Collectors.toSet());
 
             empDashboardDtls.setEmployeeId(emp.getId());
             empDashboardDtls.setEmployeeName(emp.getUsername());
@@ -581,14 +581,14 @@ public String resetPassword(PasswordResetDTO resetDTO, HttpServletRequest reques
     }
 
     private String secConvert(long seconds) {
-        return String.format("%02d:%02d:%02d",  seconds / 3600, (seconds % 3600) / 60, seconds % 60);
+        return String.format("%02d:%02d:%02d", seconds / 3600, (seconds % 3600) / 60, seconds % 60);
     }
 
     private int round(long value) {
         return (int) Math.round(value);
     }
 
-    private Map<String, Long> getWaitTimePerService(Set<String> serviceIds, LocalDate sdate, LocalDate edate) {
+    private Map<String, Long> getWaitTimePerService(Set<ServicesDTO> serviceIds, LocalDate sdate, LocalDate edate) {
         Map<String, Long> result = new HashMap<>();
         result.put("InQueWaitTime", 120L);
         result.put("InQueAvgWaitTime", 30L);
@@ -610,24 +610,24 @@ public String resetPassword(PasswordResetDTO resetDTO, HttpServletRequest reques
 //                swList, LocalDate.now(), stateList, pageable);
 //    }
 
-@Override
-public Employee activateEmployee(String id, String performedBy) {
-    Employee employee = employeeRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Employee with ID " + id + " not found"));
+    @Override
+    public Employee activateEmployee(String id, String performedBy) {
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Employee with ID " + id + " not found"));
 
-    employee.activate();
-    Employee updatedEmployee = employeeRepository.save(employee);
+        employee.activate();
+        Employee updatedEmployee = employeeRepository.save(employee);
 
-    AuditLogs log = new AuditLogs();
-    log.setEntityName("User");
-    log.setEntityId(updatedEmployee.getId());
-    log.setEntityField("Status");
-    log.setOldData("inactive");
-    log.setNewData("active");
-    log.setCreatedBy(performedBy != null ? performedBy : "system");
-    auditLogsRepository.save(log);
+        AuditLogs log = new AuditLogs();
+        log.setEntityName("User");
+        log.setEntityId(updatedEmployee.getId());
+        log.setEntityField("Status");
+        log.setOldData("inactive");
+        log.setNewData("active");
+        log.setCreatedBy(performedBy != null ? performedBy : "system");
+        auditLogsRepository.save(log);
 
-    return updatedEmployee;
-}
+        return updatedEmployee;
+    }
 
 }

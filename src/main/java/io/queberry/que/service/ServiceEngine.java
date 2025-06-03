@@ -1,5 +1,6 @@
-package io.queberry.que.entity;
-import io.queberry.que.Service.ServiceRepository;
+package io.queberry.que.service;
+
+import io.queberry.que.entity.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;

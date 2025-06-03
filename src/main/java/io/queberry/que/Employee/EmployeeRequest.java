@@ -3,7 +3,7 @@ package io.queberry.que.Employee;
 import io.queberry.que.Branch.BranchesDTO;
 import io.queberry.que.Region.RegionDTO;
 import io.queberry.que.Role.RoleDTO;
-import io.queberry.que.dto.ServicesDTO;
+import io.queberry.que.service.ServicesDTO;
 import lombok.Data;
 
 import java.util.List;

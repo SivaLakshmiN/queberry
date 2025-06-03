@@ -1,4 +1,4 @@
-package io.queberry.que.Service;
+package io.queberry.que.service;
 
 import io.queberry.que.dto.*;
 import io.queberry.que.Branch.Branch;
