@@ -84,7 +84,7 @@ public class BranchServiceImpl implements BranchService {
     }
 
     @Override
-    public BranchDTO  getBranchById(String id) throws DataNotFoundException {
+    public BranchDTO getBranchById(String id) throws DataNotFoundException {
         Optional<Branch> optional = branchRepository.findById(id);
         if (optional.isPresent()) {
             return branchMapper.entityToDto(optional.get());
@@ -133,9 +133,8 @@ public class BranchServiceImpl implements BranchService {
             return true;
         }
         return false;
-    }  
-
     }
+
     @Override
     public Page<Branch> getBranchesByRegion(String regionId, Pageable pageable) {
         return branchRepository.findByRegion(regionId, pageable);
