@@ -1,5 +1,7 @@
 package io.queberry.que.entity;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import io.queberry.que.Counter.Counter;
+import io.queberry.que.ServiceGroup.ServiceGroup;
 import io.queberry.que.anotation.AggregateReference;
 import io.queberry.que.exception.QueueException;
 import jakarta.persistence.*;

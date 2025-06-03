@@ -1,9 +1,7 @@
 package io.queberry.que.mapper;
 
-import io.queberry.que.dto.BranchDTO;
-import io.queberry.que.dto.SubTransactionDTO;
-import io.queberry.que.entity.Branch;
-import io.queberry.que.entity.SubTransaction;
+import io.queberry.que.SubTransaction.SubTransactionDTO;
+import io.queberry.que.SubTransaction.SubTransaction;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 

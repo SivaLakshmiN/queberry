@@ -1,4 +1,13 @@
 package io.queberry.que.config;
+import io.queberry.que.config.Audio.AudioConfiguration;
+import io.queberry.que.config.Dispenser.DispenserConfiguration;
+import io.queberry.que.config.Kpi.KpiConfiguration;
+import io.queberry.que.config.Meeting.MeetingConfiguration;
+import io.queberry.que.config.Queue.QueueConfiguration;
+import io.queberry.que.config.Sms.SmsConfiguration;
+import io.queberry.que.config.Survey.SurveyConfiguration;
+import io.queberry.que.config.Theme.ThemeConfiguration;
+import io.queberry.que.config.Token.TokenConfiguration;
 import io.queberry.que.entity.Home;
 import io.queberry.que.entity.License;
 import lombok.Getter;

@@ -1,10 +1,23 @@
 package io.queberry.que.serviceTest;
 
+import io.queberry.que.Assistance.Assistance;
+import io.queberry.que.Assistance.AssistanceRepository;
+import io.queberry.que.Branch.Branch;
+import io.queberry.que.Branch.BranchDTO;
+import io.queberry.que.Branch.BranchRepository;
+import io.queberry.que.Branch.BranchRequest;
+import io.queberry.que.Counter.Counter;
+import io.queberry.que.Counter.CounterRepository;
+import io.queberry.que.Employee.Employee;
+import io.queberry.que.Employee.EmployeeRepository;
+import io.queberry.que.ServiceGroup.ServiceGroup;
+import io.queberry.que.ServiceGroup.ServiceGroupDTO;
+import io.queberry.que.ServiceGroup.ServiceGroupRepository;
+import io.queberry.que.ServiceGroup.ServiceGroupRequest;
 import io.queberry.que.dto.*;
 import io.queberry.que.entity.*;
 import io.queberry.que.exception.DataNotFoundException;
 import io.queberry.que.mapper.BranchMapper;
-import io.queberry.que.repository.*;
 import io.queberry.que.service.impl.BranchServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,7 +29,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.MediaType;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -26,7 +38,6 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 class BranchServiceImplTest {
