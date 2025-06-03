@@ -1,11 +1,21 @@
 package io.queberry.que.entity;
 
-import jakarta.persistence.Entity;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.queberry.que.anotation.AggregateReference;
+import io.queberry.que.config.AppointmentConfiguration;
+import io.queberry.que.exception.QueueException;
+import jakarta.persistence.*;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.LinkedList;
+import java.util.Random;
+import java.util.Set;
 
 @Slf4j
 @Entity
@@ -15,7 +25,19 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor
 public class Appointment extends AggregateRoot<Appointment> {
 
-}
+    public enum State{
+        PENDING_OTP_VERIFICATION,
+        CONFIRMED,
+        CHECKEDIN,
+        WALKIN,
+        NOSHOW,
+        COMPLETED,
+        CANCELLED,
+        EXPIRED,
+        CANCELLEDBYAGENT
+    }
+
+
 
 //    private String branch;
 //    private String branchName;
@@ -74,7 +96,7 @@ public class Appointment extends AggregateRoot<Appointment> {
 ////        return this;
 ////    }
 //
-//    public Appointment(Branch branch, Service service, LocalDate date, LocalTime from, LocalTime to, String firstName, String lastName, String email, String mobile, int noOfAppointments,ModeofAppointment type, String tenantId, String clientId, String clientSecret, String userName, AppointmentConfiguration appointmentConfiguration, String baseDirectory) throws IOException {
+//    public Appointment(Branch branch, Service service, LocalDate date, LocalTime from, LocalTime to, String firstName, String lastName, String email, String mobile, int noOfAppointments, ModeofAppointment type, String tenantId, String clientId, String clientSecret, String userName, AppointmentConfiguration appointmentConfiguration, String baseDirectory) throws IOException {
 //        this.branch = branch.getBranchKey();
 //        this.branchName = branch.getName();
 //        //  this.branch = branch;
@@ -684,17 +706,7 @@ public class Appointment extends AggregateRoot<Appointment> {
 //        }
 //    }
 //
-//    public enum State{
-//        PENDING_OTP_VERIFICATION,
-//        CONFIRMED,
-//        CHECKEDIN,
-//        WALKIN,
-//        NOSHOW,
-//        COMPLETED,
-//        CANCELLED,
-//        EXPIRED,
-//        CANCELLEDBYAGENT
-//    }
+//
 //    public enum AppointmentType{
 //        NEW,
 //        EDIT,
@@ -807,5 +819,4 @@ public class Appointment extends AggregateRoot<Appointment> {
 //        private String teamsId;
 //        private String vLink;
 //    }
-//}
-//
+}

@@ -1,6 +1,7 @@
 package io.queberry.que.service;
 
 import io.queberry.que.dto.*;
+import io.queberry.que.entity.Appointment;
 import io.queberry.que.entity.Employee;
 import io.queberry.que.entity.EmployeeData;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,7 +17,7 @@ public interface EmployeeService {
     Employee activateEmployee(String id, String performedBy);
     EmployeeRequest createEmployee(EmployeeData employeeData);
     EmployeeRequest updateEmployee(String id, EmployeeData employeeData);
-    Page<Employee> filterEmployeesByUsername(String username, Pageable pageable, HttpServletRequest request);
+    Page<EmployeeRequest> filterEmployeesByUsername(String username, Pageable pageable);
     List<EmployeeRequest> getAllEmployees();
     EmployeeRequest getEmployeeById(String id);
     Employee resetUserPassword(String username, String newPassword);
@@ -29,6 +30,6 @@ public interface EmployeeService {
     String deleteEmployee(String employeeId, String loggedInUsername);
     List<Employee> getActiveCounterAgents(String branchKey);
     EmpDashboardDtls getEmployeeDashboard(EmpDashboardRequest request);
-//Page<Appointment> getAppointmentList(EmpDashboardRequest services, Pageable pageable);
+    //Page<Appointment> getAppointmentList(EmpDashboardRequest services, Pageable pageable);
 
 }
