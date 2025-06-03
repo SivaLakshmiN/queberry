@@ -11,6 +11,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -46,8 +47,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final SessionRepository sessionRepository;
 //    @Autowired
 //    private AssistanceRepository assistanceRepository;
-//    @Autowired
-//    private AppointmentRepository appointmentRepository;
+    @Autowired
+    private AppointmentRepository appointmentRepository;
 
 @Override
 public String resetPassword(PasswordResetDTO resetDTO, HttpServletRequest request) {
@@ -579,7 +580,7 @@ public String resetPassword(PasswordResetDTO resetDTO, HttpServletRequest reques
 
 //    @Override
 //    public Page<Appointment> getAppointmentList(EmpDashboardRequest services, Pageable pageable) {
-//        Set<com.example.QueApplication.Entity.Service> swList = new HashSet<>();
+//        Set<io.queberry.que.entity.Service> swList = new HashSet<>();
 //        Set<Appointment.State> stateList = Set.of(Appointment.State.CONFIRMED, Appointment.State.CHECKEDIN);
 //
 //        if (services.getServices() != null && !services.getServices().isEmpty()) {
@@ -591,6 +592,7 @@ public String resetPassword(PasswordResetDTO resetDTO, HttpServletRequest reques
 //        return appointmentRepository.findByServiceInAndDateAndStateIn(
 //                swList, LocalDate.now(), stateList, pageable);
 //    }
+
 @Override
 public Employee activateEmployee(String id, String performedBy) {
     Employee employee = employeeRepository.findById(id)

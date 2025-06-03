@@ -1,6 +1,7 @@
 package io.queberry.que.controller;
 
 import io.queberry.que.dto.*;
+import io.queberry.que.entity.Appointment;
 import io.queberry.que.entity.AuditLogs;
 import io.queberry.que.entity.Employee;
 import io.queberry.que.entity.EmployeeData;
@@ -197,8 +198,8 @@ public class EmployeeController {
         EmpDashboardDtls result = employeeService.getEmployeeDashboard(request);
         return ResponseEntity.ok(result);
     }
-//@PutMapping("/employees/appointmentList")
-//public ResponseEntity<?> getAppointmentList(@RequestBody EmpDashboardRequest services, Pageable pageable) {
+//    @PutMapping("/employees/appointmentList")
+//    public ResponseEntity<?> getAppointmentList(@RequestBody EmpDashboardRequest services, Pageable pageable) {
 //    Page<Appointment> appointments = employeeService.getAppointmentList(services, pageable);
 //    return ResponseEntity.ok(appointments);
 //}
