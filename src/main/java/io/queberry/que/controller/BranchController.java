@@ -54,8 +54,8 @@ public class BranchController {
     }
 
     @GetMapping("/branches")
-    public ResponseEntity<Page<BranchDTO>> getAllBranches(Pageable pageable) {
-        Page<BranchDTO> branches = branchService.getAllBranches(pageable);
+    public ResponseEntity<List<BranchDTO>> getAllBranches() {
+        List<BranchDTO> branches = branchService.getAllBranches();
         return ResponseEntity.ok(branches);
     }
     @GetMapping("/branch/{id}")

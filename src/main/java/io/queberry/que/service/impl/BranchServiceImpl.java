@@ -71,18 +71,18 @@ public class BranchServiceImpl implements BranchService {
     }
 
     @Override
-    public Page<BranchDTO> getAllBranches(Pageable pageable) {
-        Page<Branch> branches = branchRepository.findAll(pageable);
+    public List<BranchDTO> getAllBranches() {
+        return branchRepository.findAllBranchDTOs();
 
-        return branches.map(this::convertToDTO);
-    }
-    private BranchDTO convertToDTO(Branch branch) {
-        BranchDTO dto = new BranchDTO();
-        dto.setId(branch.getId());
-        dto.setName(branch.getName());
-        dto.setActive(branch.isActive());
-        dto.setBranchKey(branch.getBranchKey());
-        return dto;
+//        return branches.map(this::convertToDTO);
+//    }
+//    private BranchDTO convertToDTO(Branch branch) {
+//        BranchDTO dto = new BranchDTO();
+//        dto.setId(branch.getId());
+//        dto.setName(branch.getName());
+//        dto.setActive(branch.isActive());
+//        dto.setBranchKey(branch.getBranchKey());
+//        return dto;
     }
 
     @Override

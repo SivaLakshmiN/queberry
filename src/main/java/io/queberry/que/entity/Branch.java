@@ -20,6 +20,9 @@ import java.util.Set;
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "BranchCache")
 public class Branch extends AggregateRoot<Branch> {
 
+    @Id
+    private String id;
+
     @Column(unique = true)
     private String name;
 

@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -100,8 +101,8 @@ public class ServiceController {
     }
 
     @GetMapping("/services")
-    public ResponseEntity<ServiceDTO> getAllServices(Pageable pageable) {
-        Page<ServiceDTO> services = serviceService.getAllServices(pageable);
+    public ResponseEntity<ServiceDTO> getAllServices() {
+        List<ServiceDTO> services = serviceService.getAllServices();
         return ResponseEntity.ok((ServiceDTO) services);
     }
 

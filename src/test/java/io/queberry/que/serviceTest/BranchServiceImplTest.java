@@ -131,7 +131,7 @@ class BranchServiceImplTest {
         when(branchRepository.findAll()).thenReturn(branchList);
         when(branchMapper.mapList(branchList)).thenReturn(dtoList);
 
-        Page<BranchDTO> result = branchService.getAllBranches(any());
+        List<BranchDTO> result = branchService.getAllBranches();
 
         assertNotNull(result);
 //        assertEquals(2, result.size());

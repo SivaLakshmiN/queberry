@@ -24,6 +24,9 @@ import java.util.Set;
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "ServiceCache")
 public class Service extends AggregateRoot<Service> implements Comparable<Service>{
 
+    @Id
+    private String id;
+
     @Column(unique = true,columnDefinition = "nvarchar(255)",nullable = false)
     private String name;
 

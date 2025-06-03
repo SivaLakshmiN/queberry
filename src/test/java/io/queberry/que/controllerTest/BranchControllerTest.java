@@ -86,7 +86,7 @@ public class BranchControllerTest {
         branch2.setId("122");
         List<BranchDTO> branchList = List.of(branch1, branch2);
 
-        when(branchService.getAllBranches(any())).thenReturn(any());
+        when(branchService.getAllBranches()).thenReturn(any());
 
         mockMvc.perform(get("/branches")
                         .contentType(MediaType.APPLICATION_JSON))

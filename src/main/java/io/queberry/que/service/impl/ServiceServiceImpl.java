@@ -170,19 +170,18 @@ public class ServiceServiceImpl implements ServiceService {
                 .orElseThrow(() -> new RuntimeException("No services found for region"));
     }
     @Override
-    public Page<ServiceDTO> getAllServices(Pageable pageable) {
-        Page<Service> services = serviceRepository.findAll(pageable);
-        return services.map(this::convertToDTO);
+    public List<ServiceDTO> getAllServices() {
+        return serviceRepository.findAllService();
     }
-    private ServiceDTO convertToDTO(Service service) {
-        ServiceDTO dto = new ServiceDTO();
-        dto.setId(service.getId());
-        dto.setName(service.getName());
-        dto.setDisplayName(service.getDisplayName());
-        dto.setSharedSequenceName(service.getSharedSequence());
-        dto.setStatus(service.toString());
-        return dto;
-    }
+//    private ServiceDTO convertToDTO(Service service) {
+//        ServiceDTO dto = new ServiceDTO();
+//        dto.setId(service.getId());
+//        dto.setName(service.getName());
+//        dto.setDisplayName(service.getDisplayName());
+//        dto.setSharedSequenceName(service.getSharedSequence());
+////        dto.setStatus(service.toString());
+//        return dto;
+//    }
 
     @Override
     public Page<Service> filterByName(String regionId, String serviceName, Pageable pageable) {

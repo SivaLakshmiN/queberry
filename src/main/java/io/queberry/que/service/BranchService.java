@@ -18,7 +18,7 @@ public interface  BranchService {
     Set<BranchDTO> getActiveBranches();
     Set<BranchDTO> getActiveWebPrinterBranches();
     String getActiveBranchCount();
-    Page<BranchDTO> getAllBranches(Pageable pageable);
+    List<BranchDTO> getAllBranches();
     BranchDTO getBranchById(String id);
     Branch createBranch(Branch branch);
     Branch updateBranch(String id, BranchRequest branch);
