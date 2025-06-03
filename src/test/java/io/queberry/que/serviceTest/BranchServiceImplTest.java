@@ -5,7 +5,7 @@ import io.queberry.que.entity.*;
 import io.queberry.que.exception.DataNotFoundException;
 import io.queberry.que.mapper.BranchMapper;
 import io.queberry.que.repository.*;
-import io.queberry.que.service.impl.BranchServiceImpl;
+import io.queberry.que.service.BranchService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,7 +38,7 @@ class BranchServiceImplTest {
     private BranchMapper branchMapper;
 
     @InjectMocks
-    private BranchServiceImpl branchService;
+    private BranchService branchService;
 
     @Mock
     private EmployeeRepository employeeRepository;
