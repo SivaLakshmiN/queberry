@@ -1,6 +1,6 @@
 package io.queberry.que.config.Whatsapp;
 
-import io.queberry.que.Assistance.Assistance;
+import io.queberry.que.assistance.Assistance;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;

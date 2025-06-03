@@ -1,6 +1,6 @@
 package io.queberry.que.config.Appointment;
 
-import io.queberry.que.Branch.Branch;
+import io.queberry.que.branch.Branch;
 import io.queberry.que.entity.FileReference;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,7 +1,7 @@
 package io.queberry.que.mapper;
 
-import io.queberry.que.SubTransaction.SubTransactionDTO;
-import io.queberry.que.SubTransaction.SubTransaction;
+import io.queberry.que.subTransaction.SubTransactionDTO;
+import io.queberry.que.subTransaction.SubTransaction;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 

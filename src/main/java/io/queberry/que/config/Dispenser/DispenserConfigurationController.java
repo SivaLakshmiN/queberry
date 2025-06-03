@@ -1,7 +1,7 @@
 package io.queberry.que.config.Dispenser;
-import io.queberry.que.Counter.CounterRepository;
-import io.queberry.que.Employee.EmployeeRepository;
-import io.queberry.que.Session.SessionRepository;
+import io.queberry.que.counter.CounterRepository;
+import io.queberry.que.employee.EmployeeRepository;
+import io.queberry.que.session.SessionRepository;
 import io.queberry.que.config.Theme.ThemeConfiguration;
 import io.queberry.que.config.Theme.ThemeConfigurationRepository;
 import io.queberry.que.entity.Language;
