@@ -1,7 +1,7 @@
 package io.queberry.que.SubTransaction;
 
 import io.queberry.que.exception.DataNotFoundException;
-import io.queberry.que.Service.ServiceRepository;
+import io.queberry.que.service.ServiceRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;

@@ -1,6 +1,6 @@
 package io.queberry.que.ServiceGroup;
 
-import io.queberry.que.dto.ServiceDTO;
+import io.queberry.que.service.ServiceDTO;
 import lombok.*;
 
 import java.util.*;

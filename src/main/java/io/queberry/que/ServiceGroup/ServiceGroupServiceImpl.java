@@ -3,7 +3,7 @@ package io.queberry.que.ServiceGroup;
 import io.queberry.que.dto.AddServiceToServiceGroup;
 import io.queberry.que.exception.DataNotFoundException;
 import io.queberry.que.exception.QueueException;
-import io.queberry.que.Service.ServiceRepository;
+import io.queberry.que.service.ServiceRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;

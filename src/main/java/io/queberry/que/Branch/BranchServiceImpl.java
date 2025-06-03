@@ -1,21 +1,26 @@
-package io.queberry.que.service.impl;
+package io.queberry.que.Branch;
 
 import io.queberry.que.Assistance.Assistance;
-import io.queberry.que.Branch.*;
+import io.queberry.que.Assistance.AssistanceRepository;
 import io.queberry.que.Counter.Counter;
+import io.queberry.que.Counter.CounterRepository;
 import io.queberry.que.Employee.Employee;
+import io.queberry.que.Employee.EmployeeRepository;
 import io.queberry.que.Role.Role;
-import io.queberry.que.Service.ServiceService;
 import io.queberry.que.ServiceGroup.ServiceGroup;
 import io.queberry.que.ServiceGroup.ServiceGroupDTO;
-import io.queberry.que.dto.Capacity;
+import io.queberry.que.ServiceGroup.ServiceGroupRepository;
 import io.queberry.que.ServiceGroup.ServiceGroupRequest;
+import io.queberry.que.dto.Capacity;
+import io.queberry.que.entity.*;
 import io.queberry.que.enums.Status;
 import io.queberry.que.exception.DataNotFoundException;
+import io.queberry.que.mapper.BranchMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,7 +28,96 @@ import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Override
+@Service
+public class BranchServiceImpl implements BranchService {
+    private final BranchRepository branchRepository;
+    private final BranchMapper branchMapper;
+    private final ServiceGroupRepository serviceGroupRepository;
+    private final CounterRepository counterRepository;
+    private final AssistanceRepository assistanceRepository;
+    private final EmployeeRepository employeeRepository;
+
+    public BranchServiceImpl(BranchRepository branchRepository, BranchMapper branchMapper, ServiceGroupRepository serviceGroupRepository, CounterRepository counterRepository, AssistanceRepository assistanceRepository, EmployeeRepository employeeRepository) {
+        this.branchRepository = branchRepository;
+        this.branchMapper = branchMapper;
+        this.serviceGroupRepository = serviceGroupRepository;
+        this.counterRepository = counterRepository;
+        this.assistanceRepository = assistanceRepository;
+        this.employeeRepository = employeeRepository;
+    }
+
+    @Override
+    public Set<BranchDTO> getActiveBranches() {
+        Set<Branch> branches = branchRepository.findByActiveTrue();
+        return branches.stream()
+                .map(branchMapper::entityToDto)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    @Override
+    public Set<BranchDTO> getActiveWebPrinterBranches() {
+        Set<Branch> branches = branchRepository.findByActiveTrue();
+        return branches.stream()
+                .map(branchMapper::entityToDto)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    @Override
+    public String getActiveBranchCount() {
+        return branchRepository.countAllByActiveTrue();
+    }
+
+    @Override
+    public List<BranchDTO> getAllBranches() {
+        return branchRepository.findAllBranchDTOs();
+//        return branches.map(this::convertToDTO);
+//    }
+//    private BranchDTO convertToDTO(Branch branch) {
+//        BranchDTO dto = new BranchDTO();
+//        dto.setId(branch.getId());
+//        dto.setName(branch.getName());
+//        dto.setActive(branch.isActive());
+//        dto.setBranchKey(branch.getBranchKey());
+//        return dto;
+    }
+
+    @Override
+    public BranchDTO getBranchById(String id) throws DataNotFoundException {
+        Optional<Branch> optional = branchRepository.findById(id);
+        if (optional.isPresent()) {
+            return branchMapper.entityToDto(optional.get());
+        }
+        throw new DataNotFoundException("not found");
+    }
+
+    @Override
+    public Branch createBranch(Branch branch) {
+        return branchRepository.save(branch);
+    }
+
+    @Override
+    public Branch updateBranch(String id, BranchRequest branchInfo) {
+        Branch branch = branchRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Branch not found"));
+        branch.setName(branchInfo.getName());
+        branch.setBusinessStart(branchInfo.getBusinessStart());
+        branch.setBusinessEnd(branchInfo.getBusinessEnd());
+        branch.setRegion(branchInfo.getRegion());
+        branch.setGlobalServices(branchInfo.isGlobalServices());
+        branch.setComPort(branchInfo.getComPort());
+        return branch;
+    }
+
+    @Override
+    public boolean deleteBranch(String id) {
+        if (branchRepository.existsById(id)) {
+            branchRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public Page<Branch> getBranchesByRegion(String regionId, Pageable pageable) {
         return branchRepository.findByRegion(regionId, pageable);
     }
@@ -34,11 +128,9 @@ import java.util.stream.Collectors;
                 .orElseThrow(() -> new DataNotFoundException("Branch not found with id " + branchId));
         branch.setActive(true);
         branch = branchRepository.save(branch);
-
         Set<Branch> branches = new HashSet<>();
         branches.add(branch);
 //        sequenceEngine.setSequenceManagerByBranches(branches);
-
         return branch;
     }
 
@@ -46,12 +138,9 @@ import java.util.stream.Collectors;
     public Branch deActivateBranch(String branchId) {
         Branch branch = branchRepository.findById(branchId)
                 .orElseThrow(() -> new DataNotFoundException("Branch not found with id " + branchId));
-
         branch.setActive(false);
         branch = branchRepository.save(branch);
-
 //        sequenceEngine.removeBranchFromSequence(branch.getBranchKey());
-
         Set<String> branches = new HashSet<>();
 //        branches.add(branch);
         Set<Employee> employees = employeeRepository.findByBranchesIn(branches);
@@ -61,7 +150,6 @@ import java.util.stream.Collectors;
 //            employee.setBranch(employeeBranches);
             employeeRepository.save(employee);
         }
-
         return branch;
     }
 
@@ -69,14 +157,11 @@ import java.util.stream.Collectors;
     public Page<BranchDTO> filterBranchesByName(HttpServletRequest request, String region, String brName, Pageable pageable) {
         String username = request.getUserPrincipal().getName();
         Optional<Employee> employeeOpt = employeeRepository.findEmployeeByUsername(username);
-
         if (employeeOpt.isEmpty()) {
             return Page.empty(pageable);
         }
-
         Employee employee = employeeOpt.get();
         Set<Role> roles = employee.getAuthorities();
-
 //        boolean isAdmin = roles.contains(roleRepository.findByName("PRODUCT_ADMIN"))
 //                || roles.contains(roleRepository.findByName("ORG_ADMIN"));
 //
@@ -87,7 +172,6 @@ import java.util.stream.Collectors;
 //        Set<String> filtered = employee.getBranch().stream()
 //                .filter(b -> b.getName() != null && b.getName().toLowerCase().contains(brName.toLowerCase()))
 //                .collect(Collectors.toSet());
-
 //        Page<String> branchPage = getPage(filtered, pageable);
 //        return branchPage.map(branchMapper::entityToDto);
         return null;
@@ -95,14 +179,11 @@ import java.util.stream.Collectors;
 
     private Page<Branch> getPage(Set<Branch> branches, Pageable pageable) {
         List<Branch> branchList = branches.stream().collect(Collectors.toList());
-
         int start = (int) pageable.getOffset();
         int end = Math.min(start + pageable.getPageSize(), branchList.size());
-
         if (start > end) {
             return Page.empty(pageable);
         }
-
         List<Branch> subList = branchList.subList(start, end);
         return new PageImpl<>(subList, pageable, branchList.size());
     }
@@ -111,12 +192,10 @@ import java.util.stream.Collectors;
     public Branch assignServiceGroup(String branchId, ServiceGroupRequest request) {
         Branch branch = branchRepository.findById(branchId)
                 .orElseThrow(() -> new DataNotFoundException("Branch not found"));
-
         ServiceGroup serviceGroup = new ServiceGroup();
         serviceGroup.setName(request.getName());
         serviceGroup.setDisplayName(request.getDisplayName());
         serviceGroup.setNames(request.getNames());
-
         serviceGroup = serviceGroupRepository.save(serviceGroup);
         Set<String> serviceGroups = branch.getServiceGroup();
         if (serviceGroups == null) {
@@ -144,10 +223,8 @@ import java.util.stream.Collectors;
         if (branch == null) {
             throw new IllegalArgumentException("Branch not found with key: " + branchKey);
         }
-
         LocalDateTime start = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
         LocalDateTime end = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
-
         Set<Status> statuses = new HashSet<>();
         statuses.add(Status.SCHEDULED);
         statuses.add(Status.HOLD);
@@ -155,13 +232,10 @@ import java.util.stream.Collectors;
         statuses.add(Status.TRANSFERRED_TO_COUNTER);
         statuses.add(Status.TRANSFERRED_TO_USER);
         statuses.add(Status.ATTENDING);
-
         List<Assistance> assistances = assistanceRepository
                 .findByCreatedAtBetweenAndBranchAndStatusIn(start, end, branchKey, statuses);
-
         List<Counter> counters = counterRepository
                 .findByBranchAndInUse(branch.getId(), true);
-
         return new Capacity(branchKey, assistances.size(), counters.size());
     }
 }

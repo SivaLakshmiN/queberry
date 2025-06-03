@@ -1,13 +1,13 @@
 package io.queberry.que.serviceTest;
 
 import io.queberry.que.dto.AddServiceToServiceGroup;
-import io.queberry.que.dto.ServiceDTO;
 import io.queberry.que.ServiceGroup.ServiceGroupRequest;
 import io.queberry.que.ServiceGroup.ServiceGroup;
 import io.queberry.que.exception.DataNotFoundException;
 import io.queberry.que.ServiceGroup.ServiceGroupRepository;
-import io.queberry.que.Service.ServiceRepository;
 import io.queberry.que.ServiceGroup.ServiceGroupServiceImpl;
+import io.queberry.que.service.ServiceDTO;
+import io.queberry.que.service.ServiceRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

@@ -1,4 +1,4 @@
-package io.queberry.que.dto;
+package io.queberry.que.service;
 
 import io.queberry.que.entity.Service;
 import jakarta.persistence.Column;
@@ -21,5 +21,7 @@ public class ServicesDTO {
     public ServicesDTO(String id, String name) {
         this.id = id;
         this.name = name;
+    }
+    public ServicesDTO(ServiceDTO serviceDTO) {
     }
 }
