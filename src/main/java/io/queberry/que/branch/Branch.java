@@ -56,7 +56,7 @@ public class Branch extends AggregateRoot<Branch> {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "branch_service_groups", joinColumns = @JoinColumn(name = "branch_id"))
-    @Column(name = "service_group")
+    @Column(name = "service_group_id")
     @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "ServiceGroupCache")
     private Set<String> serviceGroup = new HashSet<>();
 
