@@ -2,7 +2,7 @@ package io.queberry.que.serviceGroup;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.queberry.que.entity.AggregateRoot;
-import io.queberry.que.entity.Service;
+import io.queberry.que.service.Service;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;

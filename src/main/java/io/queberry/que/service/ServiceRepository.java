@@ -1,7 +1,6 @@
 package io.queberry.que.service;
 
 import io.queberry.que.region.Region;
-import io.queberry.que.entity.Service;
 import io.queberry.que.sharedSequence.SharedSequence;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

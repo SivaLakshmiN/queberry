@@ -17,7 +17,6 @@ import io.queberry.que.subTransaction.SubTransactionGroupRepository;
 import io.queberry.que.dto.*;
 import io.queberry.que.dto.ServiceResource;
 import io.queberry.que.dto.ServiceResponse;
-import io.queberry.que.entity.Service;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;

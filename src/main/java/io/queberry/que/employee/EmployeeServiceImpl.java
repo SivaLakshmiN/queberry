@@ -1,6 +1,6 @@
 package io.queberry.que.employee;
 
-import io.queberry.que.service.ServiceDTO;
+import io.queberry.que.service.*;
 import io.queberry.que.appointment.Appointment;
 import io.queberry.que.appointment.AppointmentRepository;
 import io.queberry.que.auditLogs.AuditLogs;
@@ -20,7 +20,6 @@ import io.queberry.que.region.RegionDTO;
 import io.queberry.que.region.RegionRepository;
 import io.queberry.que.role.Role;
 import io.queberry.que.role.RoleRepository;
-import io.queberry.que.service.ServiceRepository;
 import io.queberry.que.service.ServiceDTO;
 import io.queberry.que.session.Session;
 import io.queberry.que.session.SessionRepository;
@@ -40,7 +39,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -49,7 +47,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Service
+@org.springframework.stereotype.Service
 @RequiredArgsConstructor
 public class EmployeeServiceImpl implements EmployeeService {
 
@@ -607,7 +605,7 @@ private Set<ServiceDTO> mapToServiceDTO(Set<String> serviceIds, Map<String, Stri
 
     @Override
     public Page<Appointment> getAppointmentList(EmpDashboardRequest services, Pageable pageable) {
-        Set<io.queberry.que.entity.Service> swList = new HashSet<>();
+        Set<Service> swList = new HashSet<>();
         Set<Appointment.State> stateList = Set.of(Appointment.State.CONFIRMED, Appointment.State.CHECKEDIN);
 
         if (services.getServices() != null && !services.getServices().isEmpty()) {

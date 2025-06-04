@@ -2,7 +2,7 @@
 package io.queberry.que.employee;
 
 import io.queberry.que.role.Role;
-import io.queberry.que.entity.Service;
+import io.queberry.que.service.Service;
 import io.queberry.que.service.ServiceDTO;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;

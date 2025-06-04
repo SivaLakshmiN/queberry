@@ -1,6 +1,6 @@
 package io.queberry.que.mapper;
 
-import io.queberry.que.entity.Service;
+import io.queberry.que.service.Service;
 import lombok.*;
 
 @Setter

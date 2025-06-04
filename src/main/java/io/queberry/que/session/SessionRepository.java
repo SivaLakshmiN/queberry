@@ -1,6 +1,6 @@
 package io.queberry.que.session;
 
-import io.queberry.que.entity.Service;
+import io.queberry.que.service.Service;
 import io.queberry.que.service.ServiceDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 

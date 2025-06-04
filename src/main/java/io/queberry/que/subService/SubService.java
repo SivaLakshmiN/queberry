@@ -1,7 +1,7 @@
 package io.queberry.que.subService;
 
 import io.queberry.que.entity.AuditedEntity;
-import io.queberry.que.entity.Service;
+import io.queberry.que.service.Service;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;

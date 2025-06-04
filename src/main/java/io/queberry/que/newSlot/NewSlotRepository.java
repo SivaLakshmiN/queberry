@@ -1,7 +1,7 @@
 package io.queberry.que.newSlot;
 
 import io.queberry.que.branch.Branch;
-import io.queberry.que.entity.Service;
+import io.queberry.que.service.Service;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

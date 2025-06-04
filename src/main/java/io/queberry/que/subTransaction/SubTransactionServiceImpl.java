@@ -111,14 +111,14 @@ public class SubTransactionServiceImpl implements SubTransactionService {
 
         for (String serviceId : currentlyAssignedServiceIds) {
             if (!serviceIds.contains(serviceId)) {
-                io.queberry.que.entity.Service service = serviceRepository.findById(serviceId)
+                io.queberry.que.service.Service service = serviceRepository.findById(serviceId)
                         .orElseThrow(() -> new RuntimeException("Service not found"));
                 service.setSubServiceGroup(null);
                 serviceRepository.save(service);
             }
         }
         for (String serviceId : serviceIds) {
-            io.queberry.que.entity.Service service = serviceRepository.findById(serviceId)
+            io.queberry.que.service.Service service = serviceRepository.findById(serviceId)
                     .orElseThrow(() -> new RuntimeException("Service not found"));
             service.setSubServiceGroup(group);
             serviceRepository.save(service);
