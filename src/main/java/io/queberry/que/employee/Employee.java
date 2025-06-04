@@ -118,17 +118,17 @@ public class Employee extends AggregateRoot<Employee> implements UserDetails {
     private String tenant;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @Column(name = "branches")
+    @Column(name = "branches_id")
     private Set<String> branches = new HashSet<>();
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @Column(name = "services")
+    @Column(name = "services_id")
     private Set<String> services = new HashSet<>();
 
     //    @ManyToOne
     //   @ElementCollection(fetch = FetchType.EAGER)
 //    @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "RegionCache")
-    @Column(name = "region")
+    @Column(name = "region_id")
     private String region;
 
     private String loggedCounter;
