@@ -1,10 +1,7 @@
 package io.queberry.que.subTransaction;
 
 import io.queberry.que.entity.AggregateRoot;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -37,7 +34,8 @@ public class SubTransactionGroup extends AggregateRoot<SubTransactionGroup> {
     @Column(columnDefinition = "nvarchar(200)",nullable = false)
     private String secondaryName;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Column(name = "sub_transactions_id")
     @NotNull(message = "SubTransaction to be added SubTransaction Group is required!!")
     @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "SubTransactionCache")
     private Set<String> subTransactions = new HashSet<>(0);
