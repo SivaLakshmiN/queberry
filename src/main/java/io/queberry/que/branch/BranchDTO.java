@@ -12,18 +12,18 @@ public class BranchDTO {
 
     private String id;
     private String name;
-//    private boolean active;
+    private boolean active;
     private String branchKey;
 
     public BranchDTO() {
     }
 
-//    public BranchDTO(String id, String name, boolean active, String branchKey) {
-//        this.id = id;
-//        this.name = name;
-//        this.active = active;
-//        this.branchKey = branchKey;
-//    }
+    public BranchDTO(String id, String name, boolean active, String branchKey) {
+        this.id = id;
+        this.name = name;
+        this.active = active;
+        this.branchKey = branchKey;
+    }
 
     public BranchDTO(String id, String name, String branchKey) {
         this.id = id;

@@ -53,7 +53,7 @@ public interface ServiceRepository extends JpaRepository<Service, String> {
 
     Set<String> findBySharedSequence(SharedSequence sharedSequence);
 
-    @Query("SELECT new io.queberry.que.service.ServiceDTO(s.id, s.name) FROM que_service s")
+    @Query("SELECT new io.queberry.que.service.ServiceDTO(s.id, s.name,s.displayName,s.sharedSequence) FROM que_service s")
     List<ServiceDTO> findAllService();
 
 }

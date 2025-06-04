@@ -7,6 +7,9 @@ import io.queberry.que.entity.DomainEvent;
 import io.queberry.que.role.Role;
 import io.queberry.que.exception.QueueException;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.springframework.http.HttpStatus;
@@ -28,31 +31,31 @@ import java.util.TreeSet;
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "EmployeeCache")
 public class Employee extends AggregateRoot<Employee> implements UserDetails {
     @Column(unique = true)
-//    @NotNull(message = "Username is required.")
-//    @Pattern(regexp =  "^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$", message = "Email is invalid")
+    @NotNull(message = "Username is required.")
+    @Pattern(regexp = "^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$", message = "Email is invalid")
     private String username;
 
     @JsonIgnore
-//    @NotNull(message = "Password is required.")
-//    @Size(min = 8, message = "Password should be minimum 8 characters!!")
+    @NotNull(message = "Password is required.")
+    @Size(min = 8, message = "Password should be minimum 8 characters!!")
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Role> roles = new HashSet<>();
 
 
-    //    @NotNull(message = "First name is required")
-//    @Pattern(regexp = "[A-Za-z0-9 ]*", message = "First name should contain only alphabets!!")
+    @NotNull(message = "First name is required")
+    @Pattern(regexp = "[A-Za-z0-9 ]*", message = "First name should contain only alphabets!!")
     private String firstname;
 
-    //    @NotNull(message = "Last name is required")
-//    @Pattern(regexp = "[A-Za-z0-9 ]*", message = "Last name should contain only alphabets!!")
+    @NotNull(message = "Last name is required")
+    @Pattern(regexp = "[A-Za-z0-9 ]*", message = "Last name should contain only alphabets!!")
     private String lastname;
     //
-    //    @Pattern(regexp = "[A-Za-z0-9 ]*", message = "Middle name should contain only alphabets!!")
+    @Pattern(regexp = "[A-Za-z0-9 ]*", message = "Middle name should contain only alphabets!!")
     private String middlename;
 
-    @Column(name="counter_id")
+    @Column(name = "counter_id")
     private String counter;
 
     @Column(columnDefinition = "bit default 1")
@@ -98,34 +101,34 @@ public class Employee extends AggregateRoot<Employee> implements UserDetails {
     private boolean showServiceList;
 
     //   @ManyToMany(fetch = FetchType.EAGER)
-    @ElementCollection(fetch=FetchType.EAGER)
-    @Column(name="second")
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Column(name = "second")
     private Set<String> second = new TreeSet<>();
 
     // @OneToMany(fetch = FetchType.EAGER)
     @ElementCollection(fetch = FetchType.EAGER)
-    @Column(name="third")
+    @Column(name = "third")
     private Set<String> third = new TreeSet<>();
 
     // @ManyToMany(fetch = FetchType.EAGER)
     @ElementCollection(fetch = FetchType.EAGER)
-    @Column(name="fourth")
+    @Column(name = "fourth")
     private Set<String> fourth = new TreeSet<>();
 
     private String tenant;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @Column(name="branches")
+    @Column(name = "branches")
     private Set<String> branches = new HashSet<>();
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @Column(name="services")
+    @Column(name = "services")
     private Set<String> services = new HashSet<>();
 
     //    @ManyToOne
     //   @ElementCollection(fetch = FetchType.EAGER)
 //    @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "RegionCache")
-    @Column(name="region")
+    @Column(name = "region")
     private String region;
 
     private String loggedCounter;
@@ -142,7 +145,7 @@ public class Employee extends AggregateRoot<Employee> implements UserDetails {
     }
 
     @JsonIgnore
-    public Set<Role> getAuthorities(){
+    public Set<Role> getAuthorities() {
         return this.getRoles();
     }
 
@@ -167,32 +170,30 @@ public class Employee extends AggregateRoot<Employee> implements UserDetails {
         return active;
     }
 
-    public Employee activate(){
-        if (!this.active){
-            this.active=true;
+    public Employee activate() {
+        if (!this.active) {
+            this.active = true;
             registerEvent(EmployeeActivated.of(this));
-        }
-        else
-            throw new QueueException("Employee is already active",HttpStatus.PRECONDITION_FAILED);
+        } else
+            throw new QueueException("Employee is already active", HttpStatus.PRECONDITION_FAILED);
         return this;
     }
 
-    public Employee deActivate(){
-        if (this.active){
-            this.active=false;
+    public Employee deActivate() {
+        if (this.active) {
+            this.active = false;
             registerEvent(EmployeeDeactivated.of(this));
-        }
-        else
-            throw new QueueException("Employee is already deactivated",HttpStatus.PRECONDITION_FAILED);
+        } else
+            throw new QueueException("Employee is already deactivated", HttpStatus.PRECONDITION_FAILED);
         return this;
     }
 
-    public Employee resetAdminPassword(String password){
+    public Employee resetAdminPassword(String password) {
         this.password = new BCryptPasswordEncoder().encode(password);
         return this;
     }
 
-    public Employee resetPassword(String existing,String password){
+    public Employee resetPassword(String existing, String password) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         if (encoder.matches(existing, this.password)) {
             this.password = encoder.encode(password);
@@ -208,7 +209,7 @@ public class Employee extends AggregateRoot<Employee> implements UserDetails {
                     String lastname,
                     String middlename,
                     String tenant,
-                    Set<Role> roles, boolean active){
+                    Set<Role> roles, boolean active) {
         this.username = username;
         this.password = password;
         this.firstname = firstname;

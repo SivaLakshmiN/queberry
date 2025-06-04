@@ -21,8 +21,13 @@ import io.queberry.que.region.RegionRepository;
 import io.queberry.que.role.Role;
 import io.queberry.que.role.RoleRepository;
 import io.queberry.que.service.ServiceRepository;
+import io.queberry.que.service.ServiceDTO;
 import io.queberry.que.session.Session;
 import io.queberry.que.session.SessionRepository;
+import io.queberry.que.config.Tenant.TenantContext;
+import io.queberry.que.enums.Status;
+import io.queberry.que.exception.QueueException;
+import io.queberry.que.service.ServiceRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -333,6 +338,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .map(branch -> new BranchDTO(branch.getId(), branch.getName(), branch.getBranchKey()))
+                .map(branch -> new BranchDTO())
                 .collect(Collectors.toList());
 
         RegionDTO regionDTO = regionRepository.findById(employee.getRegion())
@@ -340,7 +346,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .orElse(new RegionDTO(employee.getRegion(), "null"));
 
         List<ServiceDTO> serviceDTOs = employee.getServices().stream()
-                .map(serviceId -> new ServiceDTO(serviceId, serviceNameMap.getOrDefault(serviceId, "null")))
+                .map(serviceId -> new ServiceDTO())
                 .collect(Collectors.toList());
 
         Set<ServiceDTO> secondDTOs = mapToServiceDTO(employee.getSecond(), serviceNameMap);
@@ -352,7 +358,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 private Set<ServiceDTO> mapToServiceDTO(Set<String> serviceIds, Map<String, String> serviceNameMap) {
     return serviceIds.stream()
-            .map(id -> new ServiceDTO(id, serviceNameMap.get(id)))
+            .map(id -> new ServiceDTO())
             .collect(Collectors.toSet());
 }
 
@@ -490,7 +496,7 @@ private Set<ServiceDTO> mapToServiceDTO(Set<String> serviceIds, Map<String, Stri
             LocalDate edate = LocalDate.parse(services.getEndDate(),
                     DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 
-           // Set<io.queberry.que.service.ServiceDTO> serviceIds = services.getServices().stream().map(ServiceDTO::new).collect(Collectors.toSet());
+            Set<ServiceDTO> serviceIds = services.getServices().stream().map(ServiceDTO::new).collect(Collectors.toSet());
 
             empDashboardDtls.setEmployeeId(emp.getId());
             empDashboardDtls.setEmployeeName(emp.getUsername());
@@ -600,11 +606,9 @@ private Set<ServiceDTO> mapToServiceDTO(Set<String> serviceIds, Map<String, Stri
     }
 
     @Override
-    public Page<Appointment> getAppointmentList(EmpDashboardRequest services,
-                                                Pageable pageable) {
+    public Page<Appointment> getAppointmentList(EmpDashboardRequest services, Pageable pageable) {
         Set<io.queberry.que.entity.Service> swList = new HashSet<>();
-        Set<Appointment.State> stateList = Set.of(Appointment.State.CONFIRMED,
-                Appointment.State.CHECKEDIN);
+        Set<Appointment.State> stateList = Set.of(Appointment.State.CONFIRMED, Appointment.State.CHECKEDIN);
 
         if (services.getServices() != null && !services.getServices().isEmpty()) {
             services.getServices().forEach(serviceDto -> {

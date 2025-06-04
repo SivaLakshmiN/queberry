@@ -1,4 +1,4 @@
-package ServiceImplTest;
+package io.queberry.que.serviceTest;
 
 import io.queberry.que.employee.EmpDashboardDtls;
 import io.queberry.que.employee.EmpDashboardRequest;

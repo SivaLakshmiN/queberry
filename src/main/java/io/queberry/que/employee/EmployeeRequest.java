@@ -50,5 +50,6 @@ public class EmployeeRequest {
     }
 
     public EmployeeRequest() {
+
     }
 }

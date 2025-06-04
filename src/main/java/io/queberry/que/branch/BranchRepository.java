@@ -19,7 +19,7 @@ public interface BranchRepository extends JpaRepository<Branch,String> {
     Branch findByBranchKey(String branchKey);
     Set<Branch> findByActiveTrue();
     String countAllByActiveTrue();
-    @Query("SELECT new io.queberry.que.branch.BranchDTO(b.id, b.name, b.branchKey) FROM Branch b")
+    @Query("SELECT new io.queberry.que.branch.BranchDTO(b.id, b.name,b.active, b.branchKey) FROM Branch b")
     List<BranchDTO> findAllBranchDTOs();
 }
 

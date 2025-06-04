@@ -178,15 +178,15 @@ public class AppointmentConfiguration extends AggregateRoot<AppointmentConfigura
         this.apptCancelEnglish = apptCancelEnglish;
     }
 
-    @Override
-    @JsonIgnore
-    public String getId(){
-        return super.getId();
-    }
-
-    @Override
-    @JsonIgnore
-    public Long getVersion(){
-        return super.getVersion();
-    }
+//    @Override
+//    @JsonIgnore
+//    public String getId(){
+//        return super.getId();
+//    }
+//
+//    @Override
+//    @JsonIgnore
+//    public Long getVersion(){
+//        return super.getVersion();
+//    }
 }

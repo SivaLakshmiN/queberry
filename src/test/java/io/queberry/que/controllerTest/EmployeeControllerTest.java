@@ -1,4 +1,4 @@
-package ControlletTest;
+package io.queberry.que.controllerTest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.queberry.que.employee.*;
