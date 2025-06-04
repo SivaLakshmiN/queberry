@@ -7,10 +7,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.*;
 
 @Entity
@@ -22,11 +21,11 @@ import java.util.*;
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "ServiceGroupCache")
 public class ServiceGroup extends AggregateRoot<ServiceGroup> {
 
-    @NotNull()
+    @NotNull(message = "Service Group name is required!!")
     @Column(unique = true,columnDefinition = "nvarchar(200)",nullable = false)
     private String name;
 
-    @NotNull()
+    @NotNull(message = "Service Group display name is required!!")
     @Column(columnDefinition = "nvarchar(200)",nullable = false)
     private String displayName;
 
