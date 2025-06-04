@@ -32,9 +32,6 @@ public class ServiceGroupServiceImplTest {
     @Mock
     private ServiceGroupRepository serviceGroupRepository;
 
-    @Mock
-    private ServiceRepository serviceRepository;
-
     @InjectMocks
     private ServiceGroupServiceImpl serviceGroupService;
 

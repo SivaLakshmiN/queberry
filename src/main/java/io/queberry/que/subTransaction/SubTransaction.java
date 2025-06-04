@@ -39,8 +39,8 @@ public class SubTransaction extends AggregateRoot<SubTransaction> {
 
     private String selectionValues;
 
-    @ManyToOne
-    private Region region;
+    @Column(name = "region_id")
+    private String region;
 
 }
 
