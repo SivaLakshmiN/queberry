@@ -29,5 +29,8 @@ public class ServiceDTO {
     }
     public ServiceDTO(String s) {
     }
+
+    public ServiceDTO(ServiceDTO serviceDTO) {
+    }
 }
 

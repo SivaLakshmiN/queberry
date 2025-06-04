@@ -1,9 +1,9 @@
 package io.queberry.que.employee;
 
-import io.queberry.que.branch.BranchesDTO;
+import io.queberry.que.branch.BranchDTO;
 import io.queberry.que.region.RegionDTO;
 import io.queberry.que.role.RoleDTO;
-import io.queberry.que.service.ServicesDTO;
+import io.queberry.que.service.ServiceDTO;
 import lombok.Data;
 
 import java.util.List;
@@ -20,8 +20,8 @@ public class EmployeeRequest {
 
     private RegionDTO region;
     private List<RoleDTO> roles;
-    private List<BranchesDTO> branches;
-    private List<ServicesDTO> services;
+    private List<BranchDTO> branches;
+    private List<ServiceDTO> services;
     private Set<String> second;
     private Set<String> third;
     private Set<String> fourth;
@@ -29,8 +29,8 @@ public class EmployeeRequest {
 
     public EmployeeRequest(Employee employee,
                            RegionDTO region,
-                           List<BranchesDTO> branches,
-                           List<ServicesDTO> services) {
+                           List<BranchDTO> branches,
+                           List<ServiceDTO> services) {
         this.id = employee.getId();
         this.firstname = employee.getFirstname();
         this.lastname = employee.getLastname();

@@ -4,8 +4,8 @@ import io.queberry.que.appointment.AppointmentRepository;
 import io.queberry.que.auditLogs.AuditLogs;
 import io.queberry.que.auditLogs.AuditLogsRepository;
 import io.queberry.que.branch.Branch;
+import io.queberry.que.branch.BranchDTO;
 import io.queberry.que.branch.BranchRepository;
-import io.queberry.que.branch.BranchesDTO;
 import io.queberry.que.counter.Counter;
 import io.queberry.que.counter.CounterRepository;
 import io.queberry.que.passwordManagement.ForgotPasswordDTO;
@@ -16,13 +16,13 @@ import io.queberry.que.region.RegionDTO;
 import io.queberry.que.region.RegionRepository;
 import io.queberry.que.role.Role;
 import io.queberry.que.role.RoleRepository;
+import io.queberry.que.service.ServiceDTO;
 import io.queberry.que.session.Session;
 import io.queberry.que.session.SessionRepository;
 import io.queberry.que.config.Tenant.TenantContext;
 import io.queberry.que.enums.Status;
 import io.queberry.que.exception.QueueException;
 import io.queberry.que.service.ServiceRepository;
-import io.queberry.que.service.ServicesDTO;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -332,22 +332,22 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 
     private EmployeeRequest toDto(Employee employee) {
-        List<BranchesDTO> branchDTOs = employee.getBranches().stream()
+        List<BranchDTO> branchDTOs = employee.getBranches().stream()
                 .map(branchId -> branchRepository.findById(branchId))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(branch -> new BranchesDTO(branch.getId(), branch.getName(), branch.getBranchKey()))
+                .map(branch -> new BranchDTO())
                 .collect(Collectors.toList());
 
         RegionDTO regionDTO = regionRepository.findById(employee.getRegion())
                 .map(region -> new RegionDTO(region.getId(), region.getName()))
                 .orElse(new RegionDTO(employee.getRegion(), "null"));
 
-        List<ServicesDTO> serviceDTOs = employee.getServices().stream()
+        List<ServiceDTO> serviceDTOs = employee.getServices().stream()
                 .map(serviceId -> serviceRepository.findById(serviceId))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(service -> new ServicesDTO(service.getId(), service.getName()))
+                .map(service -> new ServiceDTO())
                 .collect(Collectors.toList());
 
         return new EmployeeRequest(employee, regionDTO, branchDTOs, serviceDTOs);
@@ -486,7 +486,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             LocalDate edate = LocalDate.parse(services.getEndDate(),
                     DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 
-            Set<ServicesDTO> serviceIds = services.getServices().stream().map(ServicesDTO::new).collect(Collectors.toSet());
+            Set<ServiceDTO> serviceIds = services.getServices().stream().map(ServiceDTO::new).collect(Collectors.toSet());
 
             empDashboardDtls.setEmployeeId(emp.getId());
             empDashboardDtls.setEmployeeName(emp.getUsername());
@@ -588,7 +588,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         return (int) Math.round(value);
     }
 
-    private Map<String, Long> getWaitTimePerService(Set<ServicesDTO> serviceIds, LocalDate sdate, LocalDate edate) {
+    private Map<String, Long> getWaitTimePerService(Set<ServiceDTO> serviceIds, LocalDate sdate, LocalDate edate) {
         Map<String, Long> result = new HashMap<>();
         result.put("InQueWaitTime", 120L);
         result.put("InQueAvgWaitTime", 30L);
