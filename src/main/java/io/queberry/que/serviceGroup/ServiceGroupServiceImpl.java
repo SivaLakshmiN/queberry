@@ -36,7 +36,7 @@ public class ServiceGroupServiceImpl implements ServiceGroupService {
         Set<String> validServiceIds = serviceIds.stream()
                 .map(id -> serviceRepository.findById(id)
                         .orElseThrow(() -> new EntityNotFoundException("Service not found with id: " + id)))
-                .map(io.queberry.que.entity.Service::getId)
+                .map(io.queberry.que.service.Service::getId)
                 .collect(Collectors.toSet());
 
         serviceGroup.clearServices();

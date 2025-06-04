@@ -1,9 +1,9 @@
 package io.queberry.que.session;
 import io.queberry.que.counter.Counter;
 import io.queberry.que.employee.Employee;
+import io.queberry.que.service.Service;
 import io.queberry.que.subTransaction.SubTransaction;
 import io.queberry.que.entity.AggregateRoot;
-import io.queberry.que.entity.Service;
 import io.queberry.que.enums.Status;
 import io.queberry.que.exception.QueueException;
 import jakarta.persistence.*;

@@ -1,11 +1,11 @@
 package io.queberry.que.token;
 
 import io.queberry.que.appointment.Appointment;
+import io.queberry.que.service.Service;
 import io.queberry.que.subService.SubService;
 import io.queberry.que.anotation.AggregateReference;
 import io.queberry.que.entity.AggregateRoot;
 import io.queberry.que.entity.DomainEvent;
-import io.queberry.que.entity.Service;
 import io.queberry.que.enums.TokenStatus;
 import io.queberry.que.enums.Type;
 import jakarta.persistence.*;

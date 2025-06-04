@@ -1,8 +1,8 @@
 package io.queberry.que.assistance;
 
 import io.queberry.que.entity.AggregateRoot;
-import io.queberry.que.entity.Service;
 import io.queberry.que.enums.Status;
+import io.queberry.que.service.Service;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;

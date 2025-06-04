@@ -1,6 +1,5 @@
 package io.queberry.que.service;
 
-import io.queberry.que.entity.Service;
 import lombok.Getter;
 import lombok.Setter;
 

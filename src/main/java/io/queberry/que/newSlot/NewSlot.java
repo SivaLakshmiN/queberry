@@ -2,7 +2,7 @@ package io.queberry.que.newSlot;
 
 import io.queberry.que.region.Region;
 import io.queberry.que.entity.AggregateRoot;
-import io.queberry.que.entity.Service;
+import io.queberry.que.service.Service;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

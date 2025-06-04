@@ -1,6 +1,6 @@
 package io.queberry.que.appointment;
 
-import io.queberry.que.entity.Service;
+import io.queberry.que.service.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
