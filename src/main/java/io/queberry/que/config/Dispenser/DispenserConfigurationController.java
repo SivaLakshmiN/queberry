@@ -149,6 +149,10 @@ public class DispenserConfigurationController {
         private boolean showInQueueAlert;
         private boolean eidScan;
         private List<Language> languages;
+
+        public <E> DispenserConfigurationResource(String welcome, int i, boolean b, String closed, boolean b1, boolean b2, boolean b3, String branch123, boolean b4, boolean b5, boolean b6, boolean b7, List<E> es) {
+
+        }
     }
 
 }

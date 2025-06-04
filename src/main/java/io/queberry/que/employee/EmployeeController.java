@@ -1,5 +1,6 @@
 package io.queberry.que.employee;
 
+import io.queberry.que.appointment.Appointment;
 import io.queberry.que.passwordManagement.ForgotPasswordDTO;
 import io.queberry.que.passwordManagement.PasswordResetDTO;
 import io.queberry.que.auditLogs.AuditLogs;
@@ -9,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -194,11 +196,11 @@ public class EmployeeController {
         EmpDashboardDtls result = employeeService.getEmployeeDashboard(request);
         return ResponseEntity.ok(result);
     }
-//    @PutMapping("/employees/appointmentList")
-//    public ResponseEntity<?> getAppointmentList(@RequestBody EmpDashboardRequest services, Pageable pageable) {
-//    Page<Appointment> appointments = employeeService.getAppointmentList(services, pageable);
-//    return ResponseEntity.ok(appointments);
-//}
+    @PutMapping("/employees/appointmentList")
+    public ResponseEntity<?> getAppointmentList(@RequestBody EmpDashboardRequest services, Pageable pageable) {
+    Page<Appointment> appointments = employeeService.getAppointmentList(services, pageable);
+    return ResponseEntity.ok(appointments);
+}
 
     @PutMapping("/employees/{id}/activate")
     public ResponseEntity<?> activate(@PathVariable("id") String id, @RequestParam(defaultValue = "admin") String performedBy) {
