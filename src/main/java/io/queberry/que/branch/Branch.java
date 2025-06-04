@@ -39,7 +39,7 @@ public class Branch extends AggregateRoot<Branch> {
 
     private LocalTime businessEnd;
 
-    @Column(name = "region")
+    @Column(name = "region_id")
     private String region;
 
     @Column(columnDefinition = "bit default 1")
@@ -50,7 +50,7 @@ public class Branch extends AggregateRoot<Branch> {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "branch_services", joinColumns = @JoinColumn(name = "branch_id"))
-    @Column(name = "service")
+    @Column(name = "services_id")
     @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "ServiceCache")
     private Set<String> services = new HashSet<>();
 
