@@ -1,5 +1,4 @@
 package io.queberry.que.service;
-
 //import io.queberry.que.config.JwtTokenUtil;
 //import io.queberry.que.config.RedisSequenceEngine;
 import io.queberry.que.auditLogs.AuditLogs;
@@ -35,9 +34,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 @Slf4j
 @org.springframework.stereotype.Service
-public class ServiceServiceImpl implements ServiceService {
+public class ServiceServiceImpl implements io.queberry.que.service.ServiceService {
 
-    private final ServiceRepository serviceRepository;
+    private final io.queberry.que.service.ServiceRepository serviceRepository;
 
     private final SharedSequenceRepository sharedSequenceRepository;
 
@@ -47,7 +46,7 @@ public class ServiceServiceImpl implements ServiceService {
 
     private final AuditLogsRepository auditLogsRepository;
 
-    private final ServiceEngine serviceEngine;
+    private final io.queberry.que.service.ServiceEngine serviceEngine;
 
 //    private final JwtTokenUtil jwtTokenUtil;
 
@@ -60,7 +59,7 @@ public class ServiceServiceImpl implements ServiceService {
 
     private final SubTransactionGroupRepository subTransactionGroupRepository;
 
-    public ServiceServiceImpl(ServiceRepository serviceRepository, SharedSequenceRepository sharedSequenceRepository, RegionRepository regionRepository, SubServiceRepository subServiceRepository, AuditLogsRepository auditLogsRepository, ServiceEngine serviceEngine, BranchRepository branchRepository, NewSlotRepository newSlotRepository,SubTransactionGroupRepository subTransactionGroupRepository) {
+    public ServiceServiceImpl(io.queberry.que.service.ServiceRepository serviceRepository, SharedSequenceRepository sharedSequenceRepository, RegionRepository regionRepository, SubServiceRepository subServiceRepository, AuditLogsRepository auditLogsRepository, io.queberry.que.service.ServiceEngine serviceEngine, BranchRepository branchRepository, NewSlotRepository newSlotRepository, SubTransactionGroupRepository subTransactionGroupRepository) {
         this.serviceRepository = serviceRepository;
         this.sharedSequenceRepository = sharedSequenceRepository;
         this.regionRepository = regionRepository;
@@ -79,7 +78,7 @@ public class ServiceServiceImpl implements ServiceService {
     }
 
     @Override
-    public Set<ServiceRegionResponse> getRegionActiveServices(String regionId) {
+    public Set<io.queberry.que.service.ServiceRegionResponse> getRegionActiveServices(String regionId) {
         return serviceRepository.findByIdAndActiveTrue(regionId, Sort.by(Sort.Order.asc("name")));
     }
 

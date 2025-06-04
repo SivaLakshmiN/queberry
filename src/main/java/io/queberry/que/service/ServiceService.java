@@ -16,7 +16,7 @@ public interface ServiceService {
 
 
     Set<Service> getAllActiveServices(boolean active);
-    Set<ServiceRegionResponse> getRegionActiveServices(String regionId);
+    Set<io.queberry.que.service.ServiceRegionResponse> getRegionActiveServices(String regionId);
     Service activate(String regionId);
 
     Service deactivate(String id);

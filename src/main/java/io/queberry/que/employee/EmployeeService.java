@@ -1,5 +1,6 @@
 package io.queberry.que.employee;
 
+import io.queberry.que.appointment.Appointment;
 import io.queberry.que.passwordManagement.ForgotPasswordDTO;
 import io.queberry.que.passwordManagement.PasswordResetDTO;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,6 +29,6 @@ public interface EmployeeService {
     String deleteEmployee(String employeeId, String loggedInUsername);
     List<Employee> getActiveCounterAgents(String branchKey);
     EmpDashboardDtls getEmployeeDashboard(EmpDashboardRequest request);
-    //Page<Appointment> getAppointmentList(EmpDashboardRequest services, Pageable pageable);
+    Page<Appointment> getAppointmentList(EmpDashboardRequest services, Pageable pageable);
 
 }

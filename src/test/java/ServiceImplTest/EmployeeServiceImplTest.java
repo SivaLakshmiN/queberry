@@ -148,7 +148,7 @@ class EmployeeServiceImplTest {
 
        //when(employeeRepository.findByUsername(eq(username), eq(pageable))).thenReturn(page);
 
-        Page<Employee> result = employeeService.filterEmployeesByUsername(username, pageable, null);
+        Page<EmployeeRequest> result = employeeService.filterEmployeesByUsername(username, pageable);
 
         assertNotNull(result);
         assertEquals(1, result.getTotalElements());

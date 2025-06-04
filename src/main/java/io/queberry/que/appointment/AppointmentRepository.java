@@ -1,7 +1,13 @@
 package io.queberry.que.appointment;
 
+import io.queberry.que.entity.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import java.time.LocalDate;
+import java.util.Set;
 
 @Repository
 public interface AppointmentRepository extends JpaRepository<Appointment,String> {
@@ -15,7 +21,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment,String>
 //
 //    Set<Appointment> findByStateAndDate(Appointment.State state, LocalDate date);
 
-//    Page<Appointment> findByServiceInAndDateAndStateIn(Set<Service> services, LocalDate cDate, Set<Appointment.State> state, Pageable pageable);
+    Page<Appointment> findByServiceInAndDateAndStateIn(Set<Service> services, LocalDate cDate, Set<Appointment.State> state, Pageable pageable);
 
 //   // Set<Appointment> findByDateBetweenAndBranchAndServiceIdInAndStateIsInAndSchedulingTypeIn(LocalDate sdate, LocalDate edate, String b, Set<String> s, Set<Appointment.State> states, Set<Appointment.SchedulingType> schedules);
 //

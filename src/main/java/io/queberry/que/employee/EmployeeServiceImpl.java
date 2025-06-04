@@ -1,13 +1,17 @@
 package io.queberry.que.employee;
 
+import io.queberry.que.service.ServiceDTO;
+import io.queberry.que.appointment.Appointment;
 import io.queberry.que.appointment.AppointmentRepository;
 import io.queberry.que.auditLogs.AuditLogs;
 import io.queberry.que.auditLogs.AuditLogsRepository;
 import io.queberry.que.branch.Branch;
+import io.queberry.que.branch.BranchDTO;
 import io.queberry.que.branch.BranchRepository;
-import io.queberry.que.branch.BranchesDTO;
+import io.queberry.que.config.Tenant.TenantContext;
 import io.queberry.que.counter.Counter;
 import io.queberry.que.counter.CounterRepository;
+import io.queberry.que.exception.QueueException;
 import io.queberry.que.passwordManagement.ForgotPasswordDTO;
 import io.queberry.que.passwordManagement.PasswordManagement;
 import io.queberry.que.passwordManagement.PasswordManagementRepository;
@@ -16,13 +20,9 @@ import io.queberry.que.region.RegionDTO;
 import io.queberry.que.region.RegionRepository;
 import io.queberry.que.role.Role;
 import io.queberry.que.role.RoleRepository;
+import io.queberry.que.service.ServiceRepository;
 import io.queberry.que.session.Session;
 import io.queberry.que.session.SessionRepository;
-import io.queberry.que.config.Tenant.TenantContext;
-import io.queberry.que.enums.Status;
-import io.queberry.que.exception.QueueException;
-import io.queberry.que.service.ServiceRepository;
-import io.queberry.que.service.ServicesDTO;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -38,8 +38,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -304,54 +302,60 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setFourth(data.getFourth() != null ? data.getFourth() : new TreeSet<>());
         return employeeRepository.save(employee);
     }
-
-//private EmployeeRequest toDto(Employee employee) {
-//    List<Branch> branchEntities = employee.getBranches().stream()
-//            .map(branchRepository::findById)
-//            .filter(Optional::isPresent)
-//            .map(Optional::get)
-//            .collect(Collectors.toList());
+//    private EmployeeRequest toDto(Employee employee) {
+//        List<BranchDTO> branchDTOs = employee.getBranches().stream()
+//                .map(branchId -> branchRepository.findById(branchId))
+//                .filter(Optional::isPresent)
+//                .map(Optional::get)
+//                .map(branch -> new BranchDTO(branch.getId(), branch.getName(), branch.getBranchKey()))
+//                .collect(Collectors.toList());
 //
-//    List<BranchDTO> branchDTOs = branchEntities.stream()
-//            .map(branch -> new BranchDTO())
-//            .collect(Collectors.toList());
+//        RegionDTO regionDTO = regionRepository.findById(employee.getRegion())
+//                .map(region -> new RegionDTO(region.getId(), region.getName()))
+//                .orElse(new RegionDTO(employee.getRegion(), "null"));
 //
-//    RegionDTO regionDTO = regionRepository.findById(employee.getRegion())
-//            .map(region -> new RegionDTO(region.getId(), region.getName()))
-//            .orElse(new RegionDTO(employee.getRegion(), "null"));
+//        List<io.queberry.que.service.ServiceDTO> serviceDTOs = employee.getServices().stream()
+//                .map(serviceId -> serviceRepository.findById(serviceId))
+//                .filter(Optional::isPresent)
+//                .map(Optional::get)
+//                .map(service -> new io.queberry.que.service.ServiceDTO(service.getId(), service.getName()))
+//                .collect(Collectors.toList());
 //
-//    List<ServiceDTO> serviceDTOs = employee.getServices().stream()
-//            .map(serviceId -> serviceRepository.findById(serviceId))
-//            .filter(Optional::isPresent)
-//            .map(Optional::get)
-//            .map(service -> new ServiceDTO())
-//            .collect(Collectors.toList());
-//
-//    return new EmployeeRequest(employee, regionDTO, branchDTOs, serviceDTOs);
-//}
-
+//       return new EmployeeRequest(employee, regionDTO, branchDTOs, serviceDTOs);
+//    }
 
     private EmployeeRequest toDto(Employee employee) {
-        List<BranchesDTO> branchDTOs = employee.getBranches().stream()
+        Map<String, String> serviceNameMap = serviceRepository.findAll().stream()
+                .collect(Collectors.toMap(service -> service.getId(), service -> service.getName()));
+
+        List<BranchDTO> branchDTOs = employee.getBranches().stream()
                 .map(branchId -> branchRepository.findById(branchId))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(branch -> new BranchesDTO(branch.getId(), branch.getName(), branch.getBranchKey()))
+                .map(branch -> new BranchDTO(branch.getId(), branch.getName(), branch.getBranchKey()))
                 .collect(Collectors.toList());
 
         RegionDTO regionDTO = regionRepository.findById(employee.getRegion())
                 .map(region -> new RegionDTO(region.getId(), region.getName()))
                 .orElse(new RegionDTO(employee.getRegion(), "null"));
 
-        List<ServicesDTO> serviceDTOs = employee.getServices().stream()
-                .map(serviceId -> serviceRepository.findById(serviceId))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .map(service -> new ServicesDTO(service.getId(), service.getName()))
+        List<ServiceDTO> serviceDTOs = employee.getServices().stream()
+                .map(serviceId -> new ServiceDTO(serviceId, serviceNameMap.getOrDefault(serviceId, "null")))
                 .collect(Collectors.toList());
 
-        return new EmployeeRequest(employee, regionDTO, branchDTOs, serviceDTOs);
+        Set<ServiceDTO> secondDTOs = mapToServiceDTO(employee.getSecond(), serviceNameMap);
+        Set<ServiceDTO> thirdDTOs = mapToServiceDTO(employee.getThird(), serviceNameMap);
+        Set<ServiceDTO> fourthDTOs = mapToServiceDTO(employee.getFourth(), serviceNameMap);
+
+        return new EmployeeRequest(employee, regionDTO, branchDTOs, serviceDTOs, secondDTOs, thirdDTOs, fourthDTOs);
     }
+
+private Set<ServiceDTO> mapToServiceDTO(Set<String> serviceIds, Map<String, String> serviceNameMap) {
+    return serviceIds.stream()
+            .map(id -> new ServiceDTO(id, serviceNameMap.get(id)))
+            .collect(Collectors.toSet());
+}
+
 
     @Override
     public Employee resetUserPassword(String username, String newPassword) {
@@ -486,7 +490,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             LocalDate edate = LocalDate.parse(services.getEndDate(),
                     DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 
-            Set<ServicesDTO> serviceIds = services.getServices().stream().map(ServicesDTO::new).collect(Collectors.toSet());
+           // Set<io.queberry.que.service.ServiceDTO> serviceIds = services.getServices().stream().map(ServiceDTO::new).collect(Collectors.toSet());
 
             empDashboardDtls.setEmployeeId(emp.getId());
             empDashboardDtls.setEmployeeName(emp.getUsername());
@@ -496,34 +500,34 @@ public class EmployeeServiceImpl implements EmployeeService {
             Long totalServeTime = 0L;
             AtomicReference<Long> totalWaitTime = new AtomicReference<>(0L);
 
-            if (!serviceIds.isEmpty()) {
-                empSessions = sessionRepository.findByEmployeeAndServiceIdInAndCreatedAtBetween(
-                        emp.getId(), serviceIds, LocalDateTime.of(sdate, LocalTime.MIN), LocalDateTime.of(edate, LocalTime.MAX)
-                );
-                inQueData = getWaitTimePerService(serviceIds, sdate, edate);
-            } else {
-                empSessions = sessionRepository.findByEmployeeAndCreatedAtBetween(
-                        emp.getId(), LocalDateTime.of(sdate, LocalTime.MIN), LocalDateTime.of(edate, LocalTime.MAX)
-                );
-            }
+//            if (!serviceIds.isEmpty()) {
+//                empSessions = sessionRepository.findByEmployeeAndServiceIdInAndCreatedAtBetween(
+//                        emp.getId(), serviceIds, LocalDateTime.of(sdate, LocalTime.MIN), LocalDateTime.of(edate, LocalTime.MAX)
+//                );
+//                inQueData = getWaitTimePerService(serviceIds, sdate, edate);
+//            } else {
+//                empSessions = sessionRepository.findByEmployeeAndCreatedAtBetween(
+//                        emp.getId(), LocalDateTime.of(sdate, LocalTime.MIN), LocalDateTime.of(edate, LocalTime.MAX)
+//                );
+//            }
 
-            if (!empSessions.isEmpty()) {
-                totalServeTime = empSessions.stream().map(Session::getServeTime).reduce(Long::sum).orElse(0L);
-
-                Map<Status, Long> statusCount = empSessions.stream()
-                        .collect(Collectors.groupingBy(Session::getStatus, Collectors.counting()));
-
-                empDashboardDtls.setTotalParked(statusCount.getOrDefault(Status.HOLD, 0L).intValue());
-                empDashboardDtls.setTotalNoShow(statusCount.getOrDefault(Status.NO_SHOW, 0L).intValue());
-                empDashboardDtls.setTotalCompleted(statusCount.getOrDefault(Status.COMPLETED, 0L).intValue());
-                empDashboardDtls.setTotalTransferred((int) statusCount.entrySet().stream()
-                        .filter(entry -> Arrays.asList(
-                                Status.TRANSFERRED_TO_COUNTER,
-                                Status.TRANSFERRED_TO_SERVICE,
-                                Status.TRANSFERRED_TO_USER
-                        ).contains(entry.getKey()))
-                        .mapToLong(Map.Entry::getValue).sum());
-            }
+//            if (!empSessions.isEmpty()) {
+//                totalServeTime = empSessions.stream().map(Session::getServeTime).reduce(Long::sum).orElse(0L);
+//
+//                Map<Status, Long> statusCount = empSessions.stream()
+//                        .collect(Collectors.groupingBy(Session::getStatus, Collectors.counting()));
+//
+//                empDashboardDtls.setTotalParked(statusCount.getOrDefault(Status.HOLD, 0L).intValue());
+//                empDashboardDtls.setTotalNoShow(statusCount.getOrDefault(Status.NO_SHOW, 0L).intValue());
+//                empDashboardDtls.setTotalCompleted(statusCount.getOrDefault(Status.COMPLETED, 0L).intValue());
+//                empDashboardDtls.setTotalTransferred((int) statusCount.entrySet().stream()
+//                        .filter(entry -> Arrays.asList(
+//                                Status.TRANSFERRED_TO_COUNTER,
+//                                Status.TRANSFERRED_TO_SERVICE,
+//                                Status.TRANSFERRED_TO_USER
+//                        ).contains(entry.getKey()))
+//                        .mapToLong(Map.Entry::getValue).sum());
+//            }
 
 //            Set<Assistance> assistances = (!serviceIds.isEmpty())
 //                    ? assistanceRepository.findByCreatedAtBetweenAndSessionsEmployeeAndSessionsServiceIdIn(
@@ -588,27 +592,29 @@ public class EmployeeServiceImpl implements EmployeeService {
         return (int) Math.round(value);
     }
 
-    private Map<String, Long> getWaitTimePerService(Set<ServicesDTO> serviceIds, LocalDate sdate, LocalDate edate) {
+    private Map<String, Long> getWaitTimePerService(Set<io.queberry.que.service.ServiceDTO> serviceIds, LocalDate sdate, LocalDate edate) {
         Map<String, Long> result = new HashMap<>();
         result.put("InQueWaitTime", 120L);
         result.put("InQueAvgWaitTime", 30L);
         return result;
     }
 
-//    @Override
-//    public Page<Appointment> getAppointmentList(EmpDashboardRequest services, Pageable pageable) {
-//        Set<io.queberry.que.entity.Service> swList = new HashSet<>();
-//        Set<Appointment.State> stateList = Set.of(Appointment.State.CONFIRMED, Appointment.State.CHECKEDIN);
-//
-//        if (services.getServices() != null && !services.getServices().isEmpty()) {
-//            services.getServices().forEach(serviceDto -> {
-//                serviceRepository.findById(serviceDto.getId()).ifPresent(swList::add);
-//            });
-//        }
-//
-//        return appointmentRepository.findByServiceInAndDateAndStateIn(
-//                swList, LocalDate.now(), stateList, pageable);
-//    }
+    @Override
+    public Page<Appointment> getAppointmentList(EmpDashboardRequest services,
+                                                Pageable pageable) {
+        Set<io.queberry.que.entity.Service> swList = new HashSet<>();
+        Set<Appointment.State> stateList = Set.of(Appointment.State.CONFIRMED,
+                Appointment.State.CHECKEDIN);
+
+        if (services.getServices() != null && !services.getServices().isEmpty()) {
+            services.getServices().forEach(serviceDto -> {
+                serviceRepository.findById(serviceDto.getId()).ifPresent(swList::add);
+            });
+        }
+
+        return appointmentRepository.findByServiceInAndDateAndStateIn(
+                swList, LocalDate.now(), stateList, pageable);
+    }
 
     @Override
     public Employee activateEmployee(String id, String performedBy) {

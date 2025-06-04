@@ -1,5 +1,4 @@
 package io.queberry.que.employee;
-
 import io.queberry.que.service.ServiceDTO;
 import lombok.Data;
 
