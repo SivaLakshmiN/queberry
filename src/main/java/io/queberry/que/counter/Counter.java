@@ -62,20 +62,20 @@ public class Counter extends AggregateRoot<Counter> {
 //    @JsonIgnore
 //    @ManyToMany(fetch = FetchType.EAGER)
 
+    @JsonIgnore
     @ElementCollection(fetch=FetchType.EAGER)
-    @Column(name="first")
     private Set<String> first = new TreeSet<>();
 
+    @JsonIgnore
     @ElementCollection(fetch = FetchType.EAGER)
-    @Column(name="second")
     private Set<String> second = new TreeSet<>();
 
+    @JsonIgnore
     @ElementCollection(fetch = FetchType.EAGER)
-    @Column(name="third")
     private Set<String> third = new TreeSet<>();
 
+    @JsonIgnore
     @ElementCollection(fetch = FetchType.EAGER)
-    @Column(name="fourth")
     private Set<String> fourth = new TreeSet<>();
 
     @Column(name = "branch_id")
