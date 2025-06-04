@@ -102,17 +102,17 @@ public class Employee extends AggregateRoot<Employee> implements UserDetails {
 
     //   @ManyToMany(fetch = FetchType.EAGER)
     @ElementCollection(fetch = FetchType.EAGER)
-    @Column(name = "second")
+    @Column(name = "second_id")
     private Set<String> second = new TreeSet<>();
 
     // @OneToMany(fetch = FetchType.EAGER)
     @ElementCollection(fetch = FetchType.EAGER)
-    @Column(name = "third")
+    @Column(name = "third_id")
     private Set<String> third = new TreeSet<>();
 
     // @ManyToMany(fetch = FetchType.EAGER)
     @ElementCollection(fetch = FetchType.EAGER)
-    @Column(name = "fourth")
+    @Column(name = "fourth_id")
     private Set<String> fourth = new TreeSet<>();
 
     private String tenant;
