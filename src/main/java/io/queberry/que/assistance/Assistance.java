@@ -50,7 +50,7 @@ public class Assistance extends AggregateRoot<Assistance> {
     @Column(name = "entity_status", length = 30)
     @Enumerated(EnumType.STRING)
     private Status status;
-    @Column(name = "branch_id")
+    @Column(name = "branch")
 //    @Column(name = "branch_id")
 //    private String branch;
     private String branch;
