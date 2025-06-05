@@ -1,6 +1,7 @@
 package io.queberry.que.serviceTest;
 
 import io.queberry.que.dto.AddServiceToServiceGroup;
+import io.queberry.que.service.Service;
 import io.queberry.que.serviceGroup.ServiceGroupRequest;
 import io.queberry.que.serviceGroup.ServiceGroup;
 import io.queberry.que.exception.DataNotFoundException;
@@ -118,13 +119,13 @@ public class ServiceGroupServiceImplTest {
         request.setServices(Set.of("svc1", "svc2"));
         ServiceGroup existing = new ServiceGroup();
 //        existing.setId(groupId);
-        io.queberry.que.entity.Service svc1 = new io.queberry.que.entity.Service();
+        Service svc1 = new Service();
 //        svc1.setId("svc1");
 
-        io.queberry.que.entity.Service svc2 = new io.queberry.que.entity.Service();
+        Service svc2 = new Service();
 //        svc2.setId("svc2");
 
-        Set<io.queberry.que.entity.Service> serviceSet = Set.of(svc1, svc2);
+        Set<Service> serviceSet = Set.of(svc1, svc2);
         Mockito.when(serviceGroupRepository.findById(groupId)).thenReturn(Optional.of(existing));
 //        Mockito.when(serviceRepository.findByIdIn(request.getServices())).thenReturn(serviceSet);
         Mockito.when(serviceGroupRepository.save(any(ServiceGroup.class))).thenAnswer(inv -> inv.getArgument(0));
