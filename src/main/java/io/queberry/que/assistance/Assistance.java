@@ -29,7 +29,7 @@ import java.util.TreeMap;
 @EqualsAndHashCode(callSuper = true,of = "createdAt")
 public class Assistance extends AggregateRoot<Assistance> {
 
-    @Column(unique = true, length = 50)
+    @Column(unique = true, length = 255)
     private String tokenRef;
 
     @ManyToOne
@@ -47,7 +47,7 @@ public class Assistance extends AggregateRoot<Assistance> {
 
     private LocalDateTime servingStart;
 //
-    @Column(name = "entity_status", length = 30)
+    @Column(name = "entity_status", length = 255)
     @Enumerated(EnumType.STRING)
     private Status status;
     @Column(name = "branch")

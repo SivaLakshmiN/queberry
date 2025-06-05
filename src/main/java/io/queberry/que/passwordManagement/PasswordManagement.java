@@ -32,7 +32,7 @@ public class PasswordManagement extends AggregateRoot<PasswordManagement> {
     @Column(columnDefinition = "bit default 0")
     private boolean forcePasswordChange;
 
-    @Column(columnDefinition = "varchar(2000)",unique = true)
+    @Column(columnDefinition = "varchar(100)",unique = true)
     private String username;
 
     @Enumerated(EnumType.STRING)

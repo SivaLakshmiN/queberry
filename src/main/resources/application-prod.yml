@@ -1,0 +1,57 @@
+  # Uncomment this section if you're using SQL Server datasource configuration.
+spring:
+  config:
+      activate:
+        on-profile: prod
+  datasource:
+#    url: jdbc:mysql://localhost:3306/queberry?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8&useSSL=false&autoReconnect=true&allowPublicKeyRetrieval=true
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    username: root
+#    password: root
+    url:  jdbc:sqlserver://192.168.131.128:1433;DatabaseName=QBRTAQR1;encrypt=true;trustServerCertificate=true
+#    url: jdbc:sqlserver://192.168.131.173:1433;databaseName=QueberryQMS
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    username: sa
+    password: P@ssw0rd
+    hikari:
+      maximum-pool-size: 40
+      minimum-idle: 10 # Optional, set the minimum idle connections if required
+      idle-timeout: 600000 # Optional, set timeout for idle connections (in milliseconds)
+      max-lifetime: 1800000 # Optional, set max lifetime of a connection (in milliseconds)
+      connection-test-query: SELECT 1
+      validation-timeout: 3000 # Optional, set the validation timeout (in milliseconds)
+      leak-detection-threshold: 15000 # Optional, enables leak detection for connections (in ms)
+      pool-name: HikariCP # Optional, naming the connection pool
+    tomcat:
+      time-between-eviction-runs-millis: 60000
+      test-on-borrow: true
+      test-while-idle: true
+      validation-query: Select 1
+  # JPA settings for SQL Server
+  jpa:
+    hibernate:
+      ddl-auto: none                   # Do not automatically create/drop schema (set to 'update' in dev)
+    database-platform: org.hibernate.dialect.SQLServer2012Dialect
+#    database-platform: org.hibernate.dialect.MySQL8Dialect
+    generate-ddl: true                 # Generate DDL scripts on startup
+    properties:
+      hibernate.jdbc.batch_size: 30    # Batch size for Hibernate
+      hibernate.order_inserts: true    # Order SQL INSERT statements for better performance
+      hibernate.order_updates: true    # Order SQL UPDATE statements for better performance
+      hibernate:
+        jdbc:
+          fetch_size: 100
+
+  # Excluding RabbitAutoConfiguration to prevent Spring Boot from auto-configuring RabbitMQ
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
+
+server:
+  servlet:
+    session:
+      timeout: 30m         # Session timeout (30 minutes)
+  port: 30004             # Server port
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/plain

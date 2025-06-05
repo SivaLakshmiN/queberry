@@ -118,13 +118,13 @@ public class ServiceGroupServiceImplTest {
         request.setServices(Set.of("svc1", "svc2"));
         ServiceGroup existing = new ServiceGroup();
 //        existing.setId(groupId);
-        io.queberry.que.entity.Service svc1 = new io.queberry.que.entity.Service();
+        io.queberry.que.service.Service svc1 = new io.queberry.que.service.Service();
 //        svc1.setId("svc1");
 
-        io.queberry.que.entity.Service svc2 = new io.queberry.que.entity.Service();
+        io.queberry.que.service.Service svc2 = new io.queberry.que.service.Service();
 //        svc2.setId("svc2");
 
-        Set<io.queberry.que.entity.Service> serviceSet = Set.of(svc1, svc2);
+        Set<io.queberry.que.service.Service> serviceSet = Set.of(svc1, svc2);
         Mockito.when(serviceGroupRepository.findById(groupId)).thenReturn(Optional.of(existing));
 //        Mockito.when(serviceRepository.findByIdIn(request.getServices())).thenReturn(serviceSet);
         Mockito.when(serviceGroupRepository.save(any(ServiceGroup.class))).thenAnswer(inv -> inv.getArgument(0));

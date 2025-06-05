@@ -10,10 +10,11 @@
         <version>3.4.5</version>
         <relativePath/>
     </parent>
-    <groupId>io.queberry</groupId>
-    <artifactId>que</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>que</name>
+
+    <groupId>io.queberry.que</groupId>
+    <artifactId>backend_upgrade</artifactId>
+    <version>4.0.0</version>
+    <packaging>jar</packaging>
     <description>Demo project for Spring Boot</description>
 
     <properties>
@@ -156,6 +157,12 @@
             <scope>runtime</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <version>12.4.2.jre11</version> <!-- or the latest version compatible with Java 21 -->
+        </dependency>
+
         <!-- Annotation Support -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -202,14 +209,35 @@
         </dependency>
     </dependencies>
 
-    <build>
-        <plugins>
+<!--    <build>-->
+<!--        <plugins>-->
+<!--&lt;!&ndash;            <plugin>&ndash;&gt;-->
+<!--&lt;!&ndash;                <groupId>org.apache.maven.plugins</groupId>&ndash;&gt;-->
+<!--&lt;!&ndash;                <artifactId>maven-compiler-plugin</artifactId>&ndash;&gt;-->
+<!--&lt;!&ndash;                <version>3.11.0</version>&ndash;&gt;-->
+<!--&lt;!&ndash;                <configuration>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <annotationProcessorPaths>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <path>&ndash;&gt;-->
+<!--&lt;!&ndash;                            <groupId>org.projectlombok</groupId>&ndash;&gt;-->
+<!--&lt;!&ndash;                            <artifactId>lombok</artifactId>&ndash;&gt;-->
+<!--&lt;!&ndash;                            <version>1.18.30</version>&ndash;&gt;-->
+<!--&lt;!&ndash;                        </path>&ndash;&gt;-->
+<!--&lt;!&ndash;                    </annotationProcessorPaths>&ndash;&gt;-->
+<!--&lt;!&ndash;                </configuration>&ndash;&gt;-->
+<!--&lt;!&ndash;            </plugin>&ndash;&gt;-->
 <!--            <plugin>-->
 <!--                <groupId>org.apache.maven.plugins</groupId>-->
 <!--                <artifactId>maven-compiler-plugin</artifactId>-->
 <!--                <version>3.11.0</version>-->
 <!--                <configuration>-->
+<!--                    <source>21</source>-->
+<!--                    <target>21</target>-->
 <!--                    <annotationProcessorPaths>-->
+<!--                        <path>-->
+<!--                            <groupId>org.mapstruct</groupId>-->
+<!--                            <artifactId>mapstruct-processor</artifactId>-->
+<!--                            <version>1.5.5.Final</version>-->
+<!--                        </path>-->
 <!--                        <path>-->
 <!--                            <groupId>org.projectlombok</groupId>-->
 <!--                            <artifactId>lombok</artifactId>-->
@@ -218,28 +246,108 @@
 <!--                    </annotationProcessorPaths>-->
 <!--                </configuration>-->
 <!--            </plugin>-->
+
+<!--        </plugins>-->
+<!--    </build>-->
+
+    <build>
+        <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
                 <configuration>
-                    <source>21</source>
-                    <target>21</target>
-                    <annotationProcessorPaths>
-                        <path>
-                            <groupId>org.mapstruct</groupId>
-                            <artifactId>mapstruct-processor</artifactId>
-                            <version>1.5.5.Final</version>
-                        </path>
-                        <path>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                            <version>1.18.30</version>
-                        </path>
-                    </annotationProcessorPaths>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <compilerArgument>-parameters</compilerArgument>
                 </configuration>
             </plugin>
-
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <executable>false</executable>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>build-info</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>com.spotify</groupId>-->
+<!--                <artifactId>docker-maven-plugin</artifactId>-->
+<!--                <version>${docker.maven.plugin.version}</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <phase>install</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>build</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--                <configuration>-->
+<!--                    <imageName>${docker.image.prefix}/${project.artifactId}</imageName>-->
+<!--                    <baseImage>openjdk:8-jdk-alpine</baseImage>-->
+<!--                    <runs>-->
+<!--                        <run>update-ca-certificates</run>-->
+<!--                        <run>apk add &#45;&#45;no-cache fontconfig ttf-dejavu</run>-->
+<!--                        <run>apk add &#45;&#45;no-cache curl</run>-->
+<!--                    </runs>-->
+<!--                    <entryPoint>exec java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /${project.build.finalName}.jar</entryPoint>-->
+<!--                    &lt;!&ndash;					<volumes>&ndash;&gt;-->
+<!--                    &lt;!&ndash;						<volume>/tmp</volume>&ndash;&gt;-->
+<!--                    &lt;!&ndash;					</volumes>&ndash;&gt;-->
+<!--                    <serverId>que_ent</serverId>-->
+<!--                    <forceTags>true</forceTags>-->
+<!--                    <imageTags>-->
+<!--                        <imageTag>${project.version}</imageTag>-->
+<!--                    </imageTags>-->
+<!--                    <resources>-->
+<!--                        <resource>-->
+<!--                            <targetPath>/</targetPath>-->
+<!--                            <directory>${project.build.directory}</directory>-->
+<!--                            <include>${project.build.finalName}.jar</include>-->
+<!--                        </resource>-->
+<!--                        <resource>-->
+<!--                            <targetPath>/usr/local/share/ca-certificates</targetPath> &lt;!&ndash; Define where files should be copied inside the container &ndash;&gt;-->
+<!--                            <directory>${project.basedir}/src/main/resources/certs</directory>-->
+<!--                            <includes>-->
+<!--                                <include>**/*</include>  &lt;!&ndash; Copy 'certs' directory &ndash;&gt;-->
+<!--                            </includes>-->
+<!--                        </resource>-->
+<!--                    </resources>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
         </plugins>
+        <resources>
+            <!--			<resource>-->
+            <!--				<directory>src/main/ng/dist</directory>-->
+            <!--				<targetPath>static</targetPath>-->
+            <!--			</resource>-->
+            <!--			<resource>-->
+            <!--				<directory>src/main/survey/dist</directory>-->
+            <!--				<targetPath>static/survey</targetPath>-->
+            <!--			</resource>-->
+            <resource>
+                <directory>src/main/key</directory>
+                <filtering>false</filtering>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <excludes>
+                    <exclude>**/*.xlsx</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>**/*.xlsx</include>
+                </includes>
+            </resource>
+        </resources>
     </build>
 </project>
