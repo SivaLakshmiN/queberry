@@ -2,6 +2,7 @@ package io.queberry.que.config;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -9,6 +10,7 @@ import java.util.Base64;
 public class EncryptionUtil {
     private static final String ALGORITHM = "AES";
     private static final String KEY = "queberry12345678";
+    private static final String ivKey = "queberry12345678";
 
     public static String encrypt(Object data) throws Exception {
         byte[] keyBytes = KEY.getBytes(StandardCharsets.UTF_8);
@@ -16,19 +18,6 @@ public class EncryptionUtil {
         SecretKey secretKey = new SecretKeySpec(keyBytes, ALGORITHM);
         cipher.init(Cipher.ENCRYPT_MODE, secretKey);
         return Base64.getEncoder().encodeToString(cipher.doFinal(data.toString().getBytes()));
-    }
-
-    public static String decrypt(String encryptedData) throws Exception {
-        byte[] keyBytes = KEY.getBytes(StandardCharsets.UTF_8);
-        SecretKeySpec secretKey = new SecretKeySpec(keyBytes, ALGORITHM);
-
-        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-        cipher.init(Cipher.DECRYPT_MODE, secretKey);
-
-        byte[] decodedBytes = Base64.getDecoder().decode(encryptedData);
-        byte[] decryptedBytes = cipher.doFinal(decodedBytes);
-
-        return new String(decryptedBytes, StandardCharsets.UTF_8);
     }
 
     public static SecretKey generateKey() throws Exception {
@@ -43,6 +32,21 @@ public class EncryptionUtil {
         SecretKey secretKey = new SecretKeySpec(keyBytes, ALGORITHM);
         cipher.init(Cipher.ENCRYPT_MODE, secretKey);
         return Base64.getEncoder().encodeToString(cipher.doFinal(data.getBytes()));
+    }
+    public static String decrypt(String encryptedData) throws Exception {
+        byte[] keyBytes = KEY.getBytes(StandardCharsets.UTF_8);
+        SecretKeySpec secretKey = new SecretKeySpec(keyBytes, ALGORITHM);
+
+        byte[] ivKeyBytes = ivKey.getBytes(StandardCharsets.UTF_8);
+        IvParameterSpec ivParameterSpec = new IvParameterSpec(ivKeyBytes);
+
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        cipher.init(Cipher.DECRYPT_MODE, secretKey, ivParameterSpec);
+
+        byte[] decodedBytes = Base64.getDecoder().decode(encryptedData);
+        byte[] decryptedBytes = cipher.doFinal(decodedBytes);
+
+        return new String(decryptedBytes, StandardCharsets.UTF_8);
     }
 }
 

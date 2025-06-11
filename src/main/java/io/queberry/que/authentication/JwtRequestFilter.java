@@ -44,6 +44,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
 
+        log.info("ap request:{}", request.getRequestURL());
+
         // Skip JWT processing for OPTIONS requests (CORS preflight)
         if (request.getMethod().equals("OPTIONS")) {
             chain.doFilter(request, response);
@@ -54,27 +56,35 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String username = null;
         String jwtToken = null;
 
+        log.info("token:{}",requestTokenHeader);
+
         // Extract JWT token from "Bearer " prefix
         if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
+            log.info("in if bearer token");
             jwtToken = requestTokenHeader.substring(7);
 
             try {
                 username = jwtTokenUtil.getUsernameFromToken(jwtToken);
 
+                log.info("username:{}", username);
                 if (username != null) {
                     // 1. Check if user is an Employee
                     Optional<Employee> employeeOpt = employeeRepository.findEmployeeByUsername(username);
+                    log.info(("emp rcord"));
 
                     if (employeeOpt.isPresent()) {
+                        log.info(("emp present"));
                         Employee user = employeeOpt.get();
                         setEmployeeAuthentication(user, request);
                     }
                     // 2. Check if user is a Customer (Queberry tenant)
                     else {
+                        log.info(("checking customer"));
                         TenantContext.setCurrentTenant("queberry");
                         Customer customer = customerRepository.findByUsername(username);
 
                         if (customer != null) {
+                            log.info(("customer present"));
                             setCustomerAuthentication(customer, request);
                             TenantContext.setCurrentTenant(request.getHeader("X-TenantId"));
                         } else {

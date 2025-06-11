@@ -33,9 +33,9 @@ public interface ServiceRepository extends JpaRepository<Service, String> {
     //    Service findBySubServices_Id(String id);
     List<String> findByIdIn(Set<String> ids);
 
-    List<Service> findByIdInAndRegion(Set<String> ids, Region regionId);
+    List<Service> findByIdInAndRegion(Set<String> ids, String regionId);
 
-    List<Service> findAllByRegion(Region region);
+    List<Service> findAllByRegion(String region);
 
     Page<Service> findByRegion(Region region, Pageable pageable);
 

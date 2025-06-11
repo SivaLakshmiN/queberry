@@ -145,13 +145,13 @@ public class JwtAuthenticationController {
             }
 
             // At this point, authentication passed
-            if (messagingTemplate != null) {
-                try {
-                    messagingTemplate.send("/notifications/employee/" + emp.getUsername(), "logout");
-                } catch (Exception ex) {
-                    log.warn("WebSocket logout message failed for {}", emp.getUsername(), ex);
-                }
-            }
+//            if (messagingTemplate != null) {
+//                try {
+//                    messagingTemplate.send("/notifications/employee/" + emp.getUsername(), "logout");
+//                } catch (Exception ex) {
+//                    log.warn("WebSocket logout message failed for {}", emp.getUsername(), ex);
+//                }
+//            }
 
             EmployeeInfo empData = setEmpResponse(emp);
 
@@ -470,7 +470,7 @@ public class JwtAuthenticationController {
 //		emp.setLoggedCounter(null);
         log.info(emp.getRegion());
         log.info(String.valueOf(emp.getBranches().size()));
-        employeeRepository.save(emp);
+//        employeeRepository.save(emp);
         EmployeeDTO employeeDTO = new EmployeeDTO(emp);
         empData.setEmployee(employeeDTO);
         final String token = jwtTokenUtil.generateToken(emp, employeeSessions);

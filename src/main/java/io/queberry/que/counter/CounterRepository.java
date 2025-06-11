@@ -21,6 +21,7 @@ public interface CounterRepository extends JpaRepository<Counter,String>{
     List<Counter> findByIdInAndBranch(Set<String> ids, Branch b);
     List<Counter> findAllByBranch(Branch b);
     Page<Counter> findAllByBranch(Branch b, Pageable pageable);
+    Set<Counter> findAllByBranchIn(Set<String> b);
     Set<Counter> findAllByIdNotInAndBranchAndActiveIsTrueAndInUseFalse(Set<String> ids, Branch b, Sort sort);
     Set<Counter> findAllByIdNotInAndBranchAndActiveIsTrueAndInUseFalse(Set<String> ids, String b, Sort sort);
     Set<Counter> findAllByActiveIsTrueAndBranchAndInUseFalse(Branch b,Sort sort);
