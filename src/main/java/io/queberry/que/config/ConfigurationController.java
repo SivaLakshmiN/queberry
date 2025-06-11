@@ -16,13 +16,13 @@ public class ConfigurationController {
         this.configurationService = configurationService;
     }
 
-//    @GetMapping("/config")
-//    public ResponseEntity config(){
-//        return ResponseEntity.ok(configurationService.getGlobalConfiguration());
-//    }
-//
-//    @GetMapping("/main/config")
-//    public ResponseEntity branchConfig(){
-//        return ResponseEntity.ok(configurationService.getMainConfiguration());
-//    }
+    @GetMapping("/config")
+    public ResponseEntity config(){
+        return ResponseEntity.ok(configurationService.getGlobalConfiguration());
+    }
+
+    @GetMapping("/main/config")
+    public ResponseEntity branchConfig(){
+        return ResponseEntity.ok(configurationService.getMainConfiguration());
+    }
 }

@@ -7,14 +7,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.Set;
 
 @Repository
 public interface AppointmentRepository extends JpaRepository<Appointment,String> {
 //    Set<Appointment> findByMobile(String mobile, Sort sort);
-//
-//    Appointment findByMobileAndCheckinCodeAndState(String mobile, String checkinCode, Appointment.State state);
-//
+
+    Appointment findByMobileAndCheckinCodeAndState(String mobile, String checkinCode, Appointment.State state);
+
 //    Set<Appointment> findByDateAndFromAndToAndStateAndServiceId(LocalDate date, LocalTime from, LocalTime to, Appointment.State state, String s);
 //
 //    Set<Appointment> findByDateAndFromAndToAndMobile(LocalDate date, LocalTime from, LocalTime to, String mobile);
@@ -27,7 +28,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment,String>
 //
 //    Set<Appointment> findByBranchAndServiceIdAndDateAndMobile(String b, String s, LocalDate date, String mobile);
 //
-//    Optional<Appointment> findByCheckinCodeAndDate(String checkinCode, LocalDate d);
+    Optional<Appointment> findByCheckinCodeAndDate(String checkinCode, LocalDate d);
 //
 //    Optional<Appointment> findByCheckinCodeAndBranch(String check, String b);
 //

@@ -4,5 +4,14 @@ public enum Type {
     WALKIN,
     DISPENSER,
     APPOINTMENT,
-    MEETING
+    MEETING,
+    DAILY_LIVE_REPORT,
+    SERVICE,
+    SUB_SERVICE,
+    COUNTER,
+    EMPLOYEE,
+    TOKEN,
+    REGION,
+    BRANCH,
+    NONE
 }

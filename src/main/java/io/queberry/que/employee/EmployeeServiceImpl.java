@@ -39,13 +39,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
-
+@Transactional
 @Slf4j
 @org.springframework.stereotype.Service
 @RequiredArgsConstructor
@@ -254,6 +255,8 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
 
         Employee updated = setEmployeeInfo(employee, employeeData, updatedBy);
+
+        updated = employeeRepository.save(updated);
 
         AuditLogs log = new AuditLogs();
         log.setEntityName("User");

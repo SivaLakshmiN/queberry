@@ -1,5 +1,6 @@
-package io.queberry.que.entity;
+package io.queberry.que.license;
 
+import io.queberry.que.entity.AggregateRoot;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;

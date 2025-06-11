@@ -1,0 +1,54 @@
+spring:
+  profiles:
+    active: prod
+  application:
+      name: que
+  data:
+    rest:
+          basePath: /api
+  jpa:
+    open-in-view: false
+    hibernate:
+      jdbc:
+        batch_versioned_data: true
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+    default-property-inclusion: non_null
+  kafka:
+    consumer:
+      auto-offset-reset:  earliest
+    producer:
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+  servlet:
+    multipart:
+      max-file-size: 1024MB
+      max-request-size: 1024MB
+vault:
+  baseDirectory: ${user.home}/vault/files
+zuul:
+  host:
+    connect-timeout-millis: 6000000
+    socket-timeout-millis: 6000000
+  routes:
+    api:
+      path: /api/reporting/**
+#logging:
+#  config: classpath:logback-prod.xml
+#  level:
+#    com.netflix : error
+#    org.apache.kafka : error
+#    marytts : warn
+#    org.hibernate : warn
+#    org.springframework : warn
+#    com.zaxxer.hikari : warn
+#    org.xnio : warn
+#    de.dfki.lt: error
+server:
+  servlet:
+    session:
+      timeout: 30m
+management:
+  health:
+    ldap:
+      enabled: false

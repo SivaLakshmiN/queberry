@@ -1,5 +1,6 @@
 package io.queberry.que.serviceTest;
 
+import io.queberry.que.service.Service;
 //import io.queberry.que.entity.Service;
 import io.queberry.que.enums.InputType;
 import io.queberry.que.service.Service;

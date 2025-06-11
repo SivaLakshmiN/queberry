@@ -1,33 +1,60 @@
 package io.queberry.que.config.Kpi;
 
+import io.queberry.que.appointment.Appointment;
+import io.queberry.que.assistance.Assistance;
+import io.queberry.que.branch.Branch;
+import io.queberry.que.branch.BranchRepository;
+import io.queberry.que.config.Appointment.AppointmentConfiguration;
 import io.queberry.que.config.Appointment.AppointmentConfigurationRepository;
+import io.queberry.que.config.EncryptionUtil;
+import io.queberry.que.service.ServiceRepository;
+import io.queberry.que.session.Session;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.integration.router.RecipientListRouter;
 import org.springframework.stereotype.Service;
+
+import java.net.Authenticator;
+import java.net.MalformedURLException;
+import java.net.PasswordAuthentication;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.LinkedList;
+import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class DefaultKpiService implements KpiService{
+public class DefaultKpiService implements KpiService {
 
-   // @Value("${vault.baseDirectory:null}")
+    // @Value("${vault.baseDirectory:null}")
     private String baseDirectory;
 
+    private final BranchRepository branchRepository;
+    private final ServiceRepository serviceRepository;
     private final KpiConfigurationRepository kpiConfigurationRepository;
     private final AppointmentConfigurationRepository appointmentConfigurationRepository;
 
-//    @Override
-//    public void check(String empEMail, String message) {
-//        log.info("in mail service:" + empEMail);
-//        if (kpiConfigurationRepository.count() != 0) {
-//            KpiConfiguration kpiConfiguration = kpiConfigurationRepository.findAll().get(0);
-//            if (!kpiConfiguration.isEnabled()) {
-//                log.info("Email alerts not enabled");
-//                return;
-//            }
-//            sendEmail(empEMail,message,kpiConfiguration);
-//        }
-//    }
+    @Override
+    public void check(String empEMail, String message) {
+        log.info("in mail service:" + empEMail);
+        if (kpiConfigurationRepository.count() != 0) {
+            KpiConfiguration kpiConfiguration = kpiConfigurationRepository.findAll().get(0);
+            if (!kpiConfiguration.isEnabled()) {
+                log.info("Email alerts not enabled");
+                return;
+            }
+            sendEmail(empEMail, message, kpiConfiguration);
+        }
+
 
 //    @Override
 //    public void check() {
@@ -58,8 +85,8 @@ public class DefaultKpiService implements KpiService{
 //            });
 //        }
 //    }
-
- //   private void sendEmail(String emailId, String msgBody,KpiConfiguration kpiConfiguration)
+//
+//    private void sendEmail(String emailId, String msgBody,KpiConfiguration kpiConfiguration)
 //    {
 //        if (kpiConfiguration.getExchangeType().equals("OTHER")) {
 //            //Initialize the Java Mail Sender
@@ -117,7 +144,7 @@ public class DefaultKpiService implements KpiService{
 //                final String accessToken = tokenCredentialAuthProvider.getAuthorizationTokenAsync(myUrl).get();
 //                log.info("Access token --> " + accessToken);
 //            }
-//            catch (MalformedURLException | InterruptedException | ExecutionException e) {
+//            catch (MalformedURLException | InterruptedException | ExecutionException | MalformedURLException e) {
 //                e.printStackTrace();
 //            }
 //
@@ -129,8 +156,8 @@ public class DefaultKpiService implements KpiService{
 //            body.content = msgBody;
 //            message.body = body;
 //
-//            LinkedList<Recipient> toRecipientsList = new LinkedList<>();
-//            Recipient toRecipients = new Recipient();
+//            LinkedList<RecipientListRouter.Recipient> toRecipientsList = new LinkedList<>();
+//            RecipientListRouter.Recipient toRecipients = new RecipientListRouter.Recipient();
 //            EmailAddress emailAddress = new EmailAddress();
 //            emailAddress.address = emailId;
 //            toRecipients.emailAddress = emailAddress;
@@ -398,13 +425,13 @@ public class DefaultKpiService implements KpiService{
 //            }
 //        }
 //    }
-
-
-    /**
-     * Initialize the JavaMailSender with the Kpi Configuration
-     * @param kpiConfiguration
-     * @return
-     */
+//
+//
+//    /**
+//     * Initialize the JavaMailSender with the Kpi Configuration
+//     * @param kpiConfiguration
+//     * @return
+//     */
 //    private JavaMailSenderImpl getJavaMailSender(KpiConfiguration kpiConfiguration) {
 //        JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
 //        javaMailSender.setProtocol(kpiConfiguration.getProtocol());
@@ -417,11 +444,11 @@ public class DefaultKpiService implements KpiService{
 //        javaMailSender.setJavaMailProperties(getMailProperties(kpiConfiguration));
 //        return javaMailSender;
 //    }
-
-    /**
-     * Initialize the default Email Properties
-     * @return
-     */
+//
+//    /**
+//     * Initialize the default Email Properties
+//     * @return
+//     */
 //    private Properties getMailProperties(KpiConfiguration kpiConfiguration) {
 //        Properties properties = new Properties();
 //        properties.setProperty("mail.smtp.auth", "true");
@@ -461,7 +488,7 @@ public class DefaultKpiService implements KpiService{
 //            log.error("Template file not found at path: {}", path);
 //            return;
 //        }
-
+//
 //        String htmlContent = new String(Files.readAllBytes(path));
 //        htmlContent = htmlContent.replace("#OTP#", otp);
 //
@@ -560,7 +587,113 @@ public class DefaultKpiService implements KpiService{
 //            log.error("Error sending OTP via Microsoft Graph", e);
 //        }
 //    }
+//
 
+    }
+
+    private void sendEmail(String emailId, String msgBody, KpiConfiguration kpiConfiguration) {
+//        if (kpiConfiguration.getExchangeType().equals("OTHER")) {
+//            //Initialize the Java Mail Sender
+//            JavaMailSenderImpl javaMailSender = getJavaMailSender(kpiConfiguration);
+//
+//            //Initialize the Mail with the HTML body , subject and to address
+//            MimeMessagePreparator preparator = mimeMessage -> {
+//                MimeMessageHelper message = new MimeMessageHelper(mimeMessage);
+//                message.setTo(emailId);
+//                //if (emailEvent != null && emailEvent.getCc() != null && !emailEvent.getCc().isEmpty())
+//                //message.setCc(emailEvent.getCc());
+//                message.setSubject("New Meeting request");
+//                message.setText(msgBody);
+//                message.setFrom(kpiConfiguration.getFromAddress());
+//            };
+//
+//            //Send the mail
+//            try {
+//                javaMailSender.send(preparator);
+//                //Log the Email Event
+//                log.info("Email to {}: {} Sent Successfully using {}", emailId, msgBody, kpiConfiguration);
+//            } catch (Exception e) {
+//                log.error("Error while Sending Email : {} using {}", msgBody, kpiConfiguration);
+//                e.printStackTrace();
+//            }
+//        } else {
+//            String clientId = kpiConfiguration.getClientId();
+//            String clientSecret = kpiConfiguration.getClientSecret();
+//            String tenantId = kpiConfiguration.getTenantId();
+//            String senderId = kpiConfiguration.getSender();
+//            String scope = "https://graph.microsoft.com/.default";
+//
+//            LinkedList<String> scopes = new LinkedList<>();
+//            scopes.add(scope);
+//            log.info("before authcodecred");
+//
+//            ClientSecretCredential clientSecretCredential =
+//                    new ClientSecretCredentialBuilder()
+//                            .clientId(clientId)
+//                            .clientSecret(clientSecret)
+//                            .tenantId(tenantId)
+//                            .build();
+//            final TokenCredentialAuthProvider tokenCredentialAuthProvider = new TokenCredentialAuthProvider(scopes, clientSecretCredential);
+//
+//            final GraphServiceClient graphClient = (GraphServiceClient) GraphServiceClient
+//                    .builder()
+//                    .authenticationProvider(tokenCredentialAuthProvider)
+//                    .buildClient();
+//
+//            URL myUrl;
+//            try {
+//                myUrl = new URL("https://graph.microsoft.com/v1.0/");
+//                final String accessToken = tokenCredentialAuthProvider.getAuthorizationTokenAsync(myUrl).get();
+//                log.info("Access token --> " + accessToken);
+//            } catch (MalformedURLException | InterruptedException | ExecutionException e) {
+//                e.printStackTrace();
+//            }
+//
+//            Message message = new Message();
+//
+//            message.subject = "Welcome to Queberry Solutions";
+//            ItemBody body = new ItemBody();
+//            body.contentType = BodyType.TEXT;
+//            body.content = msgBody;
+//            message.body = body;
+//
+//            LinkedList<Recipient> toRecipientsList = new LinkedList<>();
+//            Recipient toRecipients = new Recipient();
+//            EmailAddress emailAddress = new EmailAddress();
+//            emailAddress.address = emailId;
+//            toRecipients.emailAddress = emailAddress;
+//            toRecipientsList.add(toRecipients);
+//            message.toRecipients = toRecipientsList;
+//
+//            log.info("all mail variables set");
+//
+//        /*LinkedList<Recipient> ccRecipientsList = new LinkedList<Recipient>();
+//        Recipient ccRecipients = new Recipient();
+//        EmailAddress emailAddress1 = new EmailAddress();
+//        emailAddress1.address = "danas@contoso.onmicrosoft.com";
+//        ccRecipients.emailAddress = emailAddress1;
+//        ccRecipientsList.add(ccRecipients);
+//        message.ccRecipients = ccRecipientsList;*/
+//
+//            boolean saveToSentItems = kpiConfiguration.isSaveEMail();
+//
+//            try {
+//                graphClient.users(senderId)
+//                        .sendMail(UserSendMailParameterSet
+//                                .newBuilder()
+//                                .withMessage(message)
+//                                .withSaveToSentItems(saveToSentItems)
+//                                .build())
+//                        .buildRequest()
+//                        .post();
+//                //Log the Email Event
+//                log.info("Email to {}: {} Sent Successfully using {}", toRecipientsList, msgBody, kpiConfiguration);
+//            } catch (Exception e) {
+//                log.error("Error while Sending Email : {} using {}", msgBody, kpiConfiguration);
+//                e.printStackTrace();
+//            }
+//        }
+    }
 
 }
 

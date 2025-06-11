@@ -1,10 +1,17 @@
-package io.queberry.que.entity;
+package io.queberry.que.device;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
+import io.queberry.que.anotation.AggregateReference;
 import io.queberry.que.counter.Counter;
+import io.queberry.que.entity.AggregateRoot;
+import io.queberry.que.entity.DomainEvent;
+import io.queberry.que.exception.QueueException;
+import io.queberry.que.media.Playlist;
 import io.queberry.que.service.Service;
 import io.queberry.que.serviceGroup.ServiceGroup;
-import io.queberry.que.anotation.AggregateReference;
-import io.queberry.que.exception.QueueException;
+import io.queberry.que.survey.Survey;
+import io.queberry.que.template.Template;
+import io.queberry.que.ticker.Ticker;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -15,13 +22,14 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
+
 @Slf4j
 @Entity
 @Getter
 @Setter
 @ToString(callSuper = true)
 @Table(indexes = {@Index(name="device_br_index",columnList = "pairedBy")})
-public class Device extends AggregateRoot<Device>{
+public class Device extends AggregateRoot<Device> {
 
     private String name = "";
 
@@ -32,17 +40,17 @@ public class Device extends AggregateRoot<Device>{
 
     private Status status;
 
-//    @ManyToOne
-//    private Playlist playlist;
+    @ManyToOne
+    private Playlist playlist;
 
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Counter> counters = new TreeSet<>();
 
-//    @ManyToOne
-//    private Template template;
+    @ManyToOne
+    private Template template;
 
-//    @ManyToMany(fetch = FetchType.EAGER)
-//    private Set<Ticker> tickers = new HashSet<>(0);
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Set<Ticker> tickers = new HashSet<>(0);
 
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<ServiceGroup> serviceGroups = new HashSet<>(0);
@@ -52,11 +60,11 @@ public class Device extends AggregateRoot<Device>{
 
     private String pairedBy;
 
-//    @OneToOne(cascade = CascadeType.ALL)
-//    private DeviceTheme theme;
-//
-//    @ManyToOne
-//    private Survey survey;
+    @OneToOne(cascade = CascadeType.ALL)
+    private DeviceTheme theme;
+
+    @ManyToOne
+    private Survey survey;
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -97,32 +105,32 @@ public class Device extends AggregateRoot<Device>{
         return this;
     }
 
-//    public Device theme(DeviceTheme theme){
-//        validate();
-//        if (this.theme != null)
-//            this.theme.change(theme);
-//        else
-//            this.theme = theme;
-//        return this;
-//    }
-//
-//    public Device apply(Template template){
-//        validate();
-//        if (this.type.equals(template.getDeviceType())){
-//            this.template = template;
-//            return andEvent(DeviceUpdated.of(this));
-//
-//        }
-//        throw new QueueException("Cannot apply template to device as the types are not matching", HttpStatus.PRECONDITION_FAILED);
-//    }
-//
-//
-//    public Device tickers(Set<Ticker> tickers){
-//        validate();
-//        this.tickers.clear();
-//        this.tickers.addAll(tickers);
-//        return andEvent(DeviceUpdated.of(this));
-//    }
+    public Device theme(DeviceTheme theme){
+        validate();
+        if (this.theme != null)
+            this.theme.change(theme);
+        else
+            this.theme = theme;
+        return this;
+    }
+
+    public Device apply(Template template){
+        validate();
+        if (this.type.equals(template.getDeviceType())){
+            this.template = template;
+            return andEvent(DeviceUpdated.of(this));
+
+        }
+        throw new QueueException("Cannot apply template to device as the types are not matching", HttpStatus.PRECONDITION_FAILED);
+    }
+
+
+    public Device tickers(Set<Ticker> tickers){
+        validate();
+        this.tickers.clear();
+        this.tickers.addAll(tickers);
+        return andEvent(DeviceUpdated.of(this));
+    }
 
     public Device serviceGroups(Set<ServiceGroup> serviceGroups){
         validate();
@@ -138,23 +146,23 @@ public class Device extends AggregateRoot<Device>{
         return this;
     }
 
-//    public Device apply(Playlist playlist){
-//        validate();
-//        if (this.type==Type.SIGNAGE){
-//            this.playlist = playlist;
-//            return andEvent(DeviceUpdated.of(this));
-//        }
-//        throw new QueueException("Cannot apply a playlist to "+type,HttpStatus.PRECONDITION_FAILED);
-//    }
-//
-//    public Device apply(Survey survey){
-//        validate();
-//        if (this.type==Type.SURVEY){
-//            this.survey = survey;
-//            return andEvent(DeviceUpdated.of(this));
-//        }
-//        throw new QueueException("Cannot apply a survey to "+type,HttpStatus.PRECONDITION_FAILED);
-//    }
+    public Device apply(Playlist playlist){
+        validate();
+        if (this.type==Type.SIGNAGE){
+            this.playlist = playlist;
+            return andEvent(DeviceUpdated.of(this));
+        }
+        throw new QueueException("Cannot apply a playlist to "+type,HttpStatus.PRECONDITION_FAILED);
+    }
+
+    public Device apply(Survey survey){
+        validate();
+        if (this.type==Type.SURVEY){
+            this.survey = survey;
+            return andEvent(DeviceUpdated.of(this));
+        }
+        throw new QueueException("Cannot apply a survey to "+type,HttpStatus.PRECONDITION_FAILED);
+    }
 
     public Device assign(Set<Counter> counters){
         validate();
@@ -188,39 +196,39 @@ public class Device extends AggregateRoot<Device>{
         return andEvent(DeviceUpdated.of(this));
     }
 
-//    public void unassignTickers()
-//    {
-//        validate();
-//        this.tickers.clear();
-//        andEvent(DeviceUpdated.of(this));
-//    }
-//
-//    public Device unassignPlaylist(){
-//        validate();
-//        this.playlist = null;
-//        return andEvent(DeviceUpdated.of(this));
-//    }
-//
-//    public Device unassignTemplate(){
-//        validate();
-//        this.template = null;
-//        return andEvent(DeviceUpdated.of(this));
-//    }
-//
-//    public Playlist getPlaylistMeta(){
-//        //validate();
-//        return this.getPlaylist();
-//    }
-//
-//    public Template getTemplateMeta(){
-//        //validate();
-//        return this.getTemplate();
-//    }
-//
-//    public Set<Ticker> getTickersMeta(){
-//        //validate();
-//        return this.tickers;
-//    }
+    public void unassignTickers()
+    {
+        validate();
+        this.tickers.clear();
+        andEvent(DeviceUpdated.of(this));
+    }
+
+    public Device unassignPlaylist(){
+        validate();
+        this.playlist = null;
+        return andEvent(DeviceUpdated.of(this));
+    }
+
+    public Device unassignTemplate(){
+        validate();
+        this.template = null;
+        return andEvent(DeviceUpdated.of(this));
+    }
+
+    public Playlist getPlaylistMeta(){
+        //validate();
+        return this.getPlaylist();
+    }
+
+    public Template getTemplateMeta(){
+        //validate();
+        return this.getTemplate();
+    }
+
+    public Set<Ticker> getTickersMeta(){
+        //validate();
+        return this.tickers;
+    }
 
     public Set<Counter> getCountersMeta(){
         return this.counters;
@@ -349,7 +357,7 @@ public class Device extends AggregateRoot<Device>{
     @EqualsAndHashCode(callSuper = true)
     @RequiredArgsConstructor(staticName = "of")
     @NoArgsConstructor(access = AccessLevel.PRIVATE, force = true)
-    public static class DevicePairingRequested extends DomainEvent<Device>{
+    public static class DevicePairingRequested extends DomainEvent<Device> {
 
         @AggregateReference
         Device device;
@@ -380,3 +388,4 @@ public class Device extends AggregateRoot<Device>{
         SURVEY
     }
 }
+

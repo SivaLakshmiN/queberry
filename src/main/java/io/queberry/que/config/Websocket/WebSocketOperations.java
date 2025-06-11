@@ -1,5 +1,5 @@
 package io.queberry.que.config.Websocket;
-import io.queberry.que.entity.Device;
+import io.queberry.que.device.Device;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;

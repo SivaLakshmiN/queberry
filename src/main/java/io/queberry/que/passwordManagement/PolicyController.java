@@ -16,6 +16,7 @@ public class PolicyController {
     private final PasswordPolicyRepository passwordPolicyRepository;
     private final OtpService otpService;
     private final Map<String, String> otpStore = new ConcurrentHashMap<>();
+
     @GetMapping("/passwordPolicy")
     private ResponseEntity<?> fetch(){
         return ResponseEntity.ok(passwordPolicyRepository.findAll().stream().findFirst());

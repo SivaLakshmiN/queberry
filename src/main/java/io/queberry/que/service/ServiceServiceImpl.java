@@ -73,25 +73,28 @@ public class ServiceServiceImpl implements io.queberry.que.service.ServiceServic
 
     @Override
     public Set<Service> getAllActiveServices(boolean active) {
+        log.info("Fetching all active services. Expected active = {}", active);
         return serviceRepository.findByActiveTrue(Sort.by(Sort.Order.asc("name")));
     }
 
     @Override
-    public Set<io.queberry.que.service.ServiceRegionResponse> getRegionActiveServices(String regionId) {
+    public Set<ServiceRegionResponse> getRegionActiveServices(String regionId) {
+        log.info("Fetching active services for region ID: {}", regionId);
         return serviceRepository.findByIdAndActiveTrue(regionId, Sort.by(Sort.Order.asc("name")));
     }
 
     @Override
     public Service activate(String id) {
+        log.info("Activating service with ID: {}", id);
         Service service = serviceRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Service not found"));
-
         service.setActive(true);
         return serviceRepository.save(service);
     }
 
     @Override
     public Service deactivate(String id) {
+        log.info("Deactivating service with ID: {}", id);
         serviceRepository.findById(id).ifPresent(service -> {
             service.setActive(false);
             serviceRepository.save(service);
@@ -101,8 +104,10 @@ public class ServiceServiceImpl implements io.queberry.que.service.ServiceServic
 
     @Override
     public Service updateService(String id, ServiceResource serviceResource) {
+        log.info("Updating service with ID: {}", id);
         return serviceRepository.findById(id)
                 .map(existing -> {
+                    log.info("Existing service found. Updating fields...");
                     existing.setDisplayName(serviceResource.getDisplayName());
                     existing.setDescription(serviceResource.getDescription());
                     existing.setLongDescription(serviceResource.getLongDescription());
@@ -122,21 +127,23 @@ public class ServiceServiceImpl implements io.queberry.que.service.ServiceServic
                     existing.setPriorBookingDays(serviceResource.getPriorBookingDays());
                     existing.setVirtualService(serviceResource.getVirtualService());
 
-                    Region region = serviceResource.getRegion();
-                    if (region != null && region.getId() != null) {
-                        String managedRegion = String.valueOf(regionRepository.findById(region.getId())
+                    if (serviceResource.getRegion() != null && serviceResource.getRegion().getId() != null) {
+                        log.info("Validating region ID: {}", serviceResource.getRegion().getId());
+                        String managedRegion = String.valueOf(regionRepository.findById(serviceResource.getRegion().getId())
                                 .orElseThrow(() -> new RuntimeException("Region not found")));
                         existing.setRegion(managedRegion);
                     }
-                    SharedSequence sharedSequence = serviceResource.getSharedSequence();
-                    if (sharedSequence != null && sharedSequence.getId() != null) {
-                        String managedSharedSeq = String.valueOf(sharedSequenceRepository.findById(sharedSequence.getId())
+
+                    if (serviceResource.getSharedSequence() != null && serviceResource.getSharedSequence().getId() != null) {
+                        log.info("Validating shared sequence ID: {}", serviceResource.getSharedSequence().getId());
+                        String managedSharedSeq = String.valueOf(sharedSequenceRepository.findById(serviceResource.getSharedSequence().getId())
                                 .orElseThrow(() -> new RuntimeException("Shared Sequence not found")));
                         existing.setSharedSequence(managedSharedSeq);
                     }
-                    Set<String> subServiceGroup = serviceResource.getSubServiceGroup();
-                    if (subServiceGroup != null && !subServiceGroup.isEmpty()) {
-                        existing.setSubServiceGroup(subServiceGroup.toString());
+
+                    if (serviceResource.getSubServiceGroup() != null && !serviceResource.getSubServiceGroup().isEmpty()) {
+                        log.info("Setting sub-service groups: {}", serviceResource.getSubServiceGroup());
+                        existing.setSubServiceGroup(serviceResource.getSubServiceGroup().toString());
                     }
 
                     return serviceRepository.save(existing);
@@ -146,20 +153,23 @@ public class ServiceServiceImpl implements io.queberry.que.service.ServiceServic
 
     @Override
     public Service subServices(String serviceId, Set<String> subServices) {
+        log.info("Assigning subservices to service ID: {}", serviceId);
         Service service = serviceRepository.findById(serviceId)
                 .orElseThrow(() -> new RuntimeException("Service not found"));
-
         return serviceEngine.manageSubServices(service, subServices);
     }
 
     @Override
     public Service deactivateSubServices(String serviceId, String subserviceId) {
+        log.info("Deactivating subservice ID: {} from service ID: {}", subserviceId, serviceId);
         Service service = serviceRepository.findById(serviceId)
                 .orElseThrow(() -> new RuntimeException("Service not found"));
 
         if (!service.getSubServices().contains(subserviceId)) {
+            log.warn("SubService ID: {} not associated with service ID: {}", subserviceId, serviceId);
             throw new RuntimeException("SubService ID not associated with this service");
         }
+
         SubService subService = subServiceRepository.findById(subserviceId)
                 .orElseThrow(() -> new RuntimeException("SubService not found"));
 
@@ -168,45 +178,46 @@ public class ServiceServiceImpl implements io.queberry.que.service.ServiceServic
         return service;
     }
 
-
     @Override
     public Service getAllRegionServices(String regionId, Pageable pageable) {
+        log.info("Fetching all services for region ID: {}", regionId);
         Region region = regionRepository.findById(regionId)
                 .orElseThrow(() -> new RuntimeException("Region not found"));
 
         Page<Service> servicePage = serviceRepository.findByRegion(region, pageable);
-
         return servicePage.getContent().stream()
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("No services found for region"));
     }
+
     @Override
     public List<ServiceDTO> getAllServices() {
+        log.info("Fetching all services");
         return serviceRepository.findAllService();
     }
 
     @Override
     public Page<Service> filterByName(String regionId, String serviceName, Pageable pageable) {
+        log.info("Filtering services by name '{}' in region ID: {}", serviceName, regionId);
         Region region = regionRepository.findById(regionId)
                 .orElseThrow(() -> new RuntimeException("Region not found"));
-
         return serviceRepository.findByRegionAndNameContainingIgnoreCase(region, serviceName, pageable);
     }
 
     @Override
     public Set<ServiceDTO> findBySubServiceGroup(String subTransactionGroupId) {
+        log.info("Fetching services by sub-transaction group ID: {}", subTransactionGroupId);
         String group = String.valueOf(subTransactionGroupRepository.findById(subTransactionGroupId)
                 .orElseThrow(() -> new RuntimeException("SubTransactionGroup not found")));
 
         Set<String> services = serviceRepository.findBySubServiceGroup(group);
-
-        return services.stream()
-                .map(ServiceDTO::new)
-                .collect(Collectors.toSet());
+        return services.stream().map(ServiceDTO::new).collect(Collectors.toSet());
     }
 
     @Override
     public Service createService(Service service, HttpServletRequest request) {
+        log.info("Creating service: {}", service.getName());
+
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
         Set<ConstraintViolation<Service>> errors = validator.validate(service);
 
@@ -214,90 +225,72 @@ public class ServiceServiceImpl implements io.queberry.que.service.ServiceServic
             String errorMsg = errors.stream()
                     .map(ConstraintViolation::getMessageTemplate)
                     .collect(Collectors.joining(", "));
+            log.warn("Validation errors while creating service: {}", errorMsg);
             throw new IllegalArgumentException(errorMsg);
         }
 
         if (service.getSequenceEnd() < service.getSequenceStart()) {
+            log.warn("Invalid sequence range: start={}, end={}", service.getSequenceStart(), service.getSequenceEnd());
             throw new IllegalArgumentException("Sequence End should be greater than Sequence start.");
         }
 
         Service savedService = serviceRepository.save(service);
+        log.info("Service saved: {}", savedService.getId());
 
         if (savedService.getName() != null) {
             addServiceToBranch(savedService);
         }
 
-//        String token = request.getHeader("Authorization").substring(7);
-//        if (jwtTokenUtil.isTokenExpired(token)) {
-//            throw new SecurityException("JWT token expired");
-//        }
-
-//        String username = jwtTokenUtil.getUsernameFromToken(token);
-
-        AuditLogs log = new AuditLogs();
-        log.setEntityName("Service");
-        log.setEntityId(savedService.getId());
-        log.setNewData("New service created");
-//        log.setCreatedBy(username);
-        auditLogsRepository.save(log);
+        AuditLogs logEntry = new AuditLogs();
+        logEntry.setEntityName("Service");
+        logEntry.setEntityId(savedService.getId());
+        logEntry.setNewData("New service created");
+        auditLogsRepository.save(logEntry);
 
         return savedService;
     }
 
     private void addServiceToBranch(Service service) {
+        log.info("Adding service to all active branches in region: {}", service.getRegion());
         Set<Branch> branches = branchRepository.findByGlobalServicesTrueAndActiveTrueAndRegion(service.getRegion());
 
         for (Branch branch : branches) {
             Set<String> services = branch.getServices();
-            services.add("");
+            services.add(""); // This might need correction if "" is placeholder
             branch.setServices(services);
             branchRepository.save(branch);
+            log.info("Service added to branch: {}", branch.getId());
         }
-//        sequenceEngine.setSequenceManagerByBranches(branches);
+        // sequenceEngine.setSequenceManagerByBranches(branches);
     }
+
     @Override
     public Set<ServiceResponse> getBranchServices(Branch branch) {
+        log.info("Fetching branch services for branch ID: {}", branch.getId());
         List<NewSlot> slotInfos = newSlotRepository.findByBranchIsAndInputDateBetweenFromDateAndToDate(branch, LocalDate.now());
-
-//        log.info("slots count: {}", slotInfos.size());
-//        Set<ServiceResponse> responseSet = slotInfos.stream()
-//                .map(slot -> modelMapper.map(slot.getService(), ServiceResponse.class))
-//                .collect(Collectors.toSet());
-
-//        log.info("unique services count: {}", responseSet.size());
-//        return responseSet;
-        return Set.of();
+        log.info("Slot count found: {}", slotInfos.size());
+        return Set.of(); // Stubbed out
     }
+
     @Override
     public Set<ServiceResponse> getBranchService(ApptServiceResource apptServiceResource) {
         String branchKey = apptServiceResource.getBranchKey();
         boolean isVirtual = apptServiceResource.isVirtual();
-
-        log.info("request: {}, {}", branchKey, isVirtual);
+        log.info("Fetching appointment services for branch: {}, isVirtual: {}", branchKey, isVirtual);
 
         Set<Service> services;
         if (isVirtual) {
-            log.info("virtual appt");
+            log.info("Virtual appointment services");
             services = serviceRepository.findByActiveTrueAndVirtualServiceTrue();
         } else {
-            log.info("f2f appt");
+            log.info("Face-to-face appointment services");
             services = serviceRepository.findByActiveTrueAndVirtualServiceFalseOrVirtualServiceNull();
         }
 
-        log.info("service size: {}", services.size());
-
+        log.info("Found services: {}", services.size());
         Set<NewSlot> slotInfos = new HashSet<>(newSlotRepository.findByBranchAndServiceInAndToDateGreaterThanEqual(
                 branchKey, services, LocalDate.now()));
-
-        log.info("slots count: {}", slotInfos.size());
-
-//        Set<ServiceResponse> res = slotInfos.stream()
-//                .map(slot -> modelMapper.map(slot.getService(), ServiceResponse.class))
-//                .collect(Collectors.toSet());
-
-//        log.info("unique service responses: {}", res.size());
-//
-//        return res;
-        return Set.of();
+        log.info("Slots found: {}", slotInfos.size());
+        return Set.of(); // Stubbed out
     }
 }

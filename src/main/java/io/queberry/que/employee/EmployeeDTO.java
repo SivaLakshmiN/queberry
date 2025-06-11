@@ -81,7 +81,7 @@ public class EmployeeDTO {
         this.second = employee.getSecond();
         this.third = employee.getThird();
         this.fourth = employee.getFourth();
-//        this.branches = getBranchDTO(employee.getBranches());
+        this.branches = (employee.getBranches());
         this.tenant = employee.getTenant();
         this.loggedCounter = employee.getLoggedCounter();
 //        this.loggedBranch = employee.getLoggedBranch();

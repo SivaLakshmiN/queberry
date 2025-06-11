@@ -1,14 +1,16 @@
-package io.queberry.que.entity;
+package io.queberry.que.home;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import io.queberry.que.anotation.AggregateReference;
+import io.queberry.que.entity.Address;
+import io.queberry.que.entity.AggregateRoot;
+import io.queberry.que.entity.DomainEvent;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToOne;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-import org.w3c.dom.events.EventTarget;
 
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -21,7 +23,7 @@ import java.util.Locale;
 @ToString
 @Slf4j
 @NoArgsConstructor(force = true)
-public class Home extends AggregateRoot<Home>{
+public class Home extends AggregateRoot<Home> {
 
     @Column(unique = true)
     private String name;
@@ -121,7 +123,7 @@ public class Home extends AggregateRoot<Home>{
     }
 
     public Home address(Address newAddress)  {
-        final Address oldAddress = this.address == null ? null : this.address.clone();
+        final Address oldAddress = this.address == null ? null : this.address;
         this.address = newAddress;
 
         this.registerEvent(AddressChanged.of(getId(), oldAddress, newAddress));
@@ -155,7 +157,7 @@ public class Home extends AggregateRoot<Home>{
     @EqualsAndHashCode(callSuper = true)
     @RequiredArgsConstructor(staticName = "of")
     @NoArgsConstructor(access = AccessLevel.PRIVATE, force = true)
-    public static class HomeAdded extends DomainEvent<Home>{
+    public static class HomeAdded extends DomainEvent<Home> {
 
         @AggregateReference
         Home home;
