@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.params.ScanParams;
+import redis.clients.jedis.resps.ScanResult;
 
 import java.util.*;
 
@@ -213,34 +215,34 @@ public class RedisSequenceEngine {
 //        }
 //    }
 //
-//    public void removeBranchFromSequence(String branchKey){
-//        String seqPattern = "seq:" + branchKey + ":*";
-//        deleteKeys(seqPattern);
-//        String sharedSeqPattern = "shared:seq:" + branchKey + ":*";
-//        deleteKeys(sharedSeqPattern);
-//    }
-//
-//    private void deleteKeys(String pattern){
-//        String cursor = "0";
-//        ScanParams scanParams = new ScanParams();
-//        scanParams.match(pattern);
-//        scanParams.count(100); // Number of keys to scan in each iteration
-//
-//        try(Jedis jedis = jedisPool.getResource()) {
-//            // Scan and delete keys in batches
-//            do {
-//                ScanResult<String> scanResult = jedis.scan(cursor, scanParams);
-//                cursor = scanResult.getCursor();
-//                // Delete found keys
-//                for (String key : scanResult.getResult()) {
-//                    jedis.del(key);
-//                }
-//            } while (!cursor.equals("0"));
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
-//    }
-//
+    public void removeBranchFromSequence(String branchKey){
+        String seqPattern = "seq:" + branchKey + ":*";
+        deleteKeys(seqPattern);
+        String sharedSeqPattern = "shared:seq:" + branchKey + ":*";
+        deleteKeys(sharedSeqPattern);
+    }
+
+    private void deleteKeys(String pattern){
+        String cursor = "0";
+        ScanParams scanParams = new ScanParams();
+        scanParams.match(pattern);
+        scanParams.count(100); // Number of keys to scan in each iteration
+
+        try(Jedis jedis = jedisPool.getResource()) {
+            // Scan and delete keys in batches
+            do {
+                ScanResult<String> scanResult = jedis.scan(cursor);
+                cursor = scanResult.getCursor();
+                // Delete found keys
+                for (String key : scanResult.getResult()) {
+                    jedis.del(key);
+                }
+            } while (!cursor.equals("0"));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
     public Integer getToken(String branchKey, Service service){
         int number = 0;
         try(Jedis jedis = jedisPool.getResource()) {

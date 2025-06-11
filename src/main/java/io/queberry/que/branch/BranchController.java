@@ -1,5 +1,6 @@
 package io.queberry.que.branch;
 
+import io.queberry.que.region.Region;
 import io.queberry.que.serviceGroup.ServiceGroupDTO;
 import io.queberry.que.exception.DataNotFoundException;
 import io.queberry.que.exception.QueException;
@@ -25,6 +26,10 @@ public class BranchController {
 
     @Autowired
     private BranchService branchService;
+
+    public static Page<Region> getPage(Set<String> regions, Pageable pageable) {
+        return null;
+    }
 
     @GetMapping("/branches/active")
     public ResponseEntity<Set<BranchDTO>> getActiveBranches() {
