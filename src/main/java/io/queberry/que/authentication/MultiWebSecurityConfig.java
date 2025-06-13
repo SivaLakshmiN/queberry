@@ -317,46 +317,176 @@
 
 package io.queberry.que.authentication;
 
+import io.queberry.que.employee.EmployeeRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.session.SessionRegistry;
-import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
-import java.util.List;
+import java.util.Arrays;
+import java.util.Collections;
+
+//@Slf4j
+//@Configuration
+//@Profile("!ldap")
+//@CrossOrigin
+//@EnableWebSecurity
+//@EnableGlobalMethodSecurity(prePostEnabled = true)
+//@RequiredArgsConstructor
+//public class MultiWebSecurityConfig {
+//
+//    private final UserDetailsService userDetailsService;
+//    private final JwtRequestFilter jwtRequestFilter;
+//
+//    @Bean
+//    public PasswordEncoder passwordEncoder() {
+//        return new BCryptPasswordEncoder();
+//    }
+//
+//    @Bean
+//    public DaoAuthenticationProvider authenticationProvider(PasswordEncoder passwordEncoder) {
+//        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+//        provider.setUserDetailsService(userDetailsService);
+//        provider.setPasswordEncoder(passwordEncoder);
+//        return provider;
+//    }
+//
+//    @Bean
+//    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+//        return configuration.getAuthenticationManager();
+//    }
+//
+//    @Bean
+//    public SessionRegistry sessionRegistry() {
+//        return new SessionRegistryImpl();
+//    }
+//
+//    @Bean
+//    public HttpSessionEventPublisher httpSessionEventPublisher() {
+//        return new HttpSessionEventPublisher();
+//    }
+//
+//    @Bean
+//    public CorsFilter corsFilter() {
+//        CorsConfiguration config = new CorsConfiguration();
+//        config.setAllowCredentials(true);
+//        config.setAllowedOrigins(List.of("http://172.20.10.10:30001"));
+//        config.addAllowedHeader("*");
+//        config.addAllowedMethod("*");
+//
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/api/**", config);
+//        return new CorsFilter(source);
+//    }
+//
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        http
+////                .cors(cors -> cors.disable())
+//                .cors(Customizer.withDefaults())
+//                .csrf(csrf -> csrf.disable())
+//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                .exceptionHandling(ex -> ex.authenticationEntryPoint((request, response, authException) ->
+//                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage())))
+//                .authorizeHttpRequests(auth -> auth
+//                        .requestMatchers(
+//                                "/api/licenses", "/api/tenants", "/api/login", "/api/greeter/login", "/api/tokenanalysisService",
+//                                "/api/verify","/api/roles", "/api/logout", "/api/customerSignup", "/api/customerLogin", "/api/customerExists", "/push/**",
+//                                "/api/dispenser/**", "/api/signage/**", "/api/devices/**", "/api/device/**", "/api/device", "/api/countries",
+//                                "/api/locales", "/api/timezones", "/api/download/**", "/announcements/**", "/api/surveys/*", "/api/reporting/report/live",
+//                                "/api/slots/**", "/api/appointments/**", "/api/branches/active", "/api/branch/services/active", "/api/services/appointmentServices", "/api/azure/login", "/api/passwordPolicy",
+//                                "/api/surveys", "/api/surveys/**", "/api/medias", "/api/config/dispenser/migrate", "/api/branch/services/**", "/api/branch/branchCapacity/**","/api/refreshtoken"
+//                        ).permitAll()
+//                        .anyRequest().authenticated()
+//                );
+//
+//        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+//
+//        return http.build();
+//    }
+
+
 
 @Slf4j
 @Configuration
-@Profile("!ldap")
-@CrossOrigin
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+//@EnableMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class MultiWebSecurityConfig {
 
     private final UserDetailsService userDetailsService;
-    private final JwtRequestFilter jwtRequestFilter;
+    private final JwtRequestFilter jwtAuthFilter;
+
+    // Allow these APIs without authentication
+    private static final String[] AUTH_WHITELIST = {
+            "/api/login",
+            "/api/register",
+            "/api/public/**",     // if you have any open APIs
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-resources/**",
+            "/webjars/**",
+            "/error" // allow Spring error path
+    };
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .authorizeHttpRequests(authz -> authz
+                        .requestMatchers(AUTH_WHITELIST).permitAll()
+                        .requestMatchers("/api/**").authenticated()  // Protect all other /api endpoints
+                )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(e -> e
+                        .authenticationEntryPoint((req, res, ex) -> {
+                            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            res.setContentType("application/json");
+                            res.getWriter().write("{\"error\": \"Unauthorized access\"}");
+                        })
+                );
+
+        return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(Collections.singletonList("*"));
+        config.setAllowedOrigins(Arrays.asList("http://192.168.1.7:30001"));
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+        config.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -364,67 +494,20 @@ public class MultiWebSecurityConfig {
     }
 
     @Bean
-    public DaoAuthenticationProvider authenticationProvider(PasswordEncoder passwordEncoder) {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailsService);
-        provider.setPasswordEncoder(passwordEncoder);
-        return provider;
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return authProvider;
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
-    }
-
-    @Bean
-    public SessionRegistry sessionRegistry() {
-        return new SessionRegistryImpl();
-    }
-
-    @Bean
-    public HttpSessionEventPublisher httpSessionEventPublisher() {
-        return new HttpSessionEventPublisher();
-    }
-
-    @Bean
-    public CorsFilter corsFilter() {
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of("http://192.168.1.7:30001"));
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/api/**", config);
-        return new CorsFilter(source);
-    }
-
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-//                .cors(cors -> cors.disable())
-                .cors(Customizer.withDefaults())
-                .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(ex -> ex.authenticationEntryPoint((request, response, authException) ->
-                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage())))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/api/licenses", "/api/tenants", "/api/login", "/api/greeter/login", "/api/tokenanalysisService",
-                                "/api/verify","/api/roles", "/api/logout", "/api/customerSignup", "/api/customerLogin", "/api/customerExists", "/push/**",
-                                "/api/dispenser/**", "/api/signage/**", "/api/devices/**", "/api/device/**", "/api/device", "/api/countries",
-                                "/api/locales", "/api/timezones", "/api/download/**", "/announcements/**", "/api/surveys/*", "/api/reporting/report/live",
-                                "/api/slots/**", "/api/appointments/**", "/api/branches/active", "/api/branch/services/active", "/api/services/appointmentServices", "/api/azure/login", "/api/passwordPolicy",
-                                "/api/surveys", "/api/surveys/**", "/api/medias", "/api/config/dispenser/migrate", "/api/branch/services/**", "/api/branch/branchCapacity/**","/api/refreshtoken"
-                        ).permitAll()
-                        .anyRequest().authenticated()
-                );
-
-        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-
-        return http.build();
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 }
+
+
 
 
 

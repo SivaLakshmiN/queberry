@@ -5,6 +5,7 @@ import io.queberry.que.assistance.AssistanceRepository;
 import io.queberry.que.branch.Branch;
 import io.queberry.que.branch.BranchRepository;
 import io.queberry.que.config.Break.BreakSessionRepository;
+import io.queberry.que.config.Queue.QueueConfiguration;
 import io.queberry.que.config.Queue.QueueConfigurationRepository;
 import io.queberry.que.counter.Counter;
 import io.queberry.que.counter.CounterRepository;
@@ -15,7 +16,6 @@ import io.queberry.que.home.HomeRepository;
 import io.queberry.que.region.Region;
 import io.queberry.que.service.ServiceRepository;
 import io.queberry.que.session.SessionRepository;
-import io.queberry.que.subTransaction.SubTransaction;
 import io.queberry.que.subTransaction.SubTransactionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -89,20 +89,20 @@ public class ReportingService {
         return new Report(assistances,start.toLocalDate(),end.toLocalDate(),Type.SERVICE,serviceId);
     }
 
-    public Report getServiceReportByBranch(io.queberry.que.service.Service service, LocalDate from, LocalDate to, String branchKey){
+    public Report getServiceReportByBranch(String service, LocalDate from, LocalDate to, String branchKey){
         LocalDateTime start = LocalDateTime.of(from,LocalTime.MIN);
         LocalDateTime end = LocalDateTime.of(to,LocalTime.MAX);
-        Set<Assistance> assistance = assistanceRepository.findByCreatedAtBetweenAndSessionsServiceIdAndOptionalBranch(start,end,service.getId(),Collections.singletonList(branchKey));
-        assistance.addAll(assistanceRepository.findByCreatedAtBetweenAndServiceIdAndOptionalBranch(start,end,service.getId(),Collections.singletonList(branchKey)));
-        return new Report(assistance,start.toLocalDate(),end.toLocalDate(),Type.SERVICE,service.getId());
+        Set<Assistance> assistance = assistanceRepository.findByCreatedAtBetweenAndSessionsServiceIdAndOptionalBranch(start,end,service,Collections.singletonList(branchKey));
+        assistance.addAll(assistanceRepository.findByCreatedAtBetweenAndServiceIdAndOptionalBranch(start,end,service,Collections.singletonList(branchKey)));
+        return new Report(assistance,start.toLocalDate(),end.toLocalDate(),Type.SERVICE,service);
     }
 
-    public Report getServiceReportByBranches(io.queberry.que.service.Service service, LocalDate from, LocalDate to, Set<String> branchKey){
+    public Report getServiceReportByBranches(String service, LocalDate from, LocalDate to, Set<String> branchKey){
         LocalDateTime start = LocalDateTime.of(from,LocalTime.MIN);
         LocalDateTime end = LocalDateTime.of(to,LocalTime.MAX);
-        Set<Assistance> assistance = assistanceRepository.findByCreatedAtBetweenAndSessionsServiceIdAndOptionalBranch(start,end,service.getId(), new ArrayList<>(branchKey));
-        assistance.addAll(assistanceRepository.findByCreatedAtBetweenAndServiceIdAndOptionalBranch(start,end,service.getId(),new ArrayList<>(branchKey)));
-        return new Report(assistance,start.toLocalDate(),end.toLocalDate(),Type.SERVICE,service.getId());
+        Set<Assistance> assistance = assistanceRepository.findByCreatedAtBetweenAndSessionsServiceIdAndOptionalBranch(start,end,service, new ArrayList<>(branchKey));
+        assistance.addAll(assistanceRepository.findByCreatedAtBetweenAndServiceIdAndOptionalBranch(start,end,service,new ArrayList<>(branchKey)));
+        return new Report(assistance,start.toLocalDate(),end.toLocalDate(),Type.SERVICE,service);
     }
 
     public Report getServiceReportByEmp(io.queberry.que.service.Service service, LocalDateTime start, LocalDateTime end, String emp){
@@ -233,77 +233,77 @@ public class ReportingService {
         return serviceReport;
     }
 
-//    public ServiceReport getAllServicesForDashboard(LocalDate from, LocalDate to, String branchKey){
-//        Branch branch = branchRepository.findByBranchKey(branchKey);
-//        Set<Branch> branches = new HashSet<>();
-//        branches.add(branch);
-//        List<io.queberry.que.service.Service> services = new ArrayList<>();
-//        services.addAll(branch.getServices());
-//        ServiceReport serviceReport = new ServiceReport();
-//
-//        QueueConfiguration qc;
-//        Optional<QueueConfiguration> queueConfiguration = queueConfigurationRepository.findByBranchKey(branchKey);
-//        if(queueConfiguration.isPresent())
-//            qc = queueConfiguration.get();
-//        else
-//            qc = queueConfigurationRepository.findByBranchKey(branchKey.substring(0,9)).get();
-//
-//        services.forEach(service -> {
-//            Set<io.queberry.que.service.Service> serviceSet = new HashSet<>();
+    public ServiceReport getAllServicesForDashboard(LocalDate from, LocalDate to, String branchKey){
+        Branch branch = branchRepository.findByBranchKey(branchKey);
+        Set<Branch> branches = new HashSet<>();
+        branches.add(branch);
+        List<String> services = new ArrayList<>();
+        services.addAll(branch.getServices());
+        ServiceReport serviceReport = new ServiceReport();
+
+        QueueConfiguration qc;
+        Optional<QueueConfiguration> queueConfiguration = queueConfigurationRepository.findByBranchKey(branchKey);
+        if(queueConfiguration.isPresent())
+            qc = queueConfiguration.get();
+        else
+            qc = queueConfigurationRepository.findByBranchKey(branchKey.substring(0,9)).get();
+
+        services.forEach(service -> {
+            Set<io.queberry.que.service.Service> serviceSet = new HashSet<>();
 //            serviceSet.add(service);
-//            Set<Counter> counters = new HashSet<>(0);
-//            Set<Employee> employees = new HashSet<>(0);
-//            if((qc.getServicePriority().equals(QueueConfiguration.ServicePriority.BOTH)) || (qc.getServicePriority().equals(QueueConfiguration.ServicePriority.COUNTER))) {
-//                counters = counterRepository.findByBranchAndInUseAndFirstIsInOrSecondIsInOrThirdIsInOrFourthIsIn(branch, true, serviceSet, serviceSet, serviceSet, serviceSet);
-//            }
-//            if((qc.getServicePriority().equals(QueueConfiguration.ServicePriority.BOTH)) || (qc.getServicePriority().equals(QueueConfiguration.ServicePriority.USER))) {
-//                employees = employeeRepository.findByBranchesInAndLoggedCounterIsNotNullAndServicesIsInOrSecondIsInOrThirdIsInOrFourthIsIn(branches, serviceSet, serviceSet, serviceSet, serviceSet);
-//            }
-//            serviceReport.add(new ServiceReport.ServiceLineItem(service,getServiceReportByBranch(service,from,to,branchKey),counters.size() + employees.size()));
-//        });
-//        return serviceReport;
-//    }
-//
-//    public ServiceReport getAllServicesForBranches(LocalDate from, LocalDate to, Set<Branch> branches, Set<String> branchKeys){
-//        Set<io.queberry.que.service.Service> services = new HashSet<>();
-//        branches.forEach(branch -> {
-//            services.addAll(branch.getServices());
-//        });
-//
-//        ServiceReport serviceReport = new ServiceReport();
-//        QueueConfiguration qc;
-//
-//        if (branches.size() == 1) {
-//            String branchKey = branchKeys.stream().findFirst().orElse(null);
-//
-//            if (branchKey != null) {
-//                qc = queueConfigurationRepository.findByBranchKey(branchKey)
-//                        .orElseGet(() -> queueConfigurationRepository.findByBranchKey(branchKey.substring(0, 9))
-//                                .orElseGet(() -> queueConfigurationRepository.findByBranchKey(null).orElse(null)));
-//            } else {
-//                qc = null;
-//            }
-//        }
-//        else {
-//            qc = null;
-//        }
-//        services.forEach(service -> {
-//            Set<io.queberry.que.service.Service> serviceSet = new HashSet<>();
-//            serviceSet.add(service);
-//            Set<Counter> counters = new HashSet<>(0);
-//            Set<Employee> employees = new HashSet<>(0);
-//            if(qc != null) {
-//                if ((qc.getServicePriority().equals(QueueConfiguration.ServicePriority.BOTH)) || (qc.getServicePriority().equals(QueueConfiguration.ServicePriority.COUNTER))) {
-//                    counters = counterRepository.findByBranchAndInUseAndFirstIsInOrSecondIsInOrThirdIsInOrFourthIsIn(branches.stream().findFirst().get(), true, serviceSet, serviceSet, serviceSet, serviceSet);
-//                }
-//                if ((qc.getServicePriority().equals(QueueConfiguration.ServicePriority.BOTH)) || (qc.getServicePriority().equals(QueueConfiguration.ServicePriority.USER))) {
-//                    employees = employeeRepository.findByBranchesInAndLoggedCounterIsNotNullAndServicesIsInOrSecondIsInOrThirdIsInOrFourthIsIn(branches, serviceSet, serviceSet, serviceSet, serviceSet);
-//                }
-//            }
-//            serviceReport.add(new ServiceReport.ServiceLineItem(service,getServiceReportByBranches(service,from,to,branchKeys),counters.size() + employees.size()));
-//        });
-//        return serviceReport;
-//    }
+            Set<Counter> counters = new HashSet<>(0);
+            Set<Employee> employees = new HashSet<>(0);
+            if((qc.getServicePriority().equals(QueueConfiguration.ServicePriority.BOTH)) || (qc.getServicePriority().equals(QueueConfiguration.ServicePriority.COUNTER))) {
+                counters = counterRepository.findByBranchAndInUseAndFirstIsInOrSecondIsInOrThirdIsInOrFourthIsIn(branch, true, serviceSet, serviceSet, serviceSet, serviceSet);
+            }
+            if((qc.getServicePriority().equals(QueueConfiguration.ServicePriority.BOTH)) || (qc.getServicePriority().equals(QueueConfiguration.ServicePriority.USER))) {
+                employees = employeeRepository.findByBranchesInAndLoggedCounterIsNotNullAndServicesIsInOrSecondIsInOrThirdIsInOrFourthIsIn(branches, serviceSet, serviceSet, serviceSet, serviceSet);
+            }
+            serviceReport.add(new ServiceReport.ServiceLineItem(service,getServiceReportByBranch(service,from,to,branchKey),counters.size() + employees.size()));
+        });
+        return serviceReport;
+    }
+
+    public ServiceReport getAllServicesForBranches(LocalDate from, LocalDate to, Set<Branch> branches, Set<String> branchKeys){
+        Set<String> services = new HashSet<>();
+        branches.forEach(branch -> {
+            services.addAll(branch.getServices());
+        });
+
+        ServiceReport serviceReport = new ServiceReport();
+        QueueConfiguration qc;
+
+        if (branches.size() == 1) {
+            String branchKey = branchKeys.stream().findFirst().orElse(null);
+
+            if (branchKey != null) {
+                qc = queueConfigurationRepository.findByBranchKey(branchKey)
+                        .orElseGet(() -> queueConfigurationRepository.findByBranchKey(branchKey.substring(0, 9))
+                                .orElseGet(() -> queueConfigurationRepository.findByBranchKey(null).orElse(null)));
+            } else {
+                qc = null;
+            }
+        }
+        else {
+            qc = null;
+        }
+        services.forEach(service -> {
+            Set<io.queberry.que.service.Service> serviceSet = new HashSet<>();
+//            serviceSet.add();
+            Set<Counter> counters = new HashSet<>(0);
+            Set<Employee> employees = new HashSet<>(0);
+            if(qc != null) {
+                if ((qc.getServicePriority().equals(QueueConfiguration.ServicePriority.BOTH)) || (qc.getServicePriority().equals(QueueConfiguration.ServicePriority.COUNTER))) {
+                    counters = counterRepository.findByBranchAndInUseAndFirstIsInOrSecondIsInOrThirdIsInOrFourthIsIn(branches.stream().findFirst().get(), true, serviceSet, serviceSet, serviceSet, serviceSet);
+                }
+                if ((qc.getServicePriority().equals(QueueConfiguration.ServicePriority.BOTH)) || (qc.getServicePriority().equals(QueueConfiguration.ServicePriority.USER))) {
+                    employees = employeeRepository.findByBranchesInAndLoggedCounterIsNotNullAndServicesIsInOrSecondIsInOrThirdIsInOrFourthIsIn(branches, serviceSet, serviceSet, serviceSet, serviceSet);
+                }
+            }
+            serviceReport.add(new ServiceReport.ServiceLineItem(service,getServiceReportByBranches(service,from,to,branchKeys),counters.size() + employees.size()));
+        });
+        return serviceReport;
+    }
 
     public EmployeeReport getAllEmployeesReportByBranch(LocalDate from, LocalDate to, ReportRequest.Parties parties,String branchKey){
         List<Employee> employees = new ArrayList<>(0);
@@ -394,7 +394,7 @@ public class ReportingService {
         return null;
     }
 
-    public Report getAllDetails(LocalDateTime from, LocalDateTime to, Region region, String branchKey){
+    public Report getAllDetails(LocalDateTime from, LocalDateTime to, String region, String branchKey){
 
         Set<String> branchKeys = new HashSet<>();
 //

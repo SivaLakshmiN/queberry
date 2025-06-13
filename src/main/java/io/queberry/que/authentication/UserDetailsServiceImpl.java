@@ -16,10 +16,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
-@RequiredArgsConstructor
+
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final EmployeeRepository employeeRepository;
+
+    public UserDetailsServiceImpl(EmployeeRepository employeeRepository) {
+        this.employeeRepository = employeeRepository;
+    }
 
 
     @Override

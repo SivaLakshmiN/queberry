@@ -1,6 +1,7 @@
 package io.queberry.que.branch;
 
 import io.queberry.que.region.Region;
+import io.queberry.que.role.ReportRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,6 +24,5 @@ public interface BranchRepository extends JpaRepository<Branch,String> {
     String countAllByActiveTrue();
     @Query("SELECT new io.queberry.que.branch.BranchDTO(b.id, b.name,b.active, b.branchKey) FROM Branch b")
     List<BranchDTO> findAllBranchDTOs();
-
 }
 

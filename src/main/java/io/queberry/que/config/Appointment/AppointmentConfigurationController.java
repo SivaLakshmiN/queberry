@@ -5,10 +5,6 @@ import io.queberry.que.entity.FileReference;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.docx4j.Docx4J;
-import org.docx4j.convert.out.HTMLSettings;
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -55,42 +51,42 @@ public class AppointmentConfigurationController {
     }
 
 
-    @PostMapping(value="/config/convertHtml", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public FileReference convertToHtml(@RequestParam(value = "file") MultipartFile file) throws Exception {
-        byte[] fileContent = file.getBytes();
-
-        try (ByteArrayInputStream is = new ByteArrayInputStream(fileContent);
-             ByteArrayOutputStream os = new ByteArrayOutputStream()) {
-
-            WordprocessingMLPackage wordMLPackage = Docx4J.load(is);
-
-            // Ensure that the MainDocumentPart is properly initialized
-            MainDocumentPart documentPart = wordMLPackage.getMainDocumentPart();
-            if (documentPart == null) {
-                throw new IOException("Error loading Word document");
-            }
-
-            HTMLSettings htmlSettings = Docx4J.createHTMLSettings();
-            htmlSettings.setWmlPackage(wordMLPackage);
-
-            // Perform HTML conversion
-            Docx4J.toHTML(htmlSettings, os, Docx4J.FLAG_EXPORT_PREFER_XSL);
-
-            UUID uuid = UUID.randomUUID();
-
-            if(this.baseDirectory != null && this.baseDirectory.equals("null")){
-                this.baseDirectory = this.userHome + "/vault/files";
-            }
-
-            try (FileOutputStream fos = new FileOutputStream(baseDirectory + "/" + uuid + ".html")) {
-                fos.write(os.toString().getBytes());
-            }
-            return new FileReference(uuid.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new IOException("Error converting DOCX to HTML", e);
-        }
-    }
+//    @PostMapping(value="/config/convertHtml", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    public FileReference convertToHtml(@RequestParam(value = "file") MultipartFile file) throws Exception {
+//        byte[] fileContent = file.getBytes();
+//
+//        try (ByteArrayInputStream is = new ByteArrayInputStream(fileContent);
+//             ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+//
+//            WordprocessingMLPackage wordMLPackage = Docx4J.load(is);
+//
+//            // Ensure that the MainDocumentPart is properly initialized
+//            MainDocumentPart documentPart = wordMLPackage.getMainDocumentPart();
+//            if (documentPart == null) {
+//                throw new IOException("Error loading Word document");
+//            }
+//
+//            HTMLSettings htmlSettings = Docx4J.createHTMLSettings();
+//            htmlSettings.setWmlPackage(wordMLPackage);
+//
+//            // Perform HTML conversion
+//            Docx4J.toHTML(htmlSettings, os, Docx4J.FLAG_EXPORT_PREFER_XSL);
+//
+//            UUID uuid = UUID.randomUUID();
+//
+//            if(this.baseDirectory != null && this.baseDirectory.equals("null")){
+//                this.baseDirectory = this.userHome + "/vault/files";
+//            }
+//
+//            try (FileOutputStream fos = new FileOutputStream(baseDirectory + "/" + uuid + ".html")) {
+//                fos.write(os.toString().getBytes());
+//            }
+//            return new FileReference(uuid.toString());
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            throw new IOException("Error converting DOCX to HTML", e);
+//        }
+//    }
 
     @Getter
     @AllArgsConstructor

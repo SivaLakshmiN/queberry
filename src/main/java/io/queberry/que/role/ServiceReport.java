@@ -35,6 +35,10 @@ public class ServiceReport {
     public static class ServiceLineItem{
         private String service;
         private Report report;
+
+        public ServiceLineItem(Service service, Report serviceReportByBranches, int servingCtrsCnt) {
+        }
+
         public String serviceName(){return service;}
         public int servingCtrsCnt=0;
     }

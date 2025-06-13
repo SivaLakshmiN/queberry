@@ -28,63 +28,51 @@ import java.util.Optional;
 @Slf4j
 public class JwtRequestFilter extends OncePerRequestFilter {
 
-    private JwtTokenUtil jwtTokenUtil;
-
-    private EmployeeRepository employeeRepository;
-
+    private final JwtTokenUtil jwtTokenUtil;
+    private final EmployeeRepository employeeRepository;
     private final CustomerRepository customerRepository;
 
-    JwtRequestFilter(JwtTokenUtil jwtTokenUtil, EmployeeRepository employeeRepository, CustomerRepository customerRepository){
+    public JwtRequestFilter(JwtTokenUtil jwtTokenUtil,
+                            EmployeeRepository employeeRepository,
+                            CustomerRepository customerRepository) {
         this.jwtTokenUtil = jwtTokenUtil;
         this.employeeRepository = employeeRepository;
         this.customerRepository = customerRepository;
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain chain) throws ServletException, IOException {
 
-        log.info("ap request:{}", request.getRequestURL());
+        String requestPath = request.getRequestURI();
+        String header = request.getHeader("Authorization");
 
-        // Skip JWT processing for OPTIONS requests (CORS preflight)
-        if (request.getMethod().equals("OPTIONS")) {
+        log.debug("Incoming request: {} {}", request.getMethod(), requestPath);
+
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             chain.doFilter(request, response);
             return;
         }
 
-        final String requestTokenHeader = request.getHeader("Authorization");
-        String username = null;
-        String jwtToken = null;
-
-        log.info("token:{}",requestTokenHeader);
-
-        // Extract JWT token from "Bearer " prefix
-        if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
-            log.info("in if bearer token");
-            jwtToken = requestTokenHeader.substring(7);
+        if (header != null && header.startsWith("Bearer ")) {
+            String token = header.substring(7);
+            String username;
 
             try {
-                username = jwtTokenUtil.getUsernameFromToken(jwtToken);
+                username = jwtTokenUtil.getUsernameFromToken(token);
+                log.debug("Extracted username: {}", username);
 
-                log.info("username:{}", username);
-                if (username != null) {
-                    // 1. Check if user is an Employee
-                    Optional<Employee> employeeOpt = employeeRepository.findEmployeeByUsername(username);
-                    log.info(("emp rcord"));
-
-                    if (employeeOpt.isPresent()) {
-                        log.info(("emp present"));
-                        Employee user = employeeOpt.get();
-                        setEmployeeAuthentication(user, request);
-                    }
-                    // 2. Check if user is a Customer (Queberry tenant)
-                    else {
-                        log.info(("checking customer"));
+                if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    Optional<Employee> empOpt = employeeRepository.findEmployeeByUsername(username);
+                    if (empOpt.isPresent()) {
+                        log.debug("Employee authenticated: {}", username);
+                        setEmployeeAuthentication(empOpt.get(), request);
+                    } else {
                         TenantContext.setCurrentTenant("queberry");
                         Customer customer = customerRepository.findByUsername(username);
-
                         if (customer != null) {
-                            log.info(("customer present"));
+                            log.debug("Customer authenticated: {}", username);
                             setCustomerAuthentication(customer, request);
                             TenantContext.setCurrentTenant(request.getHeader("X-TenantId"));
                         } else {
@@ -98,21 +86,16 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 handleExpiredToken(e, request, response);
                 return;
             } catch (Exception e) {
-                log.error("JWT processing error", e);
+                log.error("JWT validation failed: {}", e.getMessage());
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token");
                 return;
             }
-        }
 
-        // Add JWT token as HTTP-only cookie
-        if (jwtToken != null) {
-            addJwtCookie(response, jwtToken);
+            addJwtCookie(response, token); // Optional: only if you use cookie-based auth
         }
 
         chain.doFilter(request, response);
     }
-
-// --- Helper Methods ---
 
     private void setEmployeeAuthentication(Employee user, HttpServletRequest request) {
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
@@ -128,18 +111,25 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(authToken);
     }
 
-    private void handleExpiredToken(ExpiredJwtException ex, HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
+    private void handleExpiredToken(ExpiredJwtException ex,
+                                    HttpServletRequest request,
+                                    HttpServletResponse response) throws IOException {
 
         String isRefreshToken = request.getHeader("isRefreshToken");
         String requestURL = request.getRequestURL().toString();
 
-        if (isRefreshToken != null && isRefreshToken.equals("true") && requestURL.contains("refreshtoken")) {
+        if ("true".equals(isRefreshToken) && requestURL.contains("refreshtoken")) {
             allowForRefreshToken(ex, request);
         } else {
-            log.warn("JWT token expired: {}", ex.getMessage());
+            log.warn("Token expired: {}", ex.getMessage());
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token expired");
         }
+    }
+
+    private void allowForRefreshToken(ExpiredJwtException ex, HttpServletRequest request) {
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(null, null, null);
+        SecurityContextHolder.getContext().setAuthentication(token);
+        request.setAttribute("claims", ex.getClaims());
     }
 
     private void addJwtCookie(HttpServletResponse response, String token) {
@@ -147,22 +137,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
         cookie.setPath("/");
-        cookie.setMaxAge(30 * 60); // 30 minutes
+        cookie.setMaxAge(1800); // 30 minutes
         response.addCookie(cookie);
-    }
-
-    private void allowForRefreshToken(ExpiredJwtException ex, HttpServletRequest request) {
-
-        // create a UsernamePasswordAuthenticationToken with null values.
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-                null, null, null);
-        // After setting the Authentication in the context, we specify
-        // that the current user is authenticated. So it passes the
-        // Spring Security Configurations successfully.
-        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-        // Set the claims so that in controller we will be using it to create
-        // new JWT
-        request.setAttribute("claims", ex.getClaims());
-
     }
 }

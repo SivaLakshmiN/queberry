@@ -2,6 +2,7 @@ package io.queberry.que.employee;
 
 import io.queberry.que.branch.Branch;
 import io.queberry.que.role.Role;
+import io.queberry.que.service.Service;
 import jakarta.persistence.QueryHint;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -53,6 +54,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
     Optional<Employee> findById(String id);
 
     List<Employee> findByActiveTrueAndBranchesAndRolesContaining(Branch branch, Role role);
+    Set<Employee> findByBranchesInAndLoggedCounterIsNotNullAndServicesIsInOrSecondIsInOrThirdIsInOrFourthIsIn(Set<Branch> s, Set<Service> s1, Set<Service> s2, Set<Service> s3, Set<Service> s4);
 
 }
 

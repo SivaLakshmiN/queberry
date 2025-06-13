@@ -10,6 +10,7 @@ import io.queberry.que.config.Break.BreakSession;
 import io.queberry.que.config.Break.BreakSessionRepository;
 import io.queberry.que.config.EncryptionUtil;
 import io.queberry.que.config.JwtTokenUtil;
+import io.queberry.que.config.Tenant.TenantContext;
 import io.queberry.que.config.Websocket.WebSocketOperations;
 import io.queberry.que.counter.CounterRepository;
 import io.queberry.que.customer.Customer;
@@ -86,109 +87,61 @@ public class JwtAuthenticationController {
 //	private static final byte[] KEY = "queberry123".getBytes(StandardCharsets.UTF_8); // Replace with a secure key
 
 
-    @PostMapping("/login")
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody String payload) {
-        try {
-            String decryptedData = EncryptionUtil.decrypt(payload);
-            ObjectMapper mapper = new ObjectMapper();
-            Authenticate authenticationRequest = mapper.readValue(decryptedData, Authenticate.class);
-
-            log.info("Login request: {}", authenticationRequest.getUsername());
-
-            Employee emp = employeeRepository.findByUsername(authenticationRequest.getUsername());
-            LocalDateTime start = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
-            LocalDateTime end = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
-
-            if (emp == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
-                        "status", "error",
-                        "message", "Username doesn't exist"
-                ));
-            }
-
-            if (!emp.isActive() || emp.isLocked()) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
-                        "status", "error",
-                        "message", "Your account is locked/inactive. Please contact your admin"
-                ));
-            }
-
-            if (!authenticate(authenticationRequest.getPassword(), emp)) {
-                if (emp.getRoles().contains(rolesRepository.findByName("PRODUCT_ADMIN"))) {
-                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
-                            "status", "error",
-                            "message", "Incorrect password"
-                    ));
-                }
-
-                PasswordPolicy policy = passwordPolicyRepository.findAll().stream().findFirst().orElse(null);
-                if (policy != null) {
-                    int failedCount = failedLoginRepository.countFailedAttempts(emp.getId(), start);
-                    int remaining = policy.getFailedAttempts() - failedCount;
-
-                    failedLoginRepository.save(new FailedLogin(emp.getId(), LocalDateTime.now()));
-
-                    if (remaining > 1) {
-                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
-                                "status", "error",
-                                "message", "Incorrect password. " + (remaining - 1) + " attempt(s) left."
-                        ));
-                    } else {
-                        emp.setLocked(true);
-                        employeeRepository.save(emp);
-                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
-                                "status", "error",
-                                "message", "Your account is locked due to multiple failed attempts"
-                        ));
-                    }
-                }
-            }
-
-            // At this point, authentication passed
-//            if (messagingTemplate != null) {
-//                try {
-//                    messagingTemplate.send("/notifications/employee/" + emp.getUsername(), "logout");
-//                } catch (Exception ex) {
-//                    log.warn("WebSocket logout message failed for {}", emp.getUsername(), ex);
+//    @PostMapping("/login")
+//    public ResponseEntity<?> createAuthenticationToken(@RequestBody String payload) {
+//        try {
+//            String decryptedData = EncryptionUtil.decrypt(payload);
+//            ObjectMapper mapper = new ObjectMapper();
+//            JwtAuthenticationController.Authenticate authenticationRequest = mapper.readValue(decryptedData, JwtAuthenticationController.Authenticate.class);
+//            log.info("{}", authenticationRequest);
+//            Employee empinfo = employeeRepository.findByUsername(authenticationRequest.getUsername());
+//            log.info("emp details");
+//
+//            if (empinfo == null) {
+//                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Username doesn't exit");
+//            } else {
+//                TenantContext.setCurrentTenant(empinfo.getTenant());
+//                log.info("tenant before emp details");
+//                Employee emp = employeeRepository.findByUsername(authenticationRequest.getUsername());
+//                log.info("{}", emp.getId());
+//                log.info("tenant emp details");
+//
+//                if (!emp.isActive()) {
+//                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Your account is inactive. Please contact your admin");
+//                }
+//                Set<Assistance> assist;
+//                if (authenticate(authenticationRequest.getPassword(), emp)) {
+//                    LocalDateTime start = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+//                    LocalDateTime end = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
+//                    if (emp.getRoles().contains(rolesRepository.findByName("COUNTER_AGENT"))) {
+//                        log.info("counter agent");
+//                        assist = assistanceRepository.findByCreatedAtBetweenAndSessionsEmployeeAndSessionsStatus(start, end, emp.getId(), Status.ATTENDING, Sort.by(Sort.Order.desc("CreatedAt")));
+//                        if (assist.size() > 0) {
+//                            messagingTemplate.send("/notifications/employee/" + emp.getUsername(), "logout");
+//                            log.info("running token");
+//                            JwtAuthenticationController.EmployeeInfo empData = setEmpResponse(emp);
+//                            assist.stream().findFirst().ifPresent(empData::setAssistance);
+//                            return ResponseEntity.status(HttpStatus.OK).body(empData);
+//                        }
+//                    }
+//                    if (emp.getLoggedTime() == null) {
+//                        log.info("clear logout");
+//                        JwtAuthenticationController.EmployeeInfo empData = setEmpResponse(emp);
+//                        log.info("return empdata");
+//                        return ResponseEntity.status(HttpStatus.OK).body(empData);
+//                    } else {
+//                        log.info("not logged out properly");
+//                        return ResponseEntity.status(HttpStatus.CONFLICT).body("An active session exists");
+//                    }
+//                } else {
+//                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect Password");
 //                }
 //            }
-
-            EmployeeInfo empData = setEmpResponse(emp);
-
-            // Handle COUNTER_AGENT logic
-            if (emp.getRoles().contains(rolesRepository.findByName("COUNTER_AGENT"))) {
-                Set<Assistance> assists = assistanceRepository
-                        .findByCreatedAtBetweenAndSessionsEmployeeAndSessionsStatus(start, end, emp.getId(), Status.ATTENDING,
-                                Sort.by(Sort.Order.desc("CreatedAt")));
-
-                if (!assists.isEmpty()) {
-                    assists.stream().findFirst().ifPresent(empData::setAssistance);
-                } else if (emp.getLoggedCounter() != null) {
-                    counterRepository.findCounterById(emp.getLoggedCounter())
-                            .ifPresent(counter -> empData.employee.setCounter(String.valueOf(counter)));
-                }
-            }
-
-            String message = emp.getLoggedTime() == null
-                    ? "Login successful"
-                    : "Previous session was terminated. You are now logged in.";
-
-            return ResponseEntity.ok(Map.of(
-                    "status", "success",
-                    "message", message,
-                    "data", empData
-            ));
-
-        } catch (Exception e) {
-            log.error("Login exception", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
-                    "status", "error",
-                    "message", "Something went wrong. Please try again."
-            ));
-        }
-    }
-
-
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return null;
+//    }
 
 //    @PostMapping("/login")
 //    public ResponseEntity<?> createAuthenticationToken(@RequestBody String payload) {
@@ -305,6 +258,114 @@ public class JwtAuthenticationController {
 //                "message", "Internal server error. Please try again later."
 //        ));
 //    }
+
+
+
+    @PostMapping("/login")
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody Authenticate authenticationRequest) {
+        try {
+            log.info("Login request: {}", authenticationRequest);
+
+            Employee emp = employeeRepository.findByUsername(authenticationRequest.getUsername());
+            LocalDateTime start = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+            LocalDateTime end = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
+
+            if (emp == null) {
+                return ResponseEntity.ok(Map.of(
+                        "status", "error",
+                        "message", "Username doesn't exist"
+                ));
+            }
+
+            if (!emp.isActive() || emp.isLocked()) {
+                return ResponseEntity.ok(Map.of(
+                        "status", "error",
+                        "message", "Your account is locked/inactive. Please contact your admin"
+                ));
+            }
+
+            if (authenticate(authenticationRequest.getPassword(), emp)) {
+                Set<Assistance> assist;
+                if (emp.getRoles().contains(rolesRepository.findByName("COUNTER_AGENT"))) {
+                    assist = assistanceRepository.findByCreatedAtBetweenAndSessionsEmployeeAndSessionsStatus(
+                            start, end, emp.getId(), Status.ATTENDING, Sort.by(Sort.Order.desc("CreatedAt"))
+                    );
+                    if (!assist.isEmpty()) {
+                        messagingTemplate.send("/notifications/employee/" + emp.getUsername(), "logout");
+                        EmployeeInfo empData = setEmpResponse(emp);
+                        assist.stream().findFirst().ifPresent(empData::setAssistance);
+                        return ResponseEntity.ok(Map.of(
+                                "status", "success",
+                                "message", "Login successful",
+                                "data", empData
+                        ));
+                    }
+                    if (emp.getLoggedCounter() != null) {
+                        Counter counter = counterRepository.findCounterById(emp.getLoggedCounter()).orElse(null);
+                        messagingTemplate.send("/notifications/employee/" + emp.getUsername(), "logout");
+                        EmployeeInfo empData = setEmpResponse(emp);
+                        if (counter != null) {
+                            empData.employee.setCounter(counter.toString());
+                        }
+                        return ResponseEntity.ok(Map.of(
+                                "status", "success",
+                                "message", "Login successful",
+                                "data", empData
+                        ));
+                    }
+                }
+
+                EmployeeInfo empData = setEmpResponse(emp);
+                if (emp.getLoggedTime() == null) {
+                    return ResponseEntity.ok(Map.of(
+                            "status", "success",
+                            "message", "Login successful",
+                            "data", empData
+                    ));
+                } else {
+                    return ResponseEntity.ok(Map.of(
+                            "status", "warning",
+                            "message", "An active session exists",
+                            "data", empData
+                    ));
+                }
+            } else {
+                if (emp.getRoles().contains(rolesRepository.findByName("PRODUCT_ADMIN"))) {
+                    return ResponseEntity.ok(Map.of(
+                            "status", "error",
+                            "message", "Incorrect password"
+                    ));
+                } else {
+                    PasswordPolicy passwordPolicy = passwordPolicyRepository.findAll().stream().findFirst().orElse(null);
+                    int remainingAttempts;
+                    if (passwordPolicy != null) {
+                        remainingAttempts = passwordPolicy.getFailedAttempts() - failedLoginRepository.countFailedAttempts(emp.getId(), start);
+                        failedLoginRepository.save(new FailedLogin(emp.getId(), LocalDateTime.now()));
+                        if (remainingAttempts > 1) {
+                            return ResponseEntity.ok(Map.of(
+                                    "status", "error",
+                                    "message", "Incorrect Password. Only " + (remainingAttempts - 1) + " attempts left."
+                            ));
+                        } else {
+                            emp.setLocked(true);
+                            employeeRepository.save(emp);
+                            return ResponseEntity.ok(Map.of(
+                                    "status", "error",
+                                    "message", "Your account is locked. Please contact your admin."
+                            ));
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return ResponseEntity.ok(Map.of(
+                "status", "error",
+                "message", "Internal server error. Please try again later."
+        ));
+    }
 
 
     @PostMapping("/verify")
